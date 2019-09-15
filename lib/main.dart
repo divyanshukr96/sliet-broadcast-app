@@ -11,8 +11,9 @@ class MyApp extends StatelessWidget {
     return
       MaterialApp(
        home:Scaffold(
-         appBar: AppBar(),
-         body: NoticeCard(),
+         resizeToAvoidBottomPadding: false,
+//         appBar: AppBar(),
+         body: LoginPage(),
        ),
       );
 

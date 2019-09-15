@@ -1,131 +1,335 @@
 import 'package:flutter/material.dart';
-
-
+import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:sliet_broadcast/style/theme.dart' as Theme;
+import 'package:sliet_broadcast/utils/bubble_indication_painter.dart';
 
 class LoginPage extends StatefulWidget {
+  LoginPage({Key key}) : super(key: key);
+
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _LoginPageState createState() => new _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  final _formKey = GlobalKey<FormState>();
+class _LoginPageState extends State<LoginPage>
+    with SingleTickerProviderStateMixin {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final FocusNode myFocusNodeEmailLogin = FocusNode();
+  final FocusNode myFocusNodePasswordLogin = FocusNode();
 
-  bool _autoValidate = false;
+  final FocusNode myFocusNodePassword = FocusNode();
+  final FocusNode myFocusNodeEmail = FocusNode();
+  final FocusNode myFocusNodeName = FocusNode();
+
+  TextEditingController loginEmailController = new TextEditingController();
+  TextEditingController loginPasswordController = new TextEditingController();
+
+  bool _obscureTextLogin = true;
+
+  PageController _pageController;
+
+  Color left = Colors.black;
+  Color right = Colors.white;
 
   @override
   Widget build(BuildContext context) {
-    TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
-
-    final emailField = TextFormField(
-      obscureText: false,
-      style: style,
-      decoration: InputDecoration(
-        hintText: "Email / Username",
-      ),
-      validator: (String value) {
-        if (value.isEmpty) {
-          return 'Please enter your Email / username.';
-        } else if (value.length < 5) {
-          return 'Username must be more than 5 character.';
-        } else
-          return null;
-      },
-      autovalidate: _autoValidate,
-      autocorrect: true,
-    );
-
-    final passwordField = TextFormField(
-      obscureText: true,
-      style: style,
-      decoration: InputDecoration(
-        hintText: "Password",
-      ),
-      validator: (value) {
-        if (value.isEmpty) {
-          return 'Please enter you password.';
-        }
-        return null;
-      },
-      autovalidate: _autoValidate,
-    );
-
-    final loginButton = Material(
-      elevation: 5.0,
-      borderRadius: BorderRadius.circular(25.0),
-      color: Colors.blue.shade700,
-      child: MaterialButton(
-        minWidth: MediaQuery.of(context).size.width / 2,
-        padding: EdgeInsets.fromLTRB(20.0, 12.0, 20.0, 12.0),
-        onPressed: () {
-          if (_formKey.currentState.validate()) {
-            setState(() {
-              _autoValidate = false;
-            });
-            _scaffoldKey.currentState.showSnackBar(
-              SnackBar(
-                content: Text('Login Processing . . .'),
-                backgroundColor: Colors.green,
-              ),
-            );
-          } else
-            setState(() {
-              _autoValidate = true;
-            });
-        },
-        child: Text(
-          'Login',
-          textAlign: TextAlign.center,
-          style: style.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-
-    return Scaffold(
-      resizeToAvoidBottomPadding: false,
+    return new Scaffold(
       key: _scaffoldKey,
-      body: Center(
-        child: Container(
-          color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+      body: NotificationListener<OverscrollIndicatorNotification>(
+        onNotification: (overscroll) {
+          overscroll.disallowGlow();
+        },
+        child: SingleChildScrollView(
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+//            height: MediaQuery.of(context).size.height >= 775.0
+//                ? MediaQuery.of(context).size.height
+//                : 775.0,
+            decoration: new BoxDecoration(
+              gradient: new LinearGradient(
+                  colors: [
+                    Theme.Colors.loginGradientStart,
+                    Theme.Colors.loginGradientEnd
+                  ],
+                  begin: const FractionalOffset(0.0, 0.0),
+                  end: const FractionalOffset(1.0, 1.0),
+                  stops: [0.0, 1.0],
+                  tileMode: TileMode.clamp),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(top: 60.0),
+                  child: new Image(
+                      width: 250.0,
+                      height: 191.0,
+                      fit: BoxFit.fill,
+                      image: new NetworkImage('https://raw.githubusercontent.com/huextrat/TheGorgeousLogin/master/assets/img/login_logo.png')),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 20.0),
+                  child: _buildMenuBar(context),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: PageView(
+                    controller: _pageController,
                     children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(top: 60.0, bottom: 80.0),
-                        child: Text(
-                          "SLIET Broadcast",
-                          style: TextStyle(fontSize: 24.0),
-                        ),
+                      new ConstrainedBox(
+                        constraints: const BoxConstraints.expand(),
+                        child: _buildSignIn(context),
                       ),
                     ],
                   ),
-
-                  SizedBox(height: 45.0),
-                  emailField,
-                  SizedBox(height: 25.0),
-                  passwordField,
-                  SizedBox(height: 35.0),
-                  loginButton,
-                  SizedBox(height: 15.0),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    myFocusNodePassword.dispose();
+    myFocusNodeEmail.dispose();
+    myFocusNodeName.dispose();
+    _pageController?.dispose();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
+    _pageController = PageController();
+  }
+
+  void showInSnackBar(String value) {
+    FocusScope.of(context).requestFocus(new FocusNode());
+    _scaffoldKey.currentState?.removeCurrentSnackBar();
+    _scaffoldKey.currentState.showSnackBar(new SnackBar(
+      content: new Text(
+        value,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            color: Colors.white,
+            fontSize: 16.0,
+            fontFamily: "WorkSansSemiBold"),
+      ),
+      backgroundColor: Colors.blue,
+      duration: Duration(seconds: 3),
+    ));
+  }
+
+  Widget _buildMenuBar(BuildContext context) {
+    return Container(
+      width: 300.0,
+      height: 56.0,
+      decoration: BoxDecoration(
+        color: Color(0x552B2B2B),
+        borderRadius: BorderRadius.all(Radius.circular(28.0)),
+      ),
+      child: CustomPaint(
+        painter: TabIndicationPainter(pageController: _pageController),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Text(
+              'SLIET Broadcast',
+              style: TextStyle(
+                  fontSize: 30.0,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'Montserrat',
+                  foreground: Paint()
+                    ..shader = Theme.Colors.primaryTextGradient),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSignIn(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(top: 23.0),
+      child: Column(
+        children: <Widget>[
+          Stack(
+            alignment: Alignment.topCenter,
+            overflow: Overflow.visible,
+            children: <Widget>[
+              Card(
+                elevation: 2.0,
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Container(
+                  width: MediaQuery.of(context).size.width * .9,
+                  height: 210.0,
+                  child: Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: 20.0, bottom: 15.0, left: 25.0, right: 25.0),
+                        child: TextField(
+                          focusNode: myFocusNodeEmailLogin,
+                          controller: loginEmailController,
+                          keyboardType: TextInputType.emailAddress,
+                          style: TextStyle(
+                              fontFamily: "WorkSansSemiBold",
+                              fontSize: 16.0,
+                              color: Colors.black),
+                          decoration: InputDecoration(
+//                            border: InputBorder.none,
+                            icon: Icon(
+                              Icons.person,
+                              color: Colors.black,
+                              size: 22.0,
+                            ),
+                            hintText: "Email / Username",
+                            hintStyle: TextStyle(
+                                fontFamily: "WorkSansSemiBold", fontSize: 17.0),
+                          ),
+                        ),
+                      ),
+//                      Container(
+//                        width: 250.0,
+//                        height: 1.0,
+//                        color: Colors.grey[400],
+//                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: 15.0, bottom: 20.0, left: 25.0, right: 25.0),
+                        child: TextField(
+                          focusNode: myFocusNodePasswordLogin,
+                          controller: loginPasswordController,
+                          obscureText: _obscureTextLogin,
+                          style: TextStyle(
+                              fontFamily: "WorkSansSemiBold",
+                              fontSize: 16.0,
+                              color: Colors.black),
+                          decoration: InputDecoration(
+//                            border: InputBorder.none,
+                            icon: Icon(
+                              FontAwesomeIcons.lock,
+                              size: 22.0,
+                              color: Colors.black,
+                            ),
+                            hintText: "Password",
+                            hintStyle: TextStyle(
+                                fontFamily: "WorkSansSemiBold", fontSize: 17.0),
+                            suffixIcon: GestureDetector(
+                              onTap: _toggleLogin,
+                              child: Icon(
+                                _obscureTextLogin
+                                    ? FontAwesomeIcons.eye
+                                    : FontAwesomeIcons.eyeSlash,
+                                size: 15.0,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 190.0),
+                decoration: new BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                      color: Theme.Colors.loginGradientStart,
+                      offset: Offset(1.0, 6.0),
+                      blurRadius: 20.0,
+                    ),
+                    BoxShadow(
+                      color: Theme.Colors.loginGradientEnd,
+                      offset: Offset(1.0, 6.0),
+                      blurRadius: 20.0,
+                    ),
+                  ],
+                  gradient: new LinearGradient(
+                      colors: [
+                        Theme.Colors.loginGradientEnd,
+                        Theme.Colors.loginGradientStart
+                      ],
+                      begin: const FractionalOffset(0.2, 0.2),
+                      end: const FractionalOffset(1.0, 1.0),
+                      stops: [0.0, 1.0],
+                      tileMode: TileMode.clamp),
+                ),
+                child: MaterialButton(
+                    highlightColor: Colors.transparent,
+                    splashColor: Theme.Colors.loginGradientEnd,
+                    //shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 42.0),
+                      child: Text(
+                        "LOGIN",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 25.0,
+                            fontFamily: "WorkSansBold"),
+                      ),
+                    ),
+                    onPressed: () => showInSnackBar("Login button pressed")),
+              ),
+            ],
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 10.0),
+            child: FlatButton(
+                onPressed: () {},
+                child: Text(
+                  "Forgot Password?",
+                  style: TextStyle(
+                      decoration: TextDecoration.underline,
+                      color: Colors.white,
+                      fontSize: 16.0,
+                      fontFamily: "WorkSansMedium"),
+                )),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top:0.0),
+            child: FlatButton(
+                onPressed: () {},
+                child: Text(
+                  "Skip?",
+                  style: TextStyle(
+                      decoration: TextDecoration.underline,
+                      color: Colors.brown,
+                      fontSize: 16.0,
+                      fontFamily: "WorkSansMedium"),
+                )),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _onSignInButtonPress() {
+    _pageController.animateToPage(0,
+        duration: Duration(milliseconds: 500), curve: Curves.decelerate);
+  }
+
+  void _toggleLogin() {
+    setState(() {
+      _obscureTextLogin = !_obscureTextLogin;
+    });
   }
 }
