@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage>
           return null;
         },
         child: SingleChildScrollView(
-            child: prefix0.Stack(
+            child: Stack(
           children: <Widget>[
             Container(
               width: MediaQuery.of(context).size.width,
@@ -62,44 +62,47 @@ class _LoginPageState extends State<LoginPage>
                     stops: [0.0, 1.0],
                     tileMode: TileMode.clamp),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  SizedBox(
-                    height: 40.0,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 20.0),
-                    child: Image(
-                      width: 250.0,
-                      height: 191.0,
-                      fit: BoxFit.fill,
-                      image: new NetworkImage(
-                          'https://raw.githubusercontent.com/huextrat/TheGorgeousLogin/master/assets/img/login_logo.png'),
+              child: Container(
+                margin: prefix0.EdgeInsets.only(
+                    top: prefix0.MediaQuery.of(context).size.height * 0.1),
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 40.0,
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 20.0),
-                    child: _buildMenuBar(context),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: PageView(
-                      controller: _pageController,
-                      children: <Widget>[
-                        new ConstrainedBox(
-                          constraints: const BoxConstraints.expand(),
-                          child: _buildSignIn(context),
-                        ),
-                      ],
+                    Padding(
+                      padding: EdgeInsets.only(top: 20.0),
+                      child: Image(
+                        width: 100.0,
+                        height: 100.0,
+                        fit: BoxFit.fill,
+                        image: new AssetImage('assets/images/login.png'),
+                      ),
                     ),
-                  ),
-                ],
+                    Padding(
+                      padding: EdgeInsets.only(top: 20.0),
+                      child: _buildMenuBar(context),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: PageView(
+                        controller: _pageController,
+                        children: <Widget>[
+                          new ConstrainedBox(
+                            constraints: const BoxConstraints.expand(),
+                            child: _buildSignIn(context),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             Positioned(
-              top: 20.0,
-              right: 0,
+              top: 35.0,
+              right: 10.0,
               child: IconButton(
                 onPressed: () {},
                 icon: Icon(Icons.close),
@@ -151,7 +154,7 @@ class _LoginPageState extends State<LoginPage>
 
   Widget _buildMenuBar(BuildContext context) {
     return Container(
-      width: 220.0,
+      width: 300.0,
       height: 45.0,
       decoration: BoxDecoration(
         boxShadow: [
@@ -208,7 +211,7 @@ class _LoginPageState extends State<LoginPage>
                       Padding(
                         padding: EdgeInsets.only(
                             top: 20.0, bottom: 10.0, left: 25.0, right: 25.0),
-                        child: TextField(
+                        child: TextFormField(
                           focusNode: myFocusNodeEmailLogin,
                           controller: loginEmailController,
                           keyboardType: TextInputType.emailAddress,
@@ -219,7 +222,7 @@ class _LoginPageState extends State<LoginPage>
                           decoration: InputDecoration(
 //                            border: InputBorder.none,
                             icon: Icon(
-                              Icons.person,
+                              Icons.person_outline,
                               color: Colors.black,
                               size: 22.0,
                             ),
@@ -237,7 +240,7 @@ class _LoginPageState extends State<LoginPage>
                       Padding(
                         padding: EdgeInsets.only(
                             top: 10.0, bottom: 20.0, left: 25.0, right: 25.0),
-                        child: TextField(
+                        child: TextFormField(
                           focusNode: myFocusNodePasswordLogin,
                           controller: loginPasswordController,
                           obscureText: _obscureTextLogin,
@@ -248,7 +251,7 @@ class _LoginPageState extends State<LoginPage>
                           decoration: InputDecoration(
 //                            border: InputBorder.none,
                             icon: Icon(
-                              FontAwesomeIcons.lock,
+                              Icons.lock_outline,
                               size: 22.0,
                               color: Colors.black,
                             ),
