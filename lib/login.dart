@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as prefix0;
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
@@ -39,56 +40,73 @@ class _LoginPageState extends State<LoginPage>
       body: NotificationListener<OverscrollIndicatorNotification>(
         onNotification: (overscroll) {
           overscroll.disallowGlow();
+          return null;
         },
         child: SingleChildScrollView(
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
+            child: prefix0.Stack(
+          children: <Widget>[
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
 //            height: MediaQuery.of(context).size.height >= 775.0
 //                ? MediaQuery.of(context).size.height
 //                : 775.0,
-            decoration: new BoxDecoration(
-              gradient: new LinearGradient(
-                  colors: [
-                    Theme.Colors.loginGradientStart,
-                    Theme.Colors.loginGradientEnd
-                  ],
-                  begin: const FractionalOffset(0.0, 0.0),
-                  end: const FractionalOffset(1.0, 1.0),
-                  stops: [0.0, 1.0],
-                  tileMode: TileMode.clamp),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.only(top: 60.0),
-                  child: new Image(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    colors: [
+                      Theme.Colors.loginGradientStart,
+                      Theme.Colors.loginGradientEnd
+                    ],
+                    begin: const FractionalOffset(0.0, 0.0),
+                    end: const FractionalOffset(1.0, 1.0),
+                    stops: [0.0, 1.0],
+                    tileMode: TileMode.clamp),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  SizedBox(
+                    height: 40.0,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 20.0),
+                    child: Image(
                       width: 250.0,
                       height: 191.0,
                       fit: BoxFit.fill,
-                      image: new NetworkImage('https://raw.githubusercontent.com/huextrat/TheGorgeousLogin/master/assets/img/login_logo.png')),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 20.0),
-                  child: _buildMenuBar(context),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: PageView(
-                    controller: _pageController,
-                    children: <Widget>[
-                      new ConstrainedBox(
-                        constraints: const BoxConstraints.expand(),
-                        child: _buildSignIn(context),
-                      ),
-                    ],
+                      image: new NetworkImage(
+                          'https://raw.githubusercontent.com/huextrat/TheGorgeousLogin/master/assets/img/login_logo.png'),
+                    ),
                   ),
-                ),
-              ],
+                  Padding(
+                    padding: EdgeInsets.only(top: 20.0),
+                    child: _buildMenuBar(context),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: PageView(
+                      controller: _pageController,
+                      children: <Widget>[
+                        new ConstrainedBox(
+                          constraints: const BoxConstraints.expand(),
+                          child: _buildSignIn(context),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ),
+            Positioned(
+              top: 20.0,
+              right: 0,
+              child: IconButton(
+                onPressed: () {},
+                icon: Icon(Icons.close),
+              ),
+            ),
+          ],
+        )),
       ),
     );
   }
@@ -133,25 +151,33 @@ class _LoginPageState extends State<LoginPage>
 
   Widget _buildMenuBar(BuildContext context) {
     return Container(
-      width: 300.0,
-      height: 56.0,
+      width: 220.0,
+      height: 45.0,
       decoration: BoxDecoration(
-        color: Color(0x552B2B2B),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black54,
+            blurRadius: 5.0,
+            spreadRadius: 1.0,
+            offset: Offset(1.0, 1.0),
+          )
+        ],
+        color: Colors.white,
         borderRadius: BorderRadius.all(Radius.circular(28.0)),
       ),
       child: CustomPaint(
-        painter: TabIndicationPainter(pageController: _pageController),
+//        painter: TabIndicationPainter(pageController: _pageController),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             Text(
               'SLIET Broadcast',
               style: TextStyle(
-                  fontSize: 30.0,
-                  fontWeight: FontWeight.w500,
-                  fontFamily: 'Montserrat',
-                  foreground: Paint()
-                    ..shader = Theme.Colors.primaryTextGradient),
+                fontSize: 30.0,
+                fontWeight: FontWeight.w500,
+                fontFamily: 'Montserrat',
+                foreground: Paint()..shader = Theme.Colors.primaryTextGradient,
+              ),
             )
           ],
         ),
@@ -176,12 +202,12 @@ class _LoginPageState extends State<LoginPage>
                 ),
                 child: Container(
                   width: MediaQuery.of(context).size.width * .9,
-                  height: 210.0,
+                  height: 200.0,
                   child: Column(
                     children: <Widget>[
                       Padding(
                         padding: EdgeInsets.only(
-                            top: 20.0, bottom: 15.0, left: 25.0, right: 25.0),
+                            top: 20.0, bottom: 10.0, left: 25.0, right: 25.0),
                         child: TextField(
                           focusNode: myFocusNodeEmailLogin,
                           controller: loginEmailController,
@@ -210,7 +236,7 @@ class _LoginPageState extends State<LoginPage>
 //                      ),
                       Padding(
                         padding: EdgeInsets.only(
-                            top: 15.0, bottom: 20.0, left: 25.0, right: 25.0),
+                            top: 10.0, bottom: 20.0, left: 25.0, right: 25.0),
                         child: TextField(
                           focusNode: myFocusNodePasswordLogin,
                           controller: loginPasswordController,
@@ -247,7 +273,7 @@ class _LoginPageState extends State<LoginPage>
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 190.0),
+                margin: EdgeInsets.only(top: 180.0),
                 decoration: new BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(5.0)),
                   boxShadow: <BoxShadow>[
@@ -300,19 +326,6 @@ class _LoginPageState extends State<LoginPage>
                   style: TextStyle(
                       decoration: TextDecoration.underline,
                       color: Colors.white,
-                      fontSize: 16.0,
-                      fontFamily: "WorkSansMedium"),
-                )),
-          ),
-          Padding(
-            padding: EdgeInsets.only(top:0.0),
-            child: FlatButton(
-                onPressed: () {},
-                child: Text(
-                  "Skip?",
-                  style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      color: Colors.brown,
                       fontSize: 16.0,
                       fontFamily: "WorkSansMedium"),
                 )),
