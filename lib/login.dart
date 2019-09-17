@@ -72,7 +72,7 @@ class _LoginPageState extends State<LoginPage>
                       height: 40.0,
                     ),
                     Padding(
-                      padding: EdgeInsets.only(top: 20.0),
+                      padding: EdgeInsets.only(top: 20.0,left:50.0),
                       child: Image(
                         width: 100.0,
                         height: 100.0,

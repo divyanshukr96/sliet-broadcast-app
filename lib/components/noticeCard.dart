@@ -1,11 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:sliet_broadcast/components/models/cardModel.dart';
+
+import './models/cardModel.dart';
 
 class NoticeCard extends StatefulWidget {
+
+  CardModelData cardModelData;
+
+  NoticeCard(this.cardModelData);
+
   @override
-  _NoticeCardState createState() => _NoticeCardState();
+  _NoticeCardState createState() => _NoticeCardState(cardModelData);
 }
 
 class _NoticeCardState extends State<NoticeCard> {
+
+  CardModelData cardModelData;
+  _NoticeCardState(this.cardModelData);
+
   int numberOfLines = 2;
 
   var iconForText =  Icon(
@@ -18,7 +30,7 @@ class _NoticeCardState extends State<NoticeCard> {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(top:8.0,left:16.0,right:16.0,bottom:8.0),
         child: Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15.0),
@@ -42,12 +54,12 @@ class _NoticeCardState extends State<NoticeCard> {
                       child: Column(
                         children: <Widget>[
                           Text(
-                              'Department of cse',
+                            cardModelData.nameOfUploader,
                             style: TextStyle(
                               fontWeight:FontWeight.bold,
                             ),
                           ),
-                          Text('one day workshop'),
+                          Text(cardModelData.titleOfEvent),
                         ],
                       ),
                     ),
@@ -55,8 +67,8 @@ class _NoticeCardState extends State<NoticeCard> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: <Widget>[
-                        Text('13:22'),
-                        Text('21 august 2018'),
+                        Text(cardModelData.timeOfNoticeUpload),
+                        Text(cardModelData.dateOfNoticeUpload),
                       ],
                     ),
                   ],
@@ -68,7 +80,7 @@ class _NoticeCardState extends State<NoticeCard> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: Text(
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+                    cardModelData.aboutEvent,
                     overflow: TextOverflow.ellipsis,
                     maxLines: numberOfLines,
                   ),
@@ -86,7 +98,7 @@ class _NoticeCardState extends State<NoticeCard> {
                             color: Color(0xFF1976D2),
                           ),
                         ),
-                        Text('4:30pm'),
+                        Text(cardModelData.timeOfEvent),
                       ],
                     ),
                     VerticalDivider(color: Colors.deepOrange,width: 10.0,thickness: 20.0,endIndent: 0.1,indent: 0.1,),
@@ -98,7 +110,7 @@ class _NoticeCardState extends State<NoticeCard> {
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF1976D2),
                         ),),
-                        Text('MINI AUDI'),
+                        Text(cardModelData.venueForEvent),
                       ],
                     ),
                   ],
