@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart' as prefix0;
 import 'package:sliet_broadcast/login.dart';
 import './components/noticeCard.dart';
 import './style/theme.dart' as Theme;
@@ -18,8 +17,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         resizeToAvoidBottomPadding: false,
-       // appBar: AppBar(),
-        body: CreateNotice(),
+        appBar: AppBar(),
+        body: PublicFeed(),
         drawer: Drawer(
           // Add a ListView to the drawer. This ensures the user can scroll
           // through the options in the drawer if there isn't enough vertical
@@ -83,7 +82,7 @@ class MyApp extends StatelessWidget {
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    prefix0.Text(
+                    Text(
                       'Login',
                       style: TextStyle(),
                     ),

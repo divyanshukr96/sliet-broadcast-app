@@ -16,9 +16,28 @@ class PublicFeed extends StatefulWidget {
 
 class _PublicFeedState extends State<PublicFeed> {
 
+  var url =  "http://www.json-generator.com/api/json/get/bONszPwHoy?indent=2";
+  var url1 = "http://www.json-generator.com/api/json/get/bVInfXTNnS?indent=2";
+  var url2 = "http://www.json-generator.com/api/json/get/bTVMBRsOtK?indent=2";
+
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+  new GlobalKey<RefreshIndicatorState>();
+
+  Future<Null> refreshList ()async{
+    //await Future.delayed(Duration(seconds: 2));
+    //url = url1;
+    //build(context);
+    setState(() {
+      url = "http://www.json-generator.com/api/json/get/bTVMBRsOtK?indent=2";
+    });
+
+    return null;
+  }
+
   Future<List<CardModelData>> _getNotices() async{
 
-    var data = await http.get("http://www.json-generator.com/api/json/get/bONszPwHoy?indent=2");
+    var data = await http.get(url);
+    print(url);
     var jsonData = json.decode(data.body);
     //print(jsonData);
 
@@ -37,7 +56,9 @@ class _PublicFeedState extends State<PublicFeed> {
     print(cardsList.length);
 
     return cardsList;
-}
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -56,44 +77,56 @@ class _PublicFeedState extends State<PublicFeed> {
 
           )
       ),
-      child: Center(
-        child: FutureBuilder(
-          future: _getNotices(), // a previously-obtained Future<String> or null
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-
-           /* switch (snapshot.connectionState) {
-              case ConnectionState.none:
-                print('connectionstate.none was executed');
-                return Text('Press button to start.');
-              case ConnectionState.active:print('connection was active');
-                                        break;
-              case ConnectionState.waiting:
-                print('we were waiting');
-                return CircularProgressIndicator();
-              case ConnectionState.done:
-                if (snapshot.hasError)
-                  return Text('Error: ${snapshot.error}');
-                print('i was here');
-                return Text('Result: ${snapshot.data}');
-            }
-            return null; // unreachable*/
-           if(snapshot.data == null){
-             return CircularProgressIndicator();
-           }
-           else{
-             return ListView.builder(
-               itemCount: snapshot.data.length ,
-                 itemBuilder: (BuildContext context,int index){
-                 print(snapshot.data[index]);
-                 return NoticeCard(snapshot.data[index]);
-                 }
-               );
-           }
-
+      child: SafeArea(
+        child: RefreshIndicator(
+          key:_refreshIndicatorKey,
+          onRefresh: ()async{
+            await refreshList();
           },
+          child: Center(
+            child: list()
+          ),
         ),
       ),
 
+    );
+  }
+
+  Widget list(){
+    return FutureBuilder(
+      future: _getNotices(), // a previously-obtained Future<String> or null
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+
+        /* switch (snapshot.connectionState) {
+                  case ConnectionState.none:
+                    print('connectionstate.none was executed');
+                    return Text('Press button to start.');
+                  case ConnectionState.active:print('connection was active');
+                                            break;
+                  case ConnectionState.waiting:
+                    print('we were waiting');
+                    return CircularProgressIndicator();
+                  case ConnectionState.done:
+                    if (snapshot.hasError)
+                      return Text('Error: ${snapshot.error}');
+                    print('i was here');
+                    return Text('Result: ${snapshot.data}');
+                }
+                return null; // unreachable*/
+        if(snapshot.data == null){
+          return CircularProgressIndicator();
+        }
+        else{
+          return ListView.builder(
+              itemCount: snapshot.data.length ,
+              itemBuilder: (BuildContext context,int index){
+                print(snapshot.data[index]);
+                return NoticeCard(snapshot.data[index]);
+              }
+          );
+        }
+
+      },
     );
   }
 
