@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sliet_broadcast/components/models/cardModel.dart';
 
-
 class NoticeCard extends StatefulWidget {
-
   CardModelData cardModelData;
 
   NoticeCard(this.cardModelData);
@@ -13,26 +11,26 @@ class NoticeCard extends StatefulWidget {
 }
 
 class _NoticeCardState extends State<NoticeCard> {
-
   CardModelData cardModelData;
+
   _NoticeCardState(this.cardModelData);
 
   int numberOfLines = 2;
 
-  var iconForText =  Icon(
+  var iconForText = Icon(
     Icons.keyboard_arrow_down,
   );
 
-  var imageForCard = null;
+  var imageForCard;
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.only(top:8.0,left:16.0,right:16.0,bottom:8.0),
+        padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
         child: Card(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15.0),
+            borderRadius: BorderRadius.circular(8.0),
           ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -55,7 +53,7 @@ class _NoticeCardState extends State<NoticeCard> {
                           Text(
                             cardModelData.nameOfUploader,
                             style: TextStyle(
-                              fontWeight:FontWeight.bold,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                           Text(cardModelData.titleOfEvent),
@@ -73,7 +71,8 @@ class _NoticeCardState extends State<NoticeCard> {
                   ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 0,right: 0,top: 8.0,bottom: 16.0),
+                  padding: const EdgeInsets.only(
+                      left: 0, right: 0, top: 8.0, bottom: 16.0),
                   child: imageForCard,
                 ),
                 Padding(
@@ -91,7 +90,7 @@ class _NoticeCardState extends State<NoticeCard> {
                     Column(
                       children: <Widget>[
                         Text(
-                            'TIME',
+                          'TIME',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Color(0xFF1976D2),
@@ -100,15 +99,22 @@ class _NoticeCardState extends State<NoticeCard> {
                         Text(cardModelData.timeOfEvent),
                       ],
                     ),
-                    VerticalDivider(color: Colors.deepOrange,width: 10.0,thickness: 20.0,endIndent: 0.1,indent: 0.1,),
+                    VerticalDivider(
+                      color: Colors.deepOrange,
+                      width: 10.0,
+                      thickness: 20.0,
+                      endIndent: 0.1,
+                      indent: 0.1,
+                    ),
                     Column(
                       children: <Widget>[
                         Text(
-                            'VENUE',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1976D2),
-                        ),),
+                          'VENUE',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1976D2),
+                          ),
+                        ),
                         Text(cardModelData.venueForEvent),
                       ],
                     ),
@@ -122,7 +128,6 @@ class _NoticeCardState extends State<NoticeCard> {
                       onTap: changeLines,
                       child: iconForText,
                     ),
-
                   ],
                 )
               ],
@@ -136,7 +141,7 @@ class _NoticeCardState extends State<NoticeCard> {
   void changeLines() {
     if (numberOfLines == 2) {
       numberOfLines = 1000;
-      iconForText =  Icon(
+      iconForText = Icon(
         Icons.keyboard_arrow_up,
       );
 
@@ -145,10 +150,9 @@ class _NoticeCardState extends State<NoticeCard> {
         image: 'https://picsum.photos/250?image=9',
         fit: BoxFit.cover,
       );
-
     } else {
       numberOfLines = 2;
-      iconForText =  Icon(
+      iconForText = Icon(
         Icons.keyboard_arrow_down,
       );
       imageForCard = null;

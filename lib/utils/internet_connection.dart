@@ -1,15 +1,51 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
-class InterNetConnection extends StatelessWidget {
+import 'package:connectivity/connectivity.dart';
+import 'package:flutter/material.dart';
+import 'package:sliet_broadcast/utils/internet_status_bar.dart';
+
+class InternetConnection extends StatefulWidget {
+  @override
+  _InternetConnectionState createState() => _InternetConnectionState();
+}
+
+class _InternetConnectionState extends State<InternetConnection> {
+  StreamSubscription connectivitySubscription;
+
+  ConnectivityResult _previousResult;
+
+  bool _internet = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    connectivitySubscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult connectivityResult) {
+      if (connectivityResult == ConnectivityResult.none) {
+        setState(() {
+          _internet = false;
+        });
+      } else if (_previousResult == ConnectivityResult.none) {
+        setState(() {
+          _internet = true;
+        });
+      }
+
+      _previousResult = connectivityResult;
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    connectivitySubscription.cancel();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 40.0,
-      width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
-        color: Colors.red,
-      ),
-      child:Text('internet nahi hai madarchod'),
-    );
+    print(_internet);
+    return InternetStatusBar(_internet);
   }
 }

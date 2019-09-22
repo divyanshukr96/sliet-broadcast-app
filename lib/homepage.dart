@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sliet_broadcast/home_drawer.dart';
 import 'package:sliet_broadcast/publicFeed.dart';
+import 'package:sliet_broadcast/utils/internet_connection.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -15,7 +16,14 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text('SLIET Broadcast'),
       ),
-      body: PublicFeed(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            InternetConnection(),
+            PublicFeed(),
+          ],
+        ),
+      ),
       drawer: HomeDrawer(),
     );
   }

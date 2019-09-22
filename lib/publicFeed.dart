@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as prefix0;
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -16,16 +17,21 @@ class _PublicFeedState extends State<PublicFeed> {
   var url = "http://192.168.137.1:8000/api/public/notice";
 
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-  new GlobalKey<RefreshIndicatorState>();
+      new GlobalKey<RefreshIndicatorState>();
 
   List<CardModelData> cardsList = [];
 
   Future<Null> refreshList(_context) async {
     _getNotices().then((newData) {
+      print(newData);
       setState(() {
         cardsList.clear();
         cardsList = newData;
       });
+    }).catchError((onError) {
+      print(
+          '----------------------------------------------------------------****************************************************************************************************');
+      print(onError.toString());
     });
     return null;
   }
@@ -57,24 +63,24 @@ class _PublicFeedState extends State<PublicFeed> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height,
+      height: MediaQuery.of(context).size.height - 80,
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
           gradient: LinearGradient(
-            // Where the linear gradient begins and ends
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: [
-              Theme.Colors.loginGradientEnd,
-              Theme.Colors.loginGradientStart,
-            ],
-          )),
-      child: SafeArea(
-        child: RefreshIndicator(
-          key: _refreshIndicatorKey,
-          onRefresh: () async {
-            await refreshList(context);
-          },
+        // Where the linear gradient begins and ends
+        begin: Alignment.topRight,
+        end: Alignment.bottomLeft,
+        colors: [
+          Theme.Colors.loginGradientEnd,
+          Theme.Colors.loginGradientStart,
+        ],
+      )),
+      child: RefreshIndicator(
+        key: _refreshIndicatorKey,
+        onRefresh: () async {
+          await refreshList(context);
+        },
+        child: SafeArea(
           child: Center(child: list()),
         ),
       ),
@@ -102,9 +108,17 @@ class _PublicFeedState extends State<PublicFeed> {
                 }
                 return null; // unreachable*/
         if (snapshot.data == null) {
-          return CircularProgressIndicator();
+          return ListView(
+            children: <Widget>[
+              Align(
+                heightFactor: 15.0,
+                child: CircularProgressIndicator(),
+              )
+            ],
+          );
         } else {
           return ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
             itemCount: snapshot.data.length,
             itemBuilder: (BuildContext context, int index) {
               return NoticeCard(
