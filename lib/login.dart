@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as prefix0;
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sliet_broadcast/publicFeed.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
-import 'package:sliet_broadcast/utils/bubble_indication_painter.dart';
+import 'package:sliet_broadcast/utils/auth_utils.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -15,6 +17,9 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  SharedPreferences _sharedPreferences;
 
   final FocusNode myFocusNodeEmailLogin = FocusNode();
   final FocusNode myFocusNodePasswordLogin = FocusNode();
@@ -44,72 +49,84 @@ class _LoginPageState extends State<LoginPage>
         },
         child: SingleChildScrollView(
             child: Stack(
-          children: <Widget>[
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
+              children: <Widget>[
+                Container(
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width,
+                  height: MediaQuery
+                      .of(context)
+                      .size
+                      .height,
 //            height: MediaQuery.of(context).size.height >= 775.0
 //                ? MediaQuery.of(context).size.height
 //                : 775.0,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    colors: [
-                      Theme.Colors.loginGradientStart,
-                      Theme.Colors.loginGradientEnd
-                    ],
-                    begin: const FractionalOffset(0.0, 0.0),
-                    end: const FractionalOffset(1.0, 1.0),
-                    stops: [0.0, 1.0],
-                    tileMode: TileMode.clamp),
-              ),
-              child: Container(
-                margin: prefix0.EdgeInsets.only(
-                    top: prefix0.MediaQuery.of(context).size.height * 0.1),
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 40.0,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 20.0,left:50.0),
-                      child: Image(
-                        width: 100.0,
-                        height: 100.0,
-                        fit: BoxFit.fill,
-                        image: new AssetImage('assets/images/login.png'),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 20.0),
-                      child: _buildMenuBar(context),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: PageView(
-                        controller: _pageController,
-                        children: <Widget>[
-                          new ConstrainedBox(
-                            constraints: const BoxConstraints.expand(),
-                            child: _buildSignIn(context),
-                          ),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        colors: [
+                          Theme.Colors.loginGradientStart,
+                          Theme.Colors.loginGradientEnd
                         ],
-                      ),
+                        begin: const FractionalOffset(0.0, 0.0),
+                        end: const FractionalOffset(1.0, 1.0),
+                        stops: [0.0, 1.0],
+                        tileMode: TileMode.clamp),
+                  ),
+                  child: Container(
+                    margin: prefix0.EdgeInsets.only(
+                        top: prefix0.MediaQuery
+                            .of(context)
+                            .size
+                            .height * 0.1),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        SizedBox(
+                          height: 40.0,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 20.0, left: 50.0),
+                          child: Image(
+                            width: 100.0,
+                            height: 100.0,
+                            fit: BoxFit.fill,
+                            image: new AssetImage('assets/images/login.png'),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 20.0),
+                          child: _buildMenuBar(context),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: PageView(
+                            controller: _pageController,
+                            children: <Widget>[
+                              new ConstrainedBox(
+                                constraints: const BoxConstraints.expand(),
+                                child: _buildSignIn(context),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-            Positioned(
-              top: 35.0,
-              right: 10.0,
-              child: IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.close),
-              ),
-            ),
-          ],
-        )),
+                Positioned(
+                  top: 35.0,
+                  right: 10.0,
+                  child: IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: Icon(Icons.close),
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            )),
       ),
     );
   }
@@ -131,8 +148,22 @@ class _LoginPageState extends State<LoginPage>
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+    _fetchSessionAndNavigate();
 
     _pageController = PageController();
+  }
+
+  _fetchSessionAndNavigate() async {
+    _sharedPreferences = await _prefs;
+    String authToken = AuthUtils.getToken(_sharedPreferences);
+    if (authToken != null) {
+      print('fetch session ----------------------------------------');
+      Navigator.of(_scaffoldKey.currentContext).push(
+        MaterialPageRoute(
+          builder: (BuildContext context) => PublicFeed(),
+        ),
+      );
+    }
   }
 
   void showInSnackBar(String value) {
@@ -179,7 +210,8 @@ class _LoginPageState extends State<LoginPage>
                 fontSize: 30.0,
                 fontWeight: FontWeight.w500,
                 fontFamily: 'Montserrat',
-                foreground: Paint()..shader = Theme.Colors.primaryTextGradient,
+                foreground: Paint()
+                  ..shader = Theme.Colors.primaryTextGradient,
               ),
             )
           ],
@@ -204,74 +236,82 @@ class _LoginPageState extends State<LoginPage>
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child: Container(
-                  width: MediaQuery.of(context).size.width * .9,
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width * .9,
                   height: 200.0,
-                  child: Column(
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: 20.0, bottom: 10.0, left: 25.0, right: 25.0),
-                        child: TextFormField(
-                          focusNode: myFocusNodeEmailLogin,
-                          controller: loginEmailController,
-                          keyboardType: TextInputType.emailAddress,
-                          style: TextStyle(
-                              fontFamily: "WorkSansSemiBold",
-                              fontSize: 16.0,
-                              color: Colors.black),
-                          decoration: InputDecoration(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: 20.0, bottom: 10.0, left: 25.0, right: 25.0),
+                          child: TextFormField(
+                            focusNode: myFocusNodeEmailLogin,
+                            controller: loginEmailController,
+                            keyboardType: TextInputType.emailAddress,
+                            style: TextStyle(
+                                fontFamily: "WorkSansSemiBold",
+                                fontSize: 16.0,
+                                color: Colors.black),
+                            decoration: InputDecoration(
 //                            border: InputBorder.none,
-                            icon: Icon(
-                              Icons.person_outline,
-                              color: Colors.black,
-                              size: 22.0,
+                              icon: Icon(
+                                Icons.person_outline,
+                                color: Colors.black,
+                                size: 22.0,
+                              ),
+                              hintText: "Email / Username",
+                              hintStyle: TextStyle(
+                                  fontFamily: "WorkSansSemiBold",
+                                  fontSize: 17.0),
                             ),
-                            hintText: "Email / Username",
-                            hintStyle: TextStyle(
-                                fontFamily: "WorkSansSemiBold", fontSize: 17.0),
                           ),
                         ),
-                      ),
 //                      Container(
 //                        width: 250.0,
 //                        height: 1.0,
 //                        color: Colors.grey[400],
 //                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: 10.0, bottom: 20.0, left: 25.0, right: 25.0),
-                        child: TextFormField(
-                          focusNode: myFocusNodePasswordLogin,
-                          controller: loginPasswordController,
-                          obscureText: _obscureTextLogin,
-                          style: TextStyle(
-                              fontFamily: "WorkSansSemiBold",
-                              fontSize: 16.0,
-                              color: Colors.black),
-                          decoration: InputDecoration(
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: 10.0, bottom: 20.0, left: 25.0, right: 25.0),
+                          child: TextFormField(
+                            focusNode: myFocusNodePasswordLogin,
+                            controller: loginPasswordController,
+                            obscureText: _obscureTextLogin,
+                            style: TextStyle(
+                                fontFamily: "WorkSansSemiBold",
+                                fontSize: 16.0,
+                                color: Colors.black),
+                            decoration: InputDecoration(
 //                            border: InputBorder.none,
-                            icon: Icon(
-                              Icons.lock_outline,
-                              size: 22.0,
-                              color: Colors.black,
-                            ),
-                            hintText: "Password",
-                            hintStyle: TextStyle(
-                                fontFamily: "WorkSansSemiBold", fontSize: 17.0),
-                            suffixIcon: GestureDetector(
-                              onTap: _toggleLogin,
-                              child: Icon(
-                                _obscureTextLogin
-                                    ? FontAwesomeIcons.eye
-                                    : FontAwesomeIcons.eyeSlash,
-                                size: 15.0,
+                              icon: Icon(
+                                Icons.lock_outline,
+                                size: 22.0,
                                 color: Colors.black,
+                              ),
+                              hintText: "Password",
+                              hintStyle: TextStyle(
+                                  fontFamily: "WorkSansSemiBold",
+                                  fontSize: 17.0),
+                              suffixIcon: GestureDetector(
+                                onTap: _toggleLogin,
+                                child: Icon(
+                                  _obscureTextLogin
+                                      ? FontAwesomeIcons.eye
+                                      : FontAwesomeIcons.eyeSlash,
+                                  size: 15.0,
+                                  color: Colors.black,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
