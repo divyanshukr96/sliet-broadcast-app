@@ -135,12 +135,13 @@ class _LoginPageState extends State<LoginPage>
   @override
   void initState() {
     super.initState();
+    _fetchSessionAndNavigate();
 
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    _fetchSessionAndNavigate();
+
 
     _pageController = PageController();
   }
