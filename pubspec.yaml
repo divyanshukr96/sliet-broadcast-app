@@ -30,6 +30,7 @@ dependencies:
   datetime_picker_formfield: ^0.4.3
   connectivity: ^0.4.4
   shared_preferences: ^0.5.3+4
+  multi_image_picker: ^4.5.5
 
 dev_dependencies:
   flutter_test:

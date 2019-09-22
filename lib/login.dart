@@ -142,7 +142,6 @@ class _LoginPageState extends State<LoginPage>
       DeviceOrientation.portraitDown,
     ]);
 
-
     _pageController = PageController();
   }
 
@@ -173,10 +172,6 @@ class _LoginPageState extends State<LoginPage>
         NetworkUtils.showSnackBar(_scaffoldKey, 'Invalid Email/Password');
       } else {
         AuthUtils.insertDetails(_sharedPreferences, responseJson);
-        /**
-         * Removes stack and start with the new page.
-         * In this case on press back on HomePage app will exit.
-         * **/
         Navigator.of(_scaffoldKey.currentContext).push(
           MaterialPageRoute(
             builder: (BuildContext context) => PublicFeed(),

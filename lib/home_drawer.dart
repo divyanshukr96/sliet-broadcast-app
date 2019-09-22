@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliet_broadcast/components/drawerItem.dart';
 import 'package:sliet_broadcast/login.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
+import 'package:sliet_broadcast/utils/auth_utils.dart';
+import 'package:sliet_broadcast/utils/network_utils.dart';
 
 class HomeDrawer extends StatefulWidget {
   @override
@@ -9,6 +12,37 @@ class HomeDrawer extends StatefulWidget {
 }
 
 class _HomeDrawerState extends State<HomeDrawer> {
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  SharedPreferences _sharedPreferences;
+
+  bool authenticated;
+
+  @override
+  void initState() {
+    super.initState();
+    print(
+        "helo------------------------------------------------------------------------");
+    _fetchSessionAndNavigate();
+  }
+
+  _fetchSessionAndNavigate() async {
+    _sharedPreferences = await _prefs;
+    authenticated = AuthUtils.isAuthenticated(_sharedPreferences);
+    if (authenticated) {
+      print('is authentication');
+    } else {
+      print(
+          '------------------------------- not authentication -----------------------');
+    }
+    if (authenticated != null) {
+//      Navigator.of(_scaffoldKey.currentContext).push(
+//        MaterialPageRoute(
+//          builder: (BuildContext context) => PublicFeed(),
+//        ),
+//      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -66,25 +100,27 @@ class _HomeDrawerState extends State<HomeDrawer> {
               ],
             )),
           ),
+          LoginButton(),
           ListTile(
             title: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  'Login',
+                  'Logout',
                   style: TextStyle(),
                 ),
               ],
             ),
-            leading: Icon(Icons.person_outline),
+            leading: Icon(Icons.exit_to_app),
             onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (BuildContext context) => LoginPage(),
-                ),
-              );
+              NetworkUtils.logoutUser(context, _sharedPreferences);
+//              Navigator.pop(context);
+//              Navigator.push(
+//                context,
+//                MaterialPageRoute(
+//                  builder: (BuildContext context) => LoginPage(),
+//                ),
+//              );
             },
           ),
           DrawerItem('click for hello', Icon(Icons.unfold_more), context,
@@ -97,5 +133,36 @@ class _HomeDrawerState extends State<HomeDrawer> {
 
   void testFunction() {
     print('hello ');
+  }
+}
+
+class LoginButton extends StatelessWidget {
+  const LoginButton({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            'Login',
+            style: TextStyle(),
+          ),
+        ],
+      ),
+      leading: Icon(Icons.person_outline),
+      onTap: () {
+        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) => LoginPage(),
+          ),
+        );
+      },
+    );
   }
 }

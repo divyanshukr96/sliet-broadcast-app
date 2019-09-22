@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:sliet_broadcast/homepage.dart';
 import 'auth_utils.dart';
 
 class NetworkUtils {
@@ -33,7 +34,17 @@ class NetworkUtils {
     prefs.setString(AuthUtils.authTokenKey, null);
     prefs.setInt(AuthUtils.userIdKey, null);
     prefs.setString(AuthUtils.nameKey, null);
-    Navigator.of(context).pushReplacementNamed('/');
+    prefs.setString(AuthUtils.username, null);
+    prefs.setString(AuthUtils.userType, null);
+    prefs.setBool('isAdmin', false);
+
+//    Navigator.of(context).pushReplacementNamed('/');
+//    showSnackBar(context, message)
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (BuildContext context) => HomePage(),
+      ),
+    );
   }
 
   static showSnackBar(GlobalKey<ScaffoldState> scaffoldKey, String message) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sliet_broadcast/createNotice.dart';
 import 'package:sliet_broadcast/home_drawer.dart';
 import 'package:sliet_broadcast/publicFeed.dart';
 import 'package:sliet_broadcast/utils/internet_connection.dart';
@@ -20,7 +21,8 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: <Widget>[
             InternetConnection(),
-            PublicFeed(),
+//            PublicFeed(),
+            CreateNotice(),
           ],
         ),
       ),

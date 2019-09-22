@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 
 import 'package:intl/intl.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
 import 'package:sliet_broadcast/components/dateAndTime.dart';
+import 'package:sliet_broadcast/utils/image_picker.dart';
 
 class CreateNotice extends StatefulWidget {
   @override
@@ -13,6 +15,8 @@ class CreateNotice extends StatefulWidget {
 }
 
 class _CreateNoticeState extends State<CreateNotice> {
+  List<Asset> images = List<Asset>();
+
   String time = "";
   final format = DateFormat("yyyy-MM-dd");
   final controllerDate = TextEditingController();
@@ -240,6 +244,16 @@ class _CreateNoticeState extends State<CreateNotice> {
                         Text('Faculty only'),
                       ],
                     ),
+
+                    RaisedButton(
+                      child: Text("Pick images"),
+                      onPressed: _loadAssets,
+                    ),
+
+//                    Expanded(
+//                      child: buildGridView(),
+//                    )
+
                   ],
                 ),
               ),
@@ -249,6 +263,60 @@ class _CreateNoticeState extends State<CreateNotice> {
       ),
     );
   }
+
+
+  Future<void> _loadAssets() async {
+    List<Asset> resultList = List<Asset>();
+    String error = 'No Error Dectected';
+
+    try {
+      resultList = await MultiImagePicker.pickImages(
+        maxImages: 300,
+        enableCamera: true,
+        selectedAssets: images,
+        cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat"),
+        materialOptions: MaterialOptions(
+          actionBarColor: "#abcdef",
+          actionBarTitle: "Example App",
+          allViewTitle: "All Photos",
+          useDetailsView: false,
+          selectCircleStrokeColor: "#000000",
+        ),
+      );
+
+      for (var r in resultList) {
+        var t = await r.filePath;
+        print(t);
+      }
+    } on Exception catch (e) {
+      error = e.toString();
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      images = resultList;
+//      _error = error;
+    });
+  }
+//
+//  Widget buildGridView() {
+//    return GridView.count(
+//      crossAxisCount: 3,
+//      children: List.generate(images.length, (index) {
+//        print(images[index]);
+//        Asset asset = images[index];
+//        return AssetThumb(
+//          asset: asset,
+//          width: 300,
+//          height: 300,
+//        );
+//      }),
+//    );
+//  }
 
   void handleGesture(BuildContext context) {
     if (Platform.isAndroid) {
