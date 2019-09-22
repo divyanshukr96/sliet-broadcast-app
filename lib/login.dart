@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliet_broadcast/publicFeed.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
 import 'package:sliet_broadcast/utils/auth_utils.dart';
+import 'package:sliet_broadcast/utils/network_utils.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -49,84 +50,75 @@ class _LoginPageState extends State<LoginPage>
         },
         child: SingleChildScrollView(
             child: Stack(
-              children: <Widget>[
-                Container(
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width,
-                  height: MediaQuery
-                      .of(context)
-                      .size
-                      .height,
+          children: <Widget>[
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
 //            height: MediaQuery.of(context).size.height >= 775.0
 //                ? MediaQuery.of(context).size.height
 //                : 775.0,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        colors: [
-                          Theme.Colors.loginGradientStart,
-                          Theme.Colors.loginGradientEnd
-                        ],
-                        begin: const FractionalOffset(0.0, 0.0),
-                        end: const FractionalOffset(1.0, 1.0),
-                        stops: [0.0, 1.0],
-                        tileMode: TileMode.clamp),
-                  ),
-                  child: Container(
-                    margin: prefix0.EdgeInsets.only(
-                        top: prefix0.MediaQuery
-                            .of(context)
-                            .size
-                            .height * 0.1),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        SizedBox(
-                          height: 40.0,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 20.0, left: 50.0),
-                          child: Image(
-                            width: 100.0,
-                            height: 100.0,
-                            fit: BoxFit.fill,
-                            image: new AssetImage('assets/images/login.png'),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 20.0),
-                          child: _buildMenuBar(context),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: PageView(
-                            controller: _pageController,
-                            children: <Widget>[
-                              new ConstrainedBox(
-                                constraints: const BoxConstraints.expand(),
-                                child: _buildSignIn(context),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    colors: [
+                      Theme.Colors.loginGradientStart,
+                      Theme.Colors.loginGradientEnd
+                    ],
+                    begin: const FractionalOffset(0.0, 0.0),
+                    end: const FractionalOffset(1.0, 1.0),
+                    stops: [0.0, 1.0],
+                    tileMode: TileMode.clamp),
+              ),
+              child: Container(
+                margin: prefix0.EdgeInsets.only(
+                    top: prefix0.MediaQuery.of(context).size.height * 0.1),
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 40.0,
                     ),
-                  ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 20.0, left: 50.0),
+                      child: Image(
+                        width: 100.0,
+                        height: 100.0,
+                        fit: BoxFit.fill,
+                        image: new AssetImage('assets/images/login.png'),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 20.0),
+                      child: _buildMenuBar(context),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: PageView(
+                        controller: _pageController,
+                        children: <Widget>[
+                          new ConstrainedBox(
+                            constraints: const BoxConstraints.expand(),
+                            child: _buildSignIn(context),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                Positioned(
-                  top: 35.0,
-                  right: 10.0,
-                  child: IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: Icon(Icons.close),
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            )),
+              ),
+            ),
+            Positioned(
+              top: 35.0,
+              right: 10.0,
+              child: IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: Icon(Icons.close),
+                color: Colors.white,
+              ),
+            ),
+          ],
+        )),
       ),
     );
   }
@@ -157,12 +149,46 @@ class _LoginPageState extends State<LoginPage>
     _sharedPreferences = await _prefs;
     String authToken = AuthUtils.getToken(_sharedPreferences);
     if (authToken != null) {
-      print('fetch session ----------------------------------------');
       Navigator.of(_scaffoldKey.currentContext).push(
         MaterialPageRoute(
           builder: (BuildContext context) => PublicFeed(),
         ),
       );
+    }
+  }
+
+  _authenticateUser() async {
+//    _showLoading();
+    final form = _formKey.currentState;
+    if (form.validate()) {
+      var responseJson = await NetworkUtils.authenticateUser(
+          loginEmailController.text, loginPasswordController.text);
+
+      if (responseJson == null) {
+        NetworkUtils.showSnackBar(_scaffoldKey, 'Something went wrong!');
+      } else if (responseJson == 'NetworkError') {
+        NetworkUtils.showSnackBar(_scaffoldKey, null);
+      } else if (responseJson['errors'] != null) {
+        NetworkUtils.showSnackBar(_scaffoldKey, 'Invalid Email/Password');
+      } else {
+        AuthUtils.insertDetails(_sharedPreferences, responseJson);
+        /**
+         * Removes stack and start with the new page.
+         * In this case on press back on HomePage app will exit.
+         * **/
+        Navigator.of(_scaffoldKey.currentContext).push(
+          MaterialPageRoute(
+            builder: (BuildContext context) => PublicFeed(),
+          ),
+        );
+      }
+//      _hideLoading();
+    } else {
+      setState(() {
+//        _isLoading = false;
+//        _emailError;
+//        _passwordError;
+      });
     }
   }
 
@@ -210,8 +236,7 @@ class _LoginPageState extends State<LoginPage>
                 fontSize: 30.0,
                 fontWeight: FontWeight.w500,
                 fontFamily: 'Montserrat',
-                foreground: Paint()
-                  ..shader = Theme.Colors.primaryTextGradient,
+                foreground: Paint()..shader = Theme.Colors.primaryTextGradient,
               ),
             )
           ],
@@ -236,10 +261,7 @@ class _LoginPageState extends State<LoginPage>
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child: Container(
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width * .9,
+                  width: MediaQuery.of(context).size.width * .9,
                   height: 200.0,
                   child: Form(
                     key: _formKey,
@@ -356,7 +378,7 @@ class _LoginPageState extends State<LoginPage>
                             fontFamily: "WorkSansBold"),
                       ),
                     ),
-                    onPressed: () => showInSnackBar("Login button pressed")),
+                    onPressed: _authenticateUser),
               ),
             ],
           ),

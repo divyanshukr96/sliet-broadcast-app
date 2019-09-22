@@ -1,24 +1,31 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthUtils {
-
-  static final String endPoint = '/api/v1/auth_user';
+  static final String endPoint = '/api/auth/login';
 
   // Keys to store and fetch data from SharedPreferences
   static final String authTokenKey = 'auth_token';
   static final String userIdKey = 'user_id';
   static final String nameKey = 'name';
   static final String roleKey = 'role';
+  static final String username = 'username';
+  static final String userType = 'user_type';
+  static final bool isAdmin = false;
 
   static String getToken(SharedPreferences prefs) {
     return prefs.getString(authTokenKey);
   }
-
-  static insertDetails(SharedPreferences prefs, var response) {
-    prefs.setString(authTokenKey, response['auth_token']);
-    var user = response['user'];
-    prefs.setInt(userIdKey, user['id']);
-    prefs.setString(nameKey, user['name']);
+  static String isAuthenticated(SharedPreferences prefs) {
+    return prefs.getString(authTokenKey);
   }
 
+  static insertDetails(SharedPreferences prefs, var response) {
+    print(response);
+    prefs.setString(authTokenKey, response['token']);
+    prefs.setInt(userIdKey, response['id']);
+    prefs.setString(nameKey, response['name']);
+    prefs.setString(username, response['username']);
+    prefs.setString(userType, response['user_type']);
+    prefs.setBool('isAdmin', response['is_Admin']);
+  }
 }

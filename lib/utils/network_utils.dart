@@ -6,25 +6,26 @@ import 'auth_utils.dart';
 
 class NetworkUtils {
   static final String host = productionHost;
-  static final String productionHost = 'https://authflow.herokuapp.com';
-  static final String developmentHost = 'http://172.21.6.201:8000/api';
+  static final String productionHost = 'http://192.168.137.1:8000';
+  static final String developmentHost = 'http://192.168.137.1:8000';
 
   static dynamic authenticateUser(String email, String password) async {
     var uri = host + AuthUtils.endPoint;
 
     try {
       final response =
-          await http.post(uri, body: {'email': email, 'password': password});
+          await http.post(uri, body: {'username': email, 'password': password});
 
       final responseJson = json.decode(response.body);
+      if (response.statusCode == 400) return {'errors': responseJson};
       return responseJson;
     } catch (exception) {
-      print(exception);
-      if (exception.toString().contains('SocketException')) {
-        return 'NetworkError';
-      } else {
-        return null;
-      }
+//      print(exception);
+//      if (exception.toString().contains('SocketException')) {
+//        return 'NetworkError';
+//      } else {
+//        return null;
+//      }
     }
   }
 
