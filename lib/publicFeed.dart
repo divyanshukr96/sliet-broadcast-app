@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as prefix0;
 import 'dart:async';
 import 'package:http/http.dart' as http;
+import 'package:sliet_broadcast/login.dart';
 import 'dart:convert';
 
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
 import './components/models/cardModel.dart';
 import './components/noticeCard.dart';
+import 'Dummy.dart';
+import './appbuilder.dart';
 
 
 class PublicFeed extends StatefulWidget {
@@ -19,29 +22,38 @@ class _PublicFeedState extends State<PublicFeed> {
   var url =  "http://www.json-generator.com/api/json/get/bONszPwHoy?indent=2";
   var url1 = "http://www.json-generator.com/api/json/get/bVInfXTNnS?indent=2";
   var url2 = "http://www.json-generator.com/api/json/get/bTVMBRsOtK?indent=2";
+  List<CardModelData> cardsList;
 
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
   new GlobalKey<RefreshIndicatorState>();
 
   Future<Null> refreshList ()async{
-    //await Future.delayed(Duration(seconds: 2));
-    //url = url1;
-    //build(context);
-    setState(() {
-      url = "http://www.json-generator.com/api/json/get/bTVMBRsOtK?indent=2";
-    });
+
+    url = url1;
+    AppBuilder.of(context).rebuild();
+  /*  setState(() {
+      _getNotices().then((_cardList){
+
+         cardsList= _cardList;
+      });
+    });*/
+
+  //Navigator.push(context,prefix0.MaterialPageRoute(builder: (prefix0.BuildContext builder)=>Dummy()));
+  //Navigator.pop(context);
+
 
     return null;
   }
 
   Future<List<CardModelData>> _getNotices() async{
 
+    print('get notice called ma chod dunga gadha khod dunga..............-------');
     var data = await http.get(url);
     print(url);
     var jsonData = json.decode(data.body);
     //print(jsonData);
 
-    List<CardModelData> cardsList = [];
+    cardsList = [];
 
     for(var i in jsonData){
 
@@ -62,33 +74,42 @@ class _PublicFeedState extends State<PublicFeed> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      width:  MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
-          gradient: LinearGradient(
-            // Where the linear gradient begins and ends
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
-            colors: [
-              Theme.Colors.loginGradientEnd,
-              Theme.Colors.loginGradientStart,
-            ],
 
-          )
-      ),
-      child: SafeArea(
-        child: RefreshIndicator(
-          key:_refreshIndicatorKey,
-          onRefresh: ()async{
-            await refreshList();
-          },
-          child: Center(
-            child: list()
+    return myBuild();
+
+  }
+
+  Widget myBuild(){
+    return AppBuilder(
+      builder:(context){
+        return Container(
+          height: MediaQuery.of(context).size.height,
+          width:  MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                // Where the linear gradient begins and ends
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+                colors: [
+                  Theme.Colors.loginGradientEnd,
+                  Theme.Colors.loginGradientStart,
+                ],
+
+              )
           ),
-        ),
-      ),
-
+          child: SafeArea(
+            child: RefreshIndicator(
+              key:_refreshIndicatorKey,
+              onRefresh: ()async{
+                await refreshList();
+              },
+              child: Center(
+                  child: list()
+              ),
+            ),
+          ),
+        );
+      }
     );
   }
 
