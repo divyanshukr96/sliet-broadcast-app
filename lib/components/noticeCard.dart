@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sliet_broadcast/components/models/cardModel.dart';
 
-import './models/cardModel.dart';
 
 class NoticeCard extends StatefulWidget {
 

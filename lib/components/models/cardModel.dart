@@ -1,7 +1,7 @@
 import 'dart:core';
 
-class CardModelData{
-
+class CardModelData {
+  String id;
   String nameOfUploader;
   String titleOfEvent;
   String dateOfNoticeUpload;
@@ -12,8 +12,15 @@ class CardModelData{
   String venueForEvent;
   String aboutEvent;
 
-  CardModelData(this.nameOfUploader, this.titleOfEvent, this.dateOfNoticeUpload,
-      this.timeOfNoticeUpload, this.imageUrlNotice, this.timeOfEvent,
-      this.dateOfEvent, this.venueForEvent, this.aboutEvent);
-
+  CardModelData(
+      this.id,
+      this.nameOfUploader,
+      this.titleOfEvent,
+      this.dateOfNoticeUpload,
+      this.timeOfNoticeUpload,
+      this.imageUrlNotice,
+      this.timeOfEvent,
+      this.dateOfEvent,
+      this.venueForEvent,
+      this.aboutEvent);
 }

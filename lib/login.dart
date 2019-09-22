@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as prefix0;
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sliet_broadcast/publicFeed.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
-import 'package:sliet_broadcast/utils/bubble_indication_painter.dart';
+import 'package:sliet_broadcast/utils/auth_utils.dart';
+import 'package:sliet_broadcast/utils/network_utils.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -15,6 +18,9 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  SharedPreferences _sharedPreferences;
 
   final FocusNode myFocusNodeEmailLogin = FocusNode();
   final FocusNode myFocusNodePasswordLogin = FocusNode();
@@ -72,7 +78,7 @@ class _LoginPageState extends State<LoginPage>
                       height: 40.0,
                     ),
                     Padding(
-                      padding: EdgeInsets.only(top: 20.0,left:50.0),
+                      padding: EdgeInsets.only(top: 20.0, left: 50.0),
                       child: Image(
                         width: 100.0,
                         height: 100.0,
@@ -104,8 +110,11 @@ class _LoginPageState extends State<LoginPage>
               top: 35.0,
               right: 10.0,
               child: IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pop(context);
+                },
                 icon: Icon(Icons.close),
+                color: Colors.white,
               ),
             ),
           ],
@@ -131,8 +140,56 @@ class _LoginPageState extends State<LoginPage>
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+    _fetchSessionAndNavigate();
 
     _pageController = PageController();
+  }
+
+  _fetchSessionAndNavigate() async {
+    _sharedPreferences = await _prefs;
+    String authToken = AuthUtils.getToken(_sharedPreferences);
+    if (authToken != null) {
+      Navigator.of(_scaffoldKey.currentContext).push(
+        MaterialPageRoute(
+          builder: (BuildContext context) => PublicFeed(),
+        ),
+      );
+    }
+  }
+
+  _authenticateUser() async {
+//    _showLoading();
+    final form = _formKey.currentState;
+    if (form.validate()) {
+      var responseJson = await NetworkUtils.authenticateUser(
+          loginEmailController.text, loginPasswordController.text);
+
+      if (responseJson == null) {
+        NetworkUtils.showSnackBar(_scaffoldKey, 'Something went wrong!');
+      } else if (responseJson == 'NetworkError') {
+        NetworkUtils.showSnackBar(_scaffoldKey, null);
+      } else if (responseJson['errors'] != null) {
+        NetworkUtils.showSnackBar(_scaffoldKey, 'Invalid Email/Password');
+      } else {
+        AuthUtils.insertDetails(_sharedPreferences, responseJson);
+        /**
+         * Removes stack and start with the new page.
+         * In this case on press back on HomePage app will exit.
+         * **/
+        Navigator.of(_scaffoldKey.currentContext).push(
+          MaterialPageRoute(
+            builder: (BuildContext context) => PublicFeed(),
+          ),
+        );
+      }
+//      _hideLoading();
+    } else {
+      setState(() {
+//        _isLoading = false;
+//        _emailError;
+//        _passwordError;
+      });
+    }
   }
 
   void showInSnackBar(String value) {
@@ -206,72 +263,77 @@ class _LoginPageState extends State<LoginPage>
                 child: Container(
                   width: MediaQuery.of(context).size.width * .9,
                   height: 200.0,
-                  child: Column(
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: 20.0, bottom: 10.0, left: 25.0, right: 25.0),
-                        child: TextFormField(
-                          focusNode: myFocusNodeEmailLogin,
-                          controller: loginEmailController,
-                          keyboardType: TextInputType.emailAddress,
-                          style: TextStyle(
-                              fontFamily: "WorkSansSemiBold",
-                              fontSize: 16.0,
-                              color: Colors.black),
-                          decoration: InputDecoration(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: 20.0, bottom: 10.0, left: 25.0, right: 25.0),
+                          child: TextFormField(
+                            focusNode: myFocusNodeEmailLogin,
+                            controller: loginEmailController,
+                            keyboardType: TextInputType.emailAddress,
+                            style: TextStyle(
+                                fontFamily: "WorkSansSemiBold",
+                                fontSize: 16.0,
+                                color: Colors.black),
+                            decoration: InputDecoration(
 //                            border: InputBorder.none,
-                            icon: Icon(
-                              Icons.person_outline,
-                              color: Colors.black,
-                              size: 22.0,
+                              icon: Icon(
+                                Icons.person_outline,
+                                color: Colors.black,
+                                size: 22.0,
+                              ),
+                              hintText: "Email / Username",
+                              hintStyle: TextStyle(
+                                  fontFamily: "WorkSansSemiBold",
+                                  fontSize: 17.0),
                             ),
-                            hintText: "Email / Username",
-                            hintStyle: TextStyle(
-                                fontFamily: "WorkSansSemiBold", fontSize: 17.0),
                           ),
                         ),
-                      ),
 //                      Container(
 //                        width: 250.0,
 //                        height: 1.0,
 //                        color: Colors.grey[400],
 //                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: 10.0, bottom: 20.0, left: 25.0, right: 25.0),
-                        child: TextFormField(
-                          focusNode: myFocusNodePasswordLogin,
-                          controller: loginPasswordController,
-                          obscureText: _obscureTextLogin,
-                          style: TextStyle(
-                              fontFamily: "WorkSansSemiBold",
-                              fontSize: 16.0,
-                              color: Colors.black),
-                          decoration: InputDecoration(
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: 10.0, bottom: 20.0, left: 25.0, right: 25.0),
+                          child: TextFormField(
+                            focusNode: myFocusNodePasswordLogin,
+                            controller: loginPasswordController,
+                            obscureText: _obscureTextLogin,
+                            style: TextStyle(
+                                fontFamily: "WorkSansSemiBold",
+                                fontSize: 16.0,
+                                color: Colors.black),
+                            decoration: InputDecoration(
 //                            border: InputBorder.none,
-                            icon: Icon(
-                              Icons.lock_outline,
-                              size: 22.0,
-                              color: Colors.black,
-                            ),
-                            hintText: "Password",
-                            hintStyle: TextStyle(
-                                fontFamily: "WorkSansSemiBold", fontSize: 17.0),
-                            suffixIcon: GestureDetector(
-                              onTap: _toggleLogin,
-                              child: Icon(
-                                _obscureTextLogin
-                                    ? FontAwesomeIcons.eye
-                                    : FontAwesomeIcons.eyeSlash,
-                                size: 15.0,
+                              icon: Icon(
+                                Icons.lock_outline,
+                                size: 22.0,
                                 color: Colors.black,
+                              ),
+                              hintText: "Password",
+                              hintStyle: TextStyle(
+                                  fontFamily: "WorkSansSemiBold",
+                                  fontSize: 17.0),
+                              suffixIcon: GestureDetector(
+                                onTap: _toggleLogin,
+                                child: Icon(
+                                  _obscureTextLogin
+                                      ? FontAwesomeIcons.eye
+                                      : FontAwesomeIcons.eyeSlash,
+                                  size: 15.0,
+                                  color: Colors.black,
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -316,7 +378,7 @@ class _LoginPageState extends State<LoginPage>
                             fontFamily: "WorkSansBold"),
                       ),
                     ),
-                    onPressed: () => showInSnackBar("Login button pressed")),
+                    onPressed: _authenticateUser),
               ),
             ],
           ),

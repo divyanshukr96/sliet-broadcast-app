@@ -28,7 +28,11 @@ dependencies:
   font_awesome_flutter: ^8.0.1
   http: ^0.12.0+2
   datetime_picker_formfield: ^0.4.3
+<<<<<<< HEAD
   connectivity: ^0.4.4
+=======
+  shared_preferences: ^0.5.3+4
+>>>>>>> 0ff982d5a20a988dfc83c0956e6b14ceea173345
 
 dev_dependencies:
   flutter_test:
