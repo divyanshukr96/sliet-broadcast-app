@@ -48,6 +48,7 @@ class _CreateNoticeState extends State<CreateNotice> {
   void initState() {
     super.initState();
     selectedRadio = 1;
+    NetworkUtils.get("/api/public/department");
     networkUtils.isAuthenticated().then((onValue) {
       setState(() {
         authenticated = onValue;

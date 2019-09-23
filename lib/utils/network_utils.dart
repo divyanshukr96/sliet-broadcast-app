@@ -10,6 +10,8 @@ class NetworkUtils {
   static final String productionHost = 'http://192.168.137.1:8000';
   static final String developmentHost = 'http://192.168.137.1:8000';
 
+  static Future<SharedPreferences> _shPrefs = SharedPreferences.getInstance();
+
   static dynamic authenticateUser(String email, String password) async {
     var uri = host + AuthUtils.endPoint;
 
@@ -75,19 +77,16 @@ class NetworkUtils {
     }
   }
 
-  static get(var authToken, var endPoint) async {
-    var prefs = getSharedPreference();
-
-    print(prefs.getString(AuthUtils.authTokenKey));
-
+  static get(var endPoint) async {
+    var prefs = await getSharedPreference();
     var uri = host + endPoint;
-
     try {
       final response = await http.get(
         uri,
-        headers: {'Authorization': authToken},
+        headers: {
+          'Authorization': 'Token ' + prefs.getString(AuthUtils.authTokenKey)
+        },
       );
-
       final responseJson = json.decode(response.body);
       return responseJson;
     } catch (exception) {
@@ -100,10 +99,42 @@ class NetworkUtils {
     }
   }
 
-  static getSharedPreference() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs;
+  static dynamic post(var endPoint, Object data) async {
+    var prefs = await getSharedPreference();
+    var uri = host + endPoint;
+
+    try {
+      final response = await http.post(
+        uri,
+        body: data,
+        headers: {
+          'Authorization': 'Token ' + prefs.getString(AuthUtils.authTokenKey)
+        },
+      );
+
+      final responseJson = json.decode(response.body);
+      if (response.statusCode == 400) return {'errors': responseJson};
+      return responseJson;
+    } catch (exception) {
+//      print(exception);
+//      if (exception.toString().contains('SocketException')) {
+//        return 'NetworkError';
+//      } else {
+//        return null;
+//      }
+    }
   }
+
+  static getSharedPreference() async {
+    SharedPreferences _sharedPreferences;
+    _sharedPreferences = await _shPrefs;
+    return _sharedPreferences;
+  }
+
+//  static getSharedPreference() async {
+//    SharedPreferences prefs = await SharedPreferences.getInstance();
+//    return prefs;
+//  }
 
   static Future<String> getTokenStatic() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
