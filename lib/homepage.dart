@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sliet_broadcast/home_drawer.dart';
 import 'package:sliet_broadcast/publicFeed.dart';
 import 'package:sliet_broadcast/utils/internet_connection.dart';
-import 'package:sliet_broadcast/login.dart';
+import 'package:sliet_broadcast/utils/network_utils.dart';
 
 import 'createNotice.dart';
 
@@ -12,6 +12,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  NetworkUtils networkUtils = new NetworkUtils();
+  bool authenticated = false;
+
   int _selectedTab;
   Widget currentPage;
 
@@ -19,7 +22,12 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    networkUtils.isAuthenticated().then((onValue) {
+      setState(() {
+        authenticated = onValue;
+      });
+    });
+
     super.initState();
     _selectedTab = 0;
     _pageOptions = [
@@ -46,31 +54,36 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       drawer: HomeDrawer(),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedTab,
-        onTap: (int index) {
-          setState(() {
-            _selectedTab = index;
-            currentPage = _pageOptions[index];
-            print(":::::::::::::::::::::::::::::::::::::::::");
-            print(_selectedTab);
-          });
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.public),
-            title: Text('Public'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle_outline),
-            title: Text('Add Notice'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.vpn_key),
-            title: Text('Private'),
-          ),
-        ],
-      ),
+      bottomNavigationBar: authenticated ? buildBottomNavigationBar() : null,
+    );
+  }
+
+  BottomNavigationBar buildBottomNavigationBar() {
+    return BottomNavigationBar(
+      currentIndex: _selectedTab,
+      onTap: (int index) {
+        setState(() {
+          _selectedTab = index;
+          currentPage = _pageOptions[index];
+          print(
+              ":::::::::::::::::::::::::::::::::::::::::   on Bottom navigationbar      homepage.dart");
+          print(_selectedTab);
+        });
+      },
+      items: [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.public),
+          title: Text('Public'),
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.add_circle_outline),
+          title: Text('Add Notice'),
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.vpn_key),
+          title: Text('Private'),
+        ),
+      ],
     );
   }
 
