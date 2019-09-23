@@ -20,7 +20,7 @@ class AuthUtils {
   }
 
   static insertDetails(SharedPreferences prefs, var response) {
-    print(response);
+    print(response.toString() + "  insert detail   auth_util.dart");
     prefs.setString(authTokenKey, response['token']);
     prefs.setString(userIdKey, response['id']);
     prefs.setString(nameKey, response['name']);

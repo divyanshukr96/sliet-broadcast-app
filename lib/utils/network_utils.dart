@@ -37,6 +37,7 @@ class NetworkUtils {
     prefs.setString(AuthUtils.username, null);
     prefs.setString(AuthUtils.userType, null);
     prefs.setBool('isAdmin', false);
+    print(prefs.getString(AuthUtils.authTokenKey));
 
 //    Navigator.of(context).pushReplacementNamed('/');
 //    showSnackBar(context, message)
@@ -102,5 +103,25 @@ class NetworkUtils {
   static getSharedPreference() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs;
+  }
+
+  static Future<String> getTokenStatic() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return AuthUtils.getToken(prefs);
+  }
+
+  Future<String> getToken() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return AuthUtils.getToken(prefs);
+  }
+
+  Future<bool> isAuthenticated() async {
+    try {
+      String token = await getToken();
+      print(token.toString() + "  is_authenticated    network_utild.dart");
+      return (token != null);
+    } catch (onError) {
+      return false;
+    }
   }
 }

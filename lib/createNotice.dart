@@ -18,6 +18,8 @@ class CreateNotice extends StatefulWidget {
 class _CreateNoticeState extends State<CreateNotice> {
   List<Asset> images = List<Asset>();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  NetworkUtils networkUtils = new NetworkUtils();
+  bool authenticated = false;
 
   String time = "";
   final format = DateFormat("yyyy-MM-dd");
@@ -46,6 +48,11 @@ class _CreateNoticeState extends State<CreateNotice> {
   void initState() {
     super.initState();
     selectedRadio = 1;
+    networkUtils.isAuthenticated().then((onValue) {
+      setState(() {
+        authenticated = onValue;
+      });
+    });
   }
 
   @override

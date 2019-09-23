@@ -15,10 +15,19 @@ class _HomeDrawerState extends State<HomeDrawer> {
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   SharedPreferences _sharedPreferences;
 
-  bool authenticated;
+  NetworkUtils networkUtils = new NetworkUtils();
+
+  bool authenticated = false;
 
   @override
   void initState() {
+    networkUtils.isAuthenticated().then((onValue) {
+      print(onValue.toString()+ " on sucess home_drawer.dart initstate");
+      setState(() {
+        authenticated = onValue;
+      });
+    });
+
     super.initState();
     print(
         "helo------------------------------------------------------------------------");
@@ -27,7 +36,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
 
   _fetchSessionAndNavigate() async {
     _sharedPreferences = await _prefs;
-    authenticated = AuthUtils.isAuthenticated(_sharedPreferences);
+//    authenticated = AuthUtils.isAuthenticated(_sharedPreferences);
     if (authenticated) {
       print('is authentication');
     } else {
@@ -100,28 +109,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
               ],
             )),
           ),
-          LoginButton(),
-          ListTile(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  'Logout',
-                  style: TextStyle(),
-                ),
-              ],
-            ),
-            leading: Icon(Icons.exit_to_app),
-            onTap: () {
-              NetworkUtils.logoutUser(context, _sharedPreferences);
-//              Navigator.pop(context);
-//              Navigator.push(
-//                context,
-//                MaterialPageRoute(
-//                  builder: (BuildContext context) => LoginPage(),
-//                ),
-//              );
-            },
+          LoginLogout(
+            sharedPreferences: _sharedPreferences,
+            authenticated: authenticated,
           ),
           DrawerItem('click for hello', Icon(Icons.unfold_more), context,
                   testFunction)
@@ -133,6 +123,59 @@ class _HomeDrawerState extends State<HomeDrawer> {
 
   void testFunction() {
     print('hello ');
+  }
+}
+
+class LoginLogout extends StatelessWidget {
+  const LoginLogout({
+    Key key,
+    @required SharedPreferences sharedPreferences,
+    @required this.authenticated,
+  })  : _sharedPreferences = sharedPreferences,
+        super(key: key);
+
+  final SharedPreferences _sharedPreferences;
+  final bool authenticated;
+
+  @override
+  Widget build(BuildContext context) {
+    if (authenticated) {
+      return ListTile(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              'Logout',
+            ),
+          ],
+        ),
+        leading: Icon(Icons.exit_to_app),
+        onTap: () {
+          NetworkUtils.logoutUser(context, _sharedPreferences);
+        },
+      );
+    }
+    return ListTile(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            'Login',
+            style: TextStyle(),
+          ),
+        ],
+      ),
+      leading: Icon(Icons.person_outline),
+      onTap: () {
+        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) => LoginPage(),
+          ),
+        );
+      },
+    );
   }
 }
 

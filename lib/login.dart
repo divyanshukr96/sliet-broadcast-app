@@ -172,11 +172,12 @@ class _LoginPageState extends State<LoginPage>
         NetworkUtils.showSnackBar(_scaffoldKey, 'Invalid Email/Password');
       } else {
         AuthUtils.insertDetails(_sharedPreferences, responseJson);
-        Navigator.of(_scaffoldKey.currentContext).push(
-          MaterialPageRoute(
-            builder: (BuildContext context) => PublicFeed(),
-          ),
-        );
+        Navigator.of(_scaffoldKey.currentContext).pop();
+//        Navigator.of(_scaffoldKey.currentContext).push(
+//          MaterialPageRoute(
+//            builder: (BuildContext context) => PublicFeed(),
+//          ),
+//        );
       }
 //      _hideLoading();
     } else {
