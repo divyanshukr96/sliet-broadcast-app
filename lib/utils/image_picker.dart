@@ -3,19 +3,14 @@ import 'dart:async';
 
 import 'package:multi_image_picker/multi_image_picker.dart';
 
-class MyAppTest extends StatefulWidget {
+void main() => runApp(new MyApp());
+
+class MyApp extends StatefulWidget {
   @override
-  _MyAppTestState createState() => _MyAppTestState();
+  _MyAppState createState() => new _MyAppState();
 }
 
-//class _MyAppTestState extends State<MyAppTest> {
-//  @override
-//  Widget build(BuildContext context) {
-//    return Container();
-//  }
-//}
-
-class _MyAppTestState extends State<MyAppTest> {
+class _MyAppState extends State<MyApp> {
   List<Asset> images = List<Asset>();
   String _error = 'No Error Dectected';
 

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:sliet_broadcast/createNotice.dart';
 import 'package:sliet_broadcast/home_drawer.dart';
 import 'package:sliet_broadcast/publicFeed.dart';
 import 'package:sliet_broadcast/utils/internet_connection.dart';
+import 'package:sliet_broadcast/login.dart';
+
+import 'createNotice.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -10,6 +12,24 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int _selectedTab;
+  Widget currentPage;
+
+  List<Widget> _pageOptions;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _selectedTab = 0;
+    _pageOptions = [
+      PublicFeed(),
+      CreateNotice(),
+      PublicFeed(),
+    ];
+    currentPage = PublicFeed();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,12 +41,41 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: <Widget>[
             InternetConnection(),
-//            PublicFeed(),
-            CreateNotice(),
+            currentPage,
           ],
         ),
       ),
       drawer: HomeDrawer(),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedTab,
+        onTap: (int index) {
+          setState(() {
+            _selectedTab = index;
+            currentPage = _pageOptions[index];
+            print(":::::::::::::::::::::::::::::::::::::::::");
+            print(_selectedTab);
+          });
+        },
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.public),
+            title: Text('Public'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add_circle_outline),
+            title: Text('Add Notice'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.vpn_key),
+            title: Text('Private'),
+          ),
+        ],
+      ),
     );
+  }
+
+  Widget getWidget(int index) {
+    print(_pageOptions[index]);
+    return _pageOptions[index];
   }
 }

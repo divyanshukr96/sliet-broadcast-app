@@ -73,4 +73,34 @@ class NetworkUtils {
       }
     }
   }
+
+  static get(var authToken, var endPoint) async {
+    var prefs = getSharedPreference();
+
+    print(prefs.getString(AuthUtils.authTokenKey));
+
+    var uri = host + endPoint;
+
+    try {
+      final response = await http.get(
+        uri,
+        headers: {'Authorization': authToken},
+      );
+
+      final responseJson = json.decode(response.body);
+      return responseJson;
+    } catch (exception) {
+      print(exception);
+      if (exception.toString().contains('SocketException')) {
+        return 'NetworkError';
+      } else {
+        return null;
+      }
+    }
+  }
+
+  static getSharedPreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs;
+  }
 }

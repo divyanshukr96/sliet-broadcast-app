@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart' as prefix0;
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 
 import 'package:intl/intl.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:sliet_broadcast/components/checkbox_group.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
-import 'package:sliet_broadcast/components/dateAndTime.dart';
-import 'package:sliet_broadcast/utils/image_picker.dart';
+import 'package:sliet_broadcast/utils/auth_utils.dart';
+import 'package:sliet_broadcast/utils/network_utils.dart';
 
 class CreateNotice extends StatefulWidget {
   @override
@@ -16,11 +17,16 @@ class CreateNotice extends StatefulWidget {
 
 class _CreateNoticeState extends State<CreateNotice> {
   List<Asset> images = List<Asset>();
+  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
   String time = "";
   final format = DateFormat("yyyy-MM-dd");
-  final controllerDate = TextEditingController();
-  final controllerTime = TextEditingController();
+  final _dateController = TextEditingController();
+  final _timeController = TextEditingController();
+
+  TextEditingController _titleController = new TextEditingController();
+  TextEditingController _descriptionController = new TextEditingController();
+  TextEditingController _venueController = new TextEditingController();
 
   var selectedDate = DateTime.now();
   int selectedRadio;
@@ -38,7 +44,6 @@ class _CreateNoticeState extends State<CreateNotice> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     selectedRadio = 1;
   }
@@ -46,11 +51,10 @@ class _CreateNoticeState extends State<CreateNotice> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height,
+//      height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          // Where the linear gradient begins and ends
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
           colors: [
@@ -60,100 +64,39 @@ class _CreateNoticeState extends State<CreateNotice> {
         ),
       ),
       child: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.only(top: 16, bottom: 16, left: 16, right: 16),
-            //margin: EdgeInsets.only(left:16,right:16),
-
-            child: Card(
-              elevation: 2.0,
-              color: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
-              ),
+        child: Container(
+          margin: EdgeInsets.all(16.0),
+          child: Card(
+            elevation: 2.0,
+            color: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Form(
+              key: _formKey,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextFormField(
-                        keyboardType: TextInputType.multiline,
-                        maxLines: null,
-                        maxLength: 150,
-                        style: TextStyle(
-                            fontFamily: "WorkSansSemiBold",
-                            fontSize: 16.0,
-                            color: Colors.black),
-                        decoration: InputDecoration(
-//                            border: InputBorder.none,
-                          labelText: "Title",
-                          hintStyle: TextStyle(
-                              fontFamily: "WorkSansSemiBold", fontSize: 17.0),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.lightBlueAccent, width: 1.0),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Colors.blue, width: 1.0),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 12.0),
+                        child: Text(
+                          'Add new Notice',
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextFormField(
-                        keyboardType: TextInputType.multiline,
-                        maxLines: null,
-                        maxLength: 1000,
-                        style: TextStyle(
-                            fontFamily: "WorkSansSemiBold",
-                            fontSize: 16.0,
-                            color: Colors.black),
-                        decoration: InputDecoration(
-//                            border: InputBorder.none,
-                          labelText: "Description",
-                          hintStyle: TextStyle(
-                              fontFamily: "WorkSansSemiBold", fontSize: 17.0),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.lightBlueAccent, width: 1.0),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Colors.blue, width: 1.0),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextFormField(
-                        keyboardType: TextInputType.multiline,
-                        maxLines: null,
-                        maxLength: 100,
-                        style: TextStyle(
-                            fontFamily: "WorkSansSemiBold",
-                            fontSize: 16.0,
-                            color: Colors.black),
-                        decoration: InputDecoration(
-//                            border: InputBorder.none,
-                          labelText: "Venue",
-                          hintStyle: TextStyle(
-                              fontFamily: "WorkSansSemiBold", fontSize: 17.0),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.lightBlueAccent, width: 1.0),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Colors.blue, width: 1.0),
-                          ),
-                        ),
-                      ),
-                    ),
+                    Divider(),
+                    TitleInput(titleController: _titleController),
+                    DescriptionInput(
+                        descriptionController: _descriptionController),
+                    VenueInput(venueController: _venueController),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
@@ -161,10 +104,11 @@ class _CreateNoticeState extends State<CreateNotice> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: TextFormField(
-                              controller: controllerTime,
+                              controller: _timeController,
                               onTap: () {
                                 _selectTime(context);
                               },
+                              readOnly: true,
                               style: TextStyle(
                                   fontFamily: "WorkSansSemiBold",
                                   fontSize: 16.0,
@@ -191,10 +135,11 @@ class _CreateNoticeState extends State<CreateNotice> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: TextFormField(
-                              controller: controllerDate,
+                              controller: _dateController,
                               onTap: () {
                                 _selectDate(context);
                               },
+                              readOnly: true,
                               style: TextStyle(
                                   fontFamily: "WorkSansSemiBold",
                                   fontSize: 16.0,
@@ -244,16 +189,26 @@ class _CreateNoticeState extends State<CreateNotice> {
                         Text('Faculty only'),
                       ],
                     ),
-
-                    RaisedButton(
-                      child: Text("Pick images"),
+                    RaisedButton.icon(
+                      textColor: Colors.white,
+                      color: Colors.lightBlueAccent,
+                      label: Text("Select images"),
                       onPressed: _loadAssets,
+                      icon: Icon(Icons.cloud_upload),
                     ),
-
-//                    Expanded(
-//                      child: buildGridView(),
-//                    )
-
+                    ImagesView(images: images),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: RaisedButton.icon(
+                        highlightColor: Colors.transparent,
+                        splashColor: Theme.Colors.loginGradientEnd,
+                        textColor: Colors.white,
+                        color: Colors.lightBlueAccent,
+                        label: Text("Submit"),
+                        onPressed: () {},
+                        icon: Icon(Icons.save),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -264,59 +219,30 @@ class _CreateNoticeState extends State<CreateNotice> {
     );
   }
 
-
   Future<void> _loadAssets() async {
     List<Asset> resultList = List<Asset>();
-    String error = 'No Error Dectected';
 
     try {
       resultList = await MultiImagePicker.pickImages(
-        maxImages: 300,
+        maxImages: 10,
         enableCamera: true,
         selectedAssets: images,
         cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat"),
         materialOptions: MaterialOptions(
-          actionBarColor: "#abcdef",
-          actionBarTitle: "Example App",
+          actionBarColor: "#40C4FF",
           allViewTitle: "All Photos",
           useDetailsView: false,
           selectCircleStrokeColor: "#000000",
         ),
       );
+    } on Exception catch (e) {}
 
-      for (var r in resultList) {
-        var t = await r.filePath;
-        print(t);
-      }
-    } on Exception catch (e) {
-      error = e.toString();
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
     if (!mounted) return;
 
     setState(() {
       images = resultList;
-//      _error = error;
     });
   }
-//
-//  Widget buildGridView() {
-//    return GridView.count(
-//      crossAxisCount: 3,
-//      children: List.generate(images.length, (index) {
-//        print(images[index]);
-//        Asset asset = images[index];
-//        return AssetThumb(
-//          asset: asset,
-//          width: 300,
-//          height: 300,
-//        );
-//      }),
-//    );
-//  }
 
   void handleGesture(BuildContext context) {
     if (Platform.isAndroid) {
@@ -341,7 +267,7 @@ class _CreateNoticeState extends State<CreateNotice> {
         //String date = selectedDate.toString();
         print(selectedDate.toString());
         var date = DateFormat("dd-MM-yyyy").format(picked);
-        controllerDate.text = date.toString();
+        _dateController.text = date.toString();
       });
   }
 
@@ -356,10 +282,151 @@ class _CreateNoticeState extends State<CreateNotice> {
     if (picked != null)
       setState(() {
         var time = picked.hour.toString() + ":" + picked.minute.toString();
-        print(picked.hour);
-        print(picked.minute);
-
-        controllerTime.text = time;
+        _dateController.text = time;
       });
+  }
+}
+
+class VenueInput extends StatelessWidget {
+  const VenueInput({
+    Key key,
+    @required TextEditingController venueController,
+  })  : _venueController = venueController,
+        super(key: key);
+
+  final TextEditingController _venueController;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        controller: _venueController,
+        keyboardType: TextInputType.multiline,
+        maxLines: null,
+        maxLength: 100,
+        style: TextStyle(
+            fontFamily: "WorkSansSemiBold",
+            fontSize: 16.0,
+            color: Colors.black),
+        decoration: InputDecoration(
+//                            border: InputBorder.none,
+          labelText: "Venue",
+          hintStyle: TextStyle(fontFamily: "WorkSansSemiBold", fontSize: 17.0),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.lightBlueAccent, width: 1.0),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.blue, width: 1.0),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class DescriptionInput extends StatelessWidget {
+  const DescriptionInput({
+    Key key,
+    @required TextEditingController descriptionController,
+  })  : _descriptionController = descriptionController,
+        super(key: key);
+
+  final TextEditingController _descriptionController;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        controller: _descriptionController,
+        keyboardType: TextInputType.multiline,
+        maxLines: null,
+        maxLength: 1000,
+        style: TextStyle(
+            fontFamily: "WorkSansSemiBold",
+            fontSize: 16.0,
+            color: Colors.black),
+        decoration: InputDecoration(
+//                            border: InputBorder.none,
+          labelText: "Description",
+          hintStyle: TextStyle(fontFamily: "WorkSansSemiBold", fontSize: 17.0),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.lightBlueAccent, width: 1.0),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.blue, width: 1.0),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class TitleInput extends StatelessWidget {
+  const TitleInput({
+    Key key,
+    @required TextEditingController titleController,
+  })  : _titleController = titleController,
+        super(key: key);
+
+  final TextEditingController _titleController;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        controller: _titleController,
+        keyboardType: TextInputType.multiline,
+        maxLines: null,
+        maxLength: 150,
+        style: TextStyle(
+            fontFamily: "WorkSansSemiBold",
+            fontSize: 16.0,
+            color: Colors.black),
+        decoration: InputDecoration(
+          labelText: "Title",
+          hintStyle: TextStyle(fontFamily: "WorkSansSemiBold", fontSize: 17.0),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.lightBlueAccent, width: 1.0),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.blue, width: 1.0),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ImagesView extends StatelessWidget {
+  const ImagesView({
+    Key key,
+    @required this.images,
+  }) : super(key: key);
+
+  final List<Asset> images;
+
+  @override
+  Widget build(BuildContext context) {
+    double height = (images.length / 4).ceilToDouble() * 90.0;
+    if (images.length <= 0) return SizedBox(height: 0.0);
+    return Container(
+      height: height,
+      child: GridView.count(
+        crossAxisCount: 4,
+        crossAxisSpacing: 4,
+        mainAxisSpacing: 4,
+        children: List.generate(images.length, (index) {
+          Asset asset = images[index];
+          return AssetThumb(
+            asset: asset,
+            width: 100,
+            height: 100,
+          );
+        }),
+      ),
+    );
   }
 }
