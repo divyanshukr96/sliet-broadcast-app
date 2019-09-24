@@ -1,0 +1,53 @@
+PODS:
+  - BSGridCollectionViewLayout (1.2.5)
+  - BSImagePicker (2.10.2):
+    - BSGridCollectionViewLayout (= 1.2.5)
+    - BSImageView (= 1.0.3)
+  - BSImageView (1.0.3)
+  - connectivity (0.0.1):
+    - Flutter
+    - Reachability
+  - Flutter (1.0.0)
+  - multi_image_picker (4.5.5):
+    - BSImagePicker (~> 2.10.1)
+    - Flutter
+  - Reachability (3.2)
+  - shared_preferences (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - connectivity (from `.symlinks/plugins/connectivity/ios`)
+  - Flutter (from `.symlinks/flutter/ios`)
+  - multi_image_picker (from `.symlinks/plugins/multi_image_picker/ios`)
+  - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - BSGridCollectionViewLayout
+    - BSImagePicker
+    - BSImageView
+    - Reachability
+
+EXTERNAL SOURCES:
+  connectivity:
+    :path: ".symlinks/plugins/connectivity/ios"
+  Flutter:
+    :path: ".symlinks/flutter/ios"
+  multi_image_picker:
+    :path: ".symlinks/plugins/multi_image_picker/ios"
+  shared_preferences:
+    :path: ".symlinks/plugins/shared_preferences/ios"
+
+SPEC CHECKSUMS:
+  BSGridCollectionViewLayout: 333dcb457a5a3bdd9212607ab5756553dcfe06cb
+  BSImagePicker: f7228c1e1abc1fa850248fd0e8018e0ccc19148a
+  BSImageView: a149459433a2687157d034c78e059d30ac7f2544
+  connectivity: c72716e202a1225ec4810740d5cb56b8ae3bf4cc
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  multi_image_picker: de8f87f0afabf05065b6247940459fcecab4b363
+  Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
+  shared_preferences: 1feebfa37bb57264736e16865e7ffae7fc99b523
+
+PODFILE CHECKSUM: 2ef0a40072d836b2e62fb7fcb125a5e514afe953
+
+COCOAPODS: 1.7.5
