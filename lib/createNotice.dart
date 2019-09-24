@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 
 import 'package:intl/intl.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
-import 'package:sliet_broadcast/components/checkbox_group.dart';
+import 'package:sliet_broadcast/components/department_selection.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
 import 'package:sliet_broadcast/utils/auth_utils.dart';
 import 'package:sliet_broadcast/utils/network_utils.dart';
@@ -21,6 +21,10 @@ class _CreateNoticeState extends State<CreateNotice> {
   NetworkUtils networkUtils = new NetworkUtils();
   bool authenticated = false;
 
+  // department selection variable
+  var selectedDepartment;
+  var departments = new List();
+
   String time = "";
   final format = DateFormat("yyyy-MM-dd");
   final _dateController = TextEditingController();
@@ -33,11 +37,6 @@ class _CreateNoticeState extends State<CreateNotice> {
   var selectedDate = DateTime.now();
   int selectedRadio;
 
-  List _department = ["All", "CSE", "MECH", "ECE", "EIE"];
-
-  List<DropdownMenuItem<String>> _dropDownMenuItems;
-  String _currentCity;
-
   void _setSelectedRadio(int val) {
     setState(() {
       selectedRadio = val;
@@ -46,6 +45,7 @@ class _CreateNoticeState extends State<CreateNotice> {
 
   @override
   void initState() {
+    _fetchDepartment();
     super.initState();
     selectedRadio = 1;
     NetworkUtils.get("/api/public/department");
@@ -54,6 +54,78 @@ class _CreateNoticeState extends State<CreateNotice> {
         authenticated = onValue;
       });
     });
+  }
+
+  _fetchDepartment() async {
+    var responseJson = await NetworkUtils.get("/api/public/department");
+    if (responseJson.toString() != null)
+      setState(() {
+        setState(() {
+          departments = responseJson;
+        });
+      });
+  }
+
+  void _showMultiSelect(BuildContext context) async {
+    final items = <MultiSelectDialogItem<String>>[
+      MultiSelectDialogItem('ALL', 'ALL'),
+    ];
+    var data = departments.map(
+      (dept) => items.add(MultiSelectDialogItem(dept['id'], dept['name'])),
+    );
+    print(data);
+    final selectedValues = await showDialog<Set<String>>(
+      context: context,
+      builder: (BuildContext context) {
+        return MultiSelectDialog(
+          items: items,
+          initialSelectedValues: null,
+          values: selectedDepartment,
+        );
+      },
+    );
+    setState(() {
+      selectedDepartment = selectedValues;
+    });
+  }
+
+  _submitNewNotice() async {
+    final form = _formKey.currentState;
+    if (form.validate()) {
+      var responseJson = await NetworkUtils.post('/api/submit', {
+        'title': _titleController.text,
+        'description': _descriptionController.text,
+        'venue': _venueController.text,
+        'date': _dateController.text,
+        'time': _titleController.text,
+        'public_notice': selectedRadio,
+        'department': selectedDepartment,
+        'images': [],
+      });
+
+//      if (responseJson == null) {
+//        NetworkUtils.showSnackBar(_scaffoldKey, 'Something went wrong!');
+//      } else if (responseJson == 'NetworkError') {
+//        NetworkUtils.showSnackBar(_scaffoldKey, null);
+//      } else if (responseJson['errors'] != null) {
+//        NetworkUtils.showSnackBar(_scaffoldKey, 'Invalid Email/Password');
+//      } else {
+//        AuthUtils.insertDetails(_sharedPreferences, responseJson);
+//        Navigator.of(_scaffoldKey.currentContext).pop();
+//        Navigator.of(_scaffoldKey.currentContext).push(
+//          MaterialPageRoute(
+//            builder: (BuildContext context) => HomePage(),
+//          ),
+//        );
+//      }
+//      _hideLoading();
+    } else {
+      setState(() {
+//        _isLoading = false;
+//        _emailError;
+//        _passwordError;
+      });
+    }
   }
 
   @override
@@ -197,6 +269,14 @@ class _CreateNoticeState extends State<CreateNotice> {
                         Text('Faculty only'),
                       ],
                     ),
+                    RaisedButton(
+                      textColor: Colors.white,
+                      color: Colors.lightBlueAccent,
+                      child: Text("Select Target Department"),
+                      onPressed: () {
+                        _showMultiSelect(context);
+                      },
+                    ),
                     RaisedButton.icon(
                       textColor: Colors.white,
                       color: Colors.lightBlueAccent,
@@ -213,7 +293,7 @@ class _CreateNoticeState extends State<CreateNotice> {
                         textColor: Colors.white,
                         color: Colors.lightBlueAccent,
                         label: Text("Submit"),
-                        onPressed: () {},
+                        onPressed: _submitNewNotice,
                         icon: Icon(Icons.save),
                       ),
                     ),

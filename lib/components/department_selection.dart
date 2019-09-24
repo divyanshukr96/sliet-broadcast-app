@@ -31,12 +31,32 @@ class _MultiSelectDialogState<V> extends State<MultiSelectDialog<V>> {
     if (widget.values != null) _selectedValues.addAll(widget.values);
   }
 
+  _build(MultiSelectDialogItem<V> item) {
+    if (item.value != "ALL") {
+      _selectedValues.add(item.value);
+      print(_selectedValues);
+      return item.value;
+    }
+  }
+
   void _onItemCheckedChange(V itemValue, bool checked) {
     setState(() {
       if (checked) {
-        _selectedValues.add(itemValue);
+        if (itemValue == "ALL") {
+          widget.items.forEach((data) {
+            _selectedValues.add(data.value);
+          });
+        } else
+          _selectedValues.add(itemValue);
       } else {
-        _selectedValues.remove(itemValue);
+        if (itemValue == "ALL")
+          widget.items.forEach((data) {
+            _selectedValues.remove(data.value);
+          });
+        else {
+          _selectedValues.remove(itemValue);
+          if (_selectedValues.contains("ALL")) _selectedValues.remove("ALL");
+        }
       }
     });
   }
@@ -52,7 +72,7 @@ class _MultiSelectDialogState<V> extends State<MultiSelectDialog<V>> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Select animals'),
+      title: Text('Select target departments'),
       contentPadding: EdgeInsets.only(top: 12.0),
       content: SingleChildScrollView(
         child: ListTileTheme(
@@ -68,7 +88,7 @@ class _MultiSelectDialogState<V> extends State<MultiSelectDialog<V>> {
           onPressed: _onCancelTap,
         ),
         FlatButton(
-          child: Text('OK'),
+          child: Text('SELECT'),
           onPressed: _onSubmitTap,
         )
       ],
@@ -78,6 +98,7 @@ class _MultiSelectDialogState<V> extends State<MultiSelectDialog<V>> {
   Widget _buildItem(MultiSelectDialogItem<V> item) {
     final checked = _selectedValues.contains(item.value);
     return CheckboxListTile(
+      dense: false,
       value: checked,
       title: Text(item.label),
       controlAffinity: ListTileControlAffinity.leading,
