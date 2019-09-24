@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:sliet_broadcast/createNotice.dart';
 import 'package:sliet_broadcast/home_drawer.dart';
 import 'package:sliet_broadcast/publicFeed.dart';
 import 'package:sliet_broadcast/utils/internet_connection.dart';
 import 'package:sliet_broadcast/utils/network_utils.dart';
 
-import 'createNotice.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -14,6 +14,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   NetworkUtils networkUtils = new NetworkUtils();
   bool authenticated = false;
+  String userType = "STUDENT";
 
   int _selectedTab;
   Widget currentPage;
@@ -27,14 +28,15 @@ class _HomePageState extends State<HomePage> {
         authenticated = onValue;
       });
     });
+    networkUtils.getUserType().then((onValue) {
+      setState(() {
+        userType = onValue;
+      });
+    });
 
     super.initState();
     _selectedTab = 0;
-    _pageOptions = [
-      PublicFeed(),
-      CreateNotice(),
-      PublicFeed(),
-    ];
+    _pageOptions = [PublicFeed()];
     currentPage = PublicFeed();
   }
 
@@ -54,36 +56,43 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       drawer: HomeDrawer(),
-      bottomNavigationBar: authenticated ? buildBottomNavigationBar() : null,
+      bottomNavigationBar: authenticated &&
+              ["FACULTY", "DEPARTMENT", "SOCIETY"].contains(userType)
+          ? buildBottomNavigationBar()
+          : null,
     );
   }
 
   BottomNavigationBar buildBottomNavigationBar() {
+    List<BottomNavigationBarItem> items = new List<BottomNavigationBarItem>();
+    items.add(BottomNavigationBarItem(
+      icon: Icon(Icons.public),
+      title: Text('Public'),
+    ));
+
+    if (["DEPARTMENT", "SOCIETY"].contains(userType)) {
+      _pageOptions.add(CreateNotice());
+      items.add(BottomNavigationBarItem(
+        icon: Icon(Icons.add_circle_outline),
+        title: Text('Add Notice'),
+      ));
+    }
+
+    _pageOptions.add(PublicFeed());
+    items.add(BottomNavigationBarItem(
+      icon: Icon(Icons.vpn_key),
+      title: Text('Private'),
+    ));
+
     return BottomNavigationBar(
       currentIndex: _selectedTab,
       onTap: (int index) {
         setState(() {
           _selectedTab = index;
           currentPage = _pageOptions[index];
-          print(
-              ":::::::::::::::::::::::::::::::::::::::::   on Bottom navigationbar      homepage.dart");
-          print(_selectedTab);
         });
       },
-      items: [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.public),
-          title: Text('Public'),
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.add_circle_outline),
-          title: Text('Add Notice'),
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.vpn_key),
-          title: Text('Private'),
-        ),
-      ],
+      items: items,
     );
   }
 

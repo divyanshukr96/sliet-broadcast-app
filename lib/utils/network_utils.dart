@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -36,10 +37,9 @@ class NetworkUtils {
     prefs.setString(AuthUtils.authTokenKey, null);
     prefs.setInt(AuthUtils.userIdKey, null);
     prefs.setString(AuthUtils.nameKey, null);
-    prefs.setString(AuthUtils.username, null);
+    prefs.setString(AuthUtils.username, 'STUDENT');
     prefs.setString(AuthUtils.userType, null);
     prefs.setBool('isAdmin', false);
-    print(prefs.getString(AuthUtils.authTokenKey));
 
 //    Navigator.of(context).pushReplacementNamed('/');
 //    showSnackBar(context, message)
@@ -102,7 +102,7 @@ class NetworkUtils {
   static dynamic post(var endPoint, Object data) async {
     var prefs = await getSharedPreference();
     var uri = host + endPoint;
-
+    print(data.toString());
     try {
       final response = await http.post(
         uri,
@@ -153,6 +153,16 @@ class NetworkUtils {
       return (token != null);
     } catch (onError) {
       return false;
+    }
+  }
+
+  Future<String> getUserType() async {
+    try {
+      var prefs = await getSharedPreference();
+      String userType = prefs.getString(AuthUtils.userType);
+      return userType;
+    } catch (onError) {
+      return "STUDENT";
     }
   }
 }

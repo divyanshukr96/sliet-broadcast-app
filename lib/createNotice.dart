@@ -91,17 +91,24 @@ class _CreateNoticeState extends State<CreateNotice> {
 
   _submitNewNotice() async {
     final form = _formKey.currentState;
+    var _department = [];
+    if (selectedDepartment != null) _department = selectedDepartment.toList();
+    _department.removeWhere((value) => value == "ALL");
+
+    print('');
+
     if (form.validate()) {
-      var responseJson = await NetworkUtils.post('/api/submit', {
+      var responseJson = await NetworkUtils.post('/api/notice', {
         'title': _titleController.text,
         'description': _descriptionController.text,
         'venue': _venueController.text,
         'date': _dateController.text,
         'time': _titleController.text,
         'public_notice': selectedRadio,
-        'department': selectedDepartment,
-        'images': [],
+        'department': _department,
+        'images': images,
       });
+      print(responseJson.toString() + "++++++++++++++++++++");
 
 //      if (responseJson == null) {
 //        NetworkUtils.showSnackBar(_scaffoldKey, 'Something went wrong!');
@@ -322,6 +329,7 @@ class _CreateNoticeState extends State<CreateNotice> {
           useDetailsView: false,
           selectCircleStrokeColor: "#000000",
         ),
+
       );
     } on Exception catch (e) {}
 
