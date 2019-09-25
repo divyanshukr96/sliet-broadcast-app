@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sliet_broadcast/components/models/cardModel.dart';
 
 class NoticeCard extends StatefulWidget {
-  CardModelData cardModelData;
+  final CardModelData cardModelData;
 
   NoticeCard(this.cardModelData);
 
@@ -105,8 +105,7 @@ class _NoticeCardState extends State<NoticeCard> {
   }
 
   void changeLines() {
-    if ((numberOfLines == 2) &&
-        (cardModelData.imageUrlNotice.toString() != null)) {
+    if ((numberOfLines == 2) && (cardModelData.imageUrlNotice != null)) {
       numberOfLines = 1000;
       iconForText = Icon(
         Icons.keyboard_arrow_up,
@@ -127,7 +126,6 @@ class _NoticeCardState extends State<NoticeCard> {
     setState(() {
       numberOfLines = numberOfLines;
     });
-    print(numberOfLines);
   }
 }
 

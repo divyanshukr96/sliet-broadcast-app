@@ -17,7 +17,6 @@ class CreateNotice extends StatefulWidget {
 
 class _CreateNoticeState extends State<CreateNotice> {
   List<Asset> images = List<Asset>();
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   NetworkUtils networkUtils = new NetworkUtils();
   bool authenticated = false;
@@ -81,7 +80,7 @@ class _CreateNoticeState extends State<CreateNotice> {
     var data = departments.map(
       (dept) => items.add(MultiSelectDialogItem(dept['id'], dept['name'])),
     );
-    print(data);
+    print(data); // required this print necessary
     final selectedValues = await showDialog<Set<String>>(
       context: context,
       builder: (BuildContext context) {
@@ -132,17 +131,6 @@ class _CreateNoticeState extends State<CreateNotice> {
       ));
     }
     if (form.validate()) {
-//      var responseJson = await NetworkUtils.post('/api/notice', {
-//        'title': _titleController.text,
-//        'description': _descriptionController.text,
-//        'venue': _venueController.text,
-//        'date': _dateController.text,
-//        'time': _titleController.text,
-//        'public_notice': selectedRadio,
-//        'department': _department,
-//        'images': images,
-//      });
-
       FormData formData = new FormData.from({
         'title': _titleController.text,
         'description': _descriptionController.text,
@@ -342,7 +330,6 @@ class _CreateNoticeState extends State<CreateNotice> {
                           groupValue: selectedRadio,
                           activeColor: Colors.blue,
                           onChanged: (val) {
-                            print("the value is $val");
                             _setSelectedRadio(val);
                           },
                         ),
@@ -352,7 +339,6 @@ class _CreateNoticeState extends State<CreateNotice> {
                           groupValue: selectedRadio,
                           activeColor: Colors.blue,
                           onChanged: (val) {
-                            print("the value is $val");
                             _setSelectedRadio(val);
                           },
                         ),
@@ -428,7 +414,6 @@ class _CreateNoticeState extends State<CreateNotice> {
             UploadFileInfo.fromBytes(imageData, asset.name);
         files['images_$count'] = multipartImage;
         count += 1;
-        print(count);
       }
     }
 
@@ -459,8 +444,6 @@ class _CreateNoticeState extends State<CreateNotice> {
     if (picked != null && picked != selectedDate)
       setState(() {
         selectedDate = picked;
-        //String date = selectedDate.toString();
-        print(selectedDate.toString());
         var date = DateFormat("dd-MM-yyyy").format(picked);
         _dateController.text = date.toString();
       });
@@ -505,7 +488,6 @@ class VenueInput extends StatelessWidget {
             fontSize: 16.0,
             color: Colors.black),
         decoration: InputDecoration(
-//                            border: InputBorder.none,
           labelText: "Venue",
           hintStyle: TextStyle(fontFamily: "WorkSansSemiBold", fontSize: 17.0),
           focusedBorder: OutlineInputBorder(
@@ -543,7 +525,6 @@ class DescriptionInput extends StatelessWidget {
             fontSize: 16.0,
             color: Colors.black),
         decoration: InputDecoration(
-//                            border: InputBorder.none,
           labelText: "Description",
           hintStyle: TextStyle(fontFamily: "WorkSansSemiBold", fontSize: 17.0),
           focusedBorder: OutlineInputBorder(

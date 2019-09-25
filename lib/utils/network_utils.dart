@@ -80,12 +80,11 @@ class NetworkUtils {
   static get(var endPoint) async {
     var prefs = await getSharedPreference();
     var uri = host + endPoint;
+    String token = prefs.getString(AuthUtils.authTokenKey);
     try {
       final response = await http.get(
         uri,
-        headers: {
-          'Authorization': 'Token ' + prefs.getString(AuthUtils.authTokenKey)
-        },
+        headers: {'Authorization': token != null ? "Token " + token : ""},
       );
       final responseJson = json.decode(response.body);
       return responseJson;
@@ -131,17 +130,16 @@ class NetworkUtils {
     return _sharedPreferences;
   }
 
-  static dynamic postForm(var endPoint,File _image) async {
+  static dynamic postForm(var endPoint, File _image) async {
     String apiUrl = host + endPoint;
     final length = await _image.length();
     final request = new http.MultipartRequest('POST', Uri.parse(apiUrl))
       ..files.add(new http.MultipartFile('avatar', _image.openRead(), length));
-    http.Response response = await http.Response.fromStream(await request.send());
+    http.Response response =
+        await http.Response.fromStream(await request.send());
     print("Result: ${response.body}");
     return json.decode(response.body);
   }
-
-
 
 //  static getSharedPreference() async {
 //    SharedPreferences prefs = await SharedPreferences.getInstance();

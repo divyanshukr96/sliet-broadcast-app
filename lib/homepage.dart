@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:sliet_broadcast/createNotice.dart';
 import 'package:sliet_broadcast/home_drawer.dart';
+import 'package:sliet_broadcast/privateFeed.dart';
 import 'package:sliet_broadcast/publicFeed.dart';
+import 'package:sliet_broadcast/published_notice.dart';
 import 'package:sliet_broadcast/utils/internet_connection.dart';
 import 'package:sliet_broadcast/utils/network_utils.dart';
-
 
 class HomePage extends StatefulWidget {
   @override
@@ -79,10 +80,17 @@ class _HomePageState extends State<HomePage> {
     }
 
     if (["FACULTY"].contains(userType)) {
-      _pageOptions.add(PublicFeed());
+      _pageOptions.add(PrivateFeed());
       items.add(BottomNavigationBarItem(
         icon: Icon(Icons.vpn_key),
         title: Text('Private'),
+      ));
+    }
+    if (["DEPARTMENT", "SOCIETY"].contains(userType)) {
+      _pageOptions.add(PublishedNotice());
+      items.add(BottomNavigationBarItem(
+        icon: Icon(Icons.publish),
+        title: Text('Published'),
       ));
     }
 
