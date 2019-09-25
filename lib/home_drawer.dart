@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliet_broadcast/components/drawerItem.dart';
+import 'package:sliet_broadcast/components/profile.dart';
 import 'package:sliet_broadcast/login.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
 import 'package:sliet_broadcast/utils/auth_utils.dart';
@@ -22,7 +23,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
   @override
   void initState() {
     networkUtils.isAuthenticated().then((onValue) {
-      print(onValue.toString()+ " on sucess home_drawer.dart initstate");
+      print(onValue.toString() + " on sucess home_drawer.dart initstate");
       setState(() {
         authenticated = onValue;
       });
@@ -113,7 +114,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
             sharedPreferences: _sharedPreferences,
             authenticated: authenticated,
           ),
-          DrawerItem('click for hello', Icon(Icons.unfold_more), context,
+          DrawerItem('Terms & Conditions', Icon(Icons.library_books), context,
                   testFunction)
               .getItem(),
         ],
@@ -140,19 +141,38 @@ class LoginLogout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (authenticated) {
-      return ListTile(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              'Logout',
+      return Column(
+        children: <Widget>[
+          ListTile(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Text('Profile'),
+              ],
             ),
-          ],
-        ),
-        leading: Icon(Icons.exit_to_app),
-        onTap: () {
-          NetworkUtils.logoutUser(context, _sharedPreferences);
-        },
+            leading: Icon(Icons.account_circle),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => Profile(),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Text('Logout'),
+              ],
+            ),
+            leading: Icon(Icons.exit_to_app),
+            onTap: () {
+              NetworkUtils.logoutUser(context, _sharedPreferences);
+            },
+          ),
+        ],
       );
     }
     return ListTile(

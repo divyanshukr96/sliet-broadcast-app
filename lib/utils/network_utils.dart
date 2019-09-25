@@ -131,6 +131,18 @@ class NetworkUtils {
     return _sharedPreferences;
   }
 
+  static dynamic getUploadImg(var endPoint,File _image) async {
+    String apiUrl = host + endPoint;
+    final length = await _image.length();
+    final request = new http.MultipartRequest('POST', Uri.parse(apiUrl))
+      ..files.add(new http.MultipartFile('avatar', _image.openRead(), length));
+    http.Response response = await http.Response.fromStream(await request.send());
+    print("Result: ${response.body}");
+    return json.decode(response.body);
+  }
+
+
+
 //  static getSharedPreference() async {
 //    SharedPreferences prefs = await SharedPreferences.getInstance();
 //    return prefs;

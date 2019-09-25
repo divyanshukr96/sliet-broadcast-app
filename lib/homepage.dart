@@ -78,11 +78,13 @@ class _HomePageState extends State<HomePage> {
       ));
     }
 
-    _pageOptions.add(PublicFeed());
-    items.add(BottomNavigationBarItem(
-      icon: Icon(Icons.vpn_key),
-      title: Text('Private'),
-    ));
+    if (["FACULTY"].contains(userType)) {
+      _pageOptions.add(PublicFeed());
+      items.add(BottomNavigationBarItem(
+        icon: Icon(Icons.vpn_key),
+        title: Text('Private'),
+      ));
+    }
 
     return BottomNavigationBar(
       currentIndex: _selectedTab,

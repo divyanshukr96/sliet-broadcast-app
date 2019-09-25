@@ -6,7 +6,7 @@ class CardModelData {
   String titleOfEvent;
   String dateOfNoticeUpload;
   String timeOfNoticeUpload;
-  String imageUrlNotice;
+  List imageUrlNotice;
   String timeOfEvent;
   String dateOfEvent;
   String venueForEvent;

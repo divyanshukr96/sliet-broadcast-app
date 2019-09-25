@@ -52,6 +52,7 @@ class _NoticeCardState extends State<NoticeCard> {
                         children: <Widget>[
                           Text(
                             cardModelData.nameOfUploader,
+                            textAlign: TextAlign.start,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
@@ -81,45 +82,10 @@ class _NoticeCardState extends State<NoticeCard> {
                     cardModelData.aboutEvent,
                     overflow: TextOverflow.ellipsis,
                     maxLines: numberOfLines,
+                    style: TextStyle(fontSize: 16.0),
                   ),
                 ),
-                Row(
-                  // mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Column(
-                      children: <Widget>[
-                        Text(
-                          'TIME',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1976D2),
-                          ),
-                        ),
-                        Text(cardModelData.timeOfEvent),
-                      ],
-                    ),
-                    VerticalDivider(
-                      color: Colors.deepOrange,
-                      width: 10.0,
-                      thickness: 20.0,
-                      endIndent: 0.1,
-                      indent: 0.1,
-                    ),
-                    Column(
-                      children: <Widget>[
-                        Text(
-                          'VENUE',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1976D2),
-                          ),
-                        ),
-                        Text(cardModelData.venueForEvent),
-                      ],
-                    ),
-                  ],
-                ),
+                EventTime(cardModelData: cardModelData),
                 Row(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -139,7 +105,8 @@ class _NoticeCardState extends State<NoticeCard> {
   }
 
   void changeLines() {
-    if (numberOfLines == 2) {
+    if ((numberOfLines == 2) &&
+        (cardModelData.imageUrlNotice.toString() != null)) {
       numberOfLines = 1000;
       iconForText = Icon(
         Icons.keyboard_arrow_up,
@@ -147,7 +114,7 @@ class _NoticeCardState extends State<NoticeCard> {
 
       imageForCard = FadeInImage.assetNetwork(
         placeholder: 'assets/images/imageloading1.gif',
-        image: 'https://picsum.photos/250?image=9',
+        image: cardModelData.imageUrlNotice[0],
         fit: BoxFit.cover,
       );
     } else {
@@ -161,5 +128,80 @@ class _NoticeCardState extends State<NoticeCard> {
       numberOfLines = numberOfLines;
     });
     print(numberOfLines);
+  }
+}
+
+class EventTime extends StatelessWidget {
+  const EventTime({
+    Key key,
+    @required this.cardModelData,
+  }) : super(key: key);
+
+  final CardModelData cardModelData;
+
+  @override
+  Widget build(BuildContext context) {
+    if (cardModelData.timeOfEvent != null)
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Column(
+            children: <Widget>[
+              Text(
+                'TIME',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1976D2),
+                ),
+              ),
+              Text(cardModelData.timeOfEvent),
+            ],
+          ),
+          VerticalDivider(
+            color: Colors.deepOrange,
+            width: 10.0,
+            thickness: 20.0,
+            endIndent: 0.1,
+            indent: 0.1,
+          ),
+          VenueName(cardModelData: cardModelData),
+        ],
+      );
+    else
+      return SizedBox(
+        height: 0,
+        width: 0,
+      );
+  }
+}
+
+class VenueName extends StatelessWidget {
+  const VenueName({
+    Key key,
+    @required this.cardModelData,
+  }) : super(key: key);
+
+  final CardModelData cardModelData;
+
+  @override
+  Widget build(BuildContext context) {
+    if (cardModelData.venueForEvent != null)
+      return Column(
+        children: <Widget>[
+          Text(
+            'VENUE',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF1976D2),
+            ),
+          ),
+          Text(cardModelData.venueForEvent),
+        ],
+      );
+    else
+      return SizedBox(
+        height: 0,
+        width: 0,
+      );
   }
 }
