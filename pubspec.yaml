@@ -27,6 +27,7 @@ dependencies:
   expandable: ^3.0.0+1
   font_awesome_flutter: ^8.0.1
   http: ^0.12.0+2
+  dio: ^2.1.0
   datetime_picker_formfield: ^0.4.3
   connectivity: ^0.4.4
   shared_preferences: ^0.5.3+4

@@ -131,7 +131,7 @@ class NetworkUtils {
     return _sharedPreferences;
   }
 
-  static dynamic getUploadImg(var endPoint,File _image) async {
+  static dynamic postForm(var endPoint,File _image) async {
     String apiUrl = host + endPoint;
     final length = await _image.length();
     final request = new http.MultipartRequest('POST', Uri.parse(apiUrl))

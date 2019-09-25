@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
@@ -17,6 +18,7 @@ class CreateNotice extends StatefulWidget {
 
 class _CreateNoticeState extends State<CreateNotice> {
   List<Asset> images = List<Asset>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   NetworkUtils networkUtils = new NetworkUtils();
   bool authenticated = false;
@@ -90,25 +92,67 @@ class _CreateNoticeState extends State<CreateNotice> {
   }
 
   _submitNewNotice() async {
+    Response response;
+    Dio dio = new Dio();
+
+    String token = await networkUtils.getToken();
+
     final form = _formKey.currentState;
     var _department = [];
     if (selectedDepartment != null) _department = selectedDepartment.toList();
     _department.removeWhere((value) => value == "ALL");
 
-    print('');
-
     if (form.validate()) {
-      var responseJson = await NetworkUtils.post('/api/notice', {
+//      var responseJson = await NetworkUtils.post('/api/notice', {
+//        'title': _titleController.text,
+//        'description': _descriptionController.text,
+//        'venue': _venueController.text,
+//        'date': _dateController.text,
+//        'time': _titleController.text,
+//        'public_notice': selectedRadio,
+//        'department': _department,
+//        'images': images,
+//      });
+
+      FormData formData = new FormData.fromMap({
         'title': _titleController.text,
         'description': _descriptionController.text,
         'venue': _venueController.text,
-        'date': _dateController.text,
-        'time': _titleController.text,
+//        'date': _dateController.text != null
+//            ? DateFormat("yyyy-MM-dd")
+//                .format(DateFormat("dd-MM-yyyy").parse(_dateController.text))
+//                .toString()
+//            : null,
+        'time': _timeController.text,
         'public_notice': selectedRadio,
         'department': _department,
-        'images': images,
+        'files': files,
       });
-      print(responseJson.toString() + "++++++++++++++++++++");
+      dio.options.headers['Authorization'] = "Token " + token;
+      dio.options.headers['content-type'] = "application/x-www-form-urlencoded";
+      dio.options.headers['Accept'] = "application/json";
+      print(dio.options.headers);
+      response = await dio.post(
+        NetworkUtils.productionHost + "/api/notice/",
+        data: formData,
+        onSendProgress: (int sent, int total) {
+          print("$sent $total");
+        },
+        onReceiveProgress: (int sent, int total) {
+          print("$sent $total" + "---------------------");
+        },
+      );
+      if (response != null) {
+        print(response.data.toString() + "+============");
+      } else {
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text('Invalid Email/Password'),
+        ));
+      }
+
+      print(response.toString() + "================");
+
+//      print(responseJson.toString() + "++++++++++++++++++++");
 
 //      if (responseJson == null) {
 //        NetworkUtils.showSnackBar(_scaffoldKey, 'Something went wrong!');
@@ -315,6 +359,7 @@ class _CreateNoticeState extends State<CreateNotice> {
   }
 
   Future<void> _loadAssets() async {
+    files.clear();
     List<Asset> resultList = List<Asset>();
 
     try {
@@ -329,16 +374,30 @@ class _CreateNoticeState extends State<CreateNotice> {
           useDetailsView: false,
           selectCircleStrokeColor: "#000000",
         ),
-
       );
     } on Exception catch (e) {}
 
     if (!mounted) return;
 
+    int count = 0;
+    for (var asset in resultList) {
+      ByteData byteData = await asset.getByteData();
+      if (byteData != null) {
+        List<int> imageData = byteData.buffer.asUint8List();
+        MultipartFile multipartImage =
+            MultipartFile.fromBytes(imageData, filename: asset.name);
+        files['images_$count'] = multipartImage;
+        count += 1;
+        print(count);
+      }
+    }
+
     setState(() {
       images = resultList;
     });
   }
+
+  var files = {};
 
   void handleGesture(BuildContext context) {
     if (Platform.isAndroid) {
@@ -378,7 +437,7 @@ class _CreateNoticeState extends State<CreateNotice> {
     if (picked != null)
       setState(() {
         var time = picked.hour.toString() + ":" + picked.minute.toString();
-        _dateController.text = time;
+        _timeController.text = time;
       });
   }
 }
