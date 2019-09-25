@@ -8,7 +8,6 @@ import 'package:intl/intl.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:sliet_broadcast/components/department_selection.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
-import 'package:sliet_broadcast/utils/auth_utils.dart';
 import 'package:sliet_broadcast/utils/network_utils.dart';
 
 class CreateNotice extends StatefulWidget {
@@ -22,6 +21,7 @@ class _CreateNoticeState extends State<CreateNotice> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   NetworkUtils networkUtils = new NetworkUtils();
   bool authenticated = false;
+  bool loading = false;
 
   // department selection variable
   var selectedDepartment;
@@ -42,6 +42,12 @@ class _CreateNoticeState extends State<CreateNotice> {
   void _setSelectedRadio(int val) {
     setState(() {
       selectedRadio = val;
+    });
+  }
+
+  void _formSubmitting() {
+    setState(() {
+      loading = !loading;
     });
   }
 
@@ -92,6 +98,7 @@ class _CreateNoticeState extends State<CreateNotice> {
   }
 
   _submitNewNotice() async {
+    _formSubmitting();
     Response response;
     Dio dio = new Dio();
 
@@ -102,6 +109,28 @@ class _CreateNoticeState extends State<CreateNotice> {
     if (selectedDepartment != null) _department = selectedDepartment.toList();
     _department.removeWhere((value) => value == "ALL");
 
+    if (_descriptionController.text == "" && files.length == 0) {
+      _formSubmitting();
+      return Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text(
+          'Notice Description / Image field required!',
+          style: TextStyle(color: Colors.white70),
+        ),
+        backgroundColor: Colors.deepOrange,
+        duration: Duration(seconds: 2),
+      ));
+    }
+    if (_department.length == 0) {
+      _formSubmitting();
+      return Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text(
+          'Department field is required ...',
+          style: TextStyle(color: Colors.white70),
+        ),
+        backgroundColor: Colors.deepOrange,
+        duration: Duration(seconds: 2),
+      ));
+    }
     if (form.validate()) {
 //      var responseJson = await NetworkUtils.post('/api/notice', {
 //        'title': _titleController.text,
@@ -114,67 +143,77 @@ class _CreateNoticeState extends State<CreateNotice> {
 //        'images': images,
 //      });
 
-      FormData formData = new FormData.fromMap({
+      FormData formData = new FormData.from({
         'title': _titleController.text,
         'description': _descriptionController.text,
         'venue': _venueController.text,
-//        'date': _dateController.text != null
-//            ? DateFormat("yyyy-MM-dd")
-//                .format(DateFormat("dd-MM-yyyy").parse(_dateController.text))
-//                .toString()
-//            : null,
+        'date': _dateController.text != ''
+            ? DateFormat("yyyy-MM-dd")
+                .format(DateFormat("dd-MM-yyyy").parse(_dateController.text))
+                .toString()
+            : null,
         'time': _timeController.text,
         'public_notice': selectedRadio,
         'department': _department,
         'files': files,
       });
-      dio.options.headers['Authorization'] = "Token " + token;
-      dio.options.headers['content-type'] = "application/x-www-form-urlencoded";
-      dio.options.headers['Accept'] = "application/json";
-      print(dio.options.headers);
-      response = await dio.post(
-        NetworkUtils.productionHost + "/api/notice/",
-        data: formData,
-        onSendProgress: (int sent, int total) {
-          print("$sent $total");
-        },
-        onReceiveProgress: (int sent, int total) {
-          print("$sent $total" + "---------------------");
-        },
-      );
-      if (response != null) {
-        print(response.data.toString() + "+============");
-      } else {
-        Scaffold.of(context).showSnackBar(SnackBar(
-          content: Text('Invalid Email/Password'),
-        ));
+
+      try {
+        dio.options.headers['Authorization'] = "Token " + token;
+        dio.options.headers['content-type'] =
+            "application/x-www-form-urlencoded";
+        dio.options.headers['Accept'] = "application/json";
+        response = await dio.post(
+          NetworkUtils.productionHost + "/api/notice/",
+          data: formData,
+          // upload progress can be updated here
+//          onSendProgress: (int sent, int total) {
+//            print("$sent $total");
+//          },
+        );
+
+        if (response.statusCode == 201) {
+          form.reset();
+          setState(() {
+            _titleController.clear();
+            _descriptionController.clear();
+            _venueController.clear();
+            _dateController.clear();
+            _titleController.clear();
+            selectedRadio = 1;
+            selectedDepartment = null;
+          });
+          _department.clear();
+          files.clear();
+          images.clear();
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text(
+              'Notice successfully uploaded ...',
+              style: TextStyle(color: Colors.white70, fontSize: 18.0),
+            ),
+            backgroundColor: Colors.green,
+          ));
+        }
+      } on DioError catch (e) {
+        if (e.response != null) {
+          if (e.response.data != null)
+            Scaffold.of(context).showSnackBar(SnackBar(
+              content: Text(
+                'Title / Description or Image / Department field required!',
+                style: TextStyle(color: Colors.white70),
+              ),
+              backgroundColor: Colors.deepOrange,
+            ));
+        } else {
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text('Something went wrong!'),
+          ));
+        }
       }
-
-      print(response.toString() + "================");
-
-//      print(responseJson.toString() + "++++++++++++++++++++");
-
-//      if (responseJson == null) {
-//        NetworkUtils.showSnackBar(_scaffoldKey, 'Something went wrong!');
-//      } else if (responseJson == 'NetworkError') {
-//        NetworkUtils.showSnackBar(_scaffoldKey, null);
-//      } else if (responseJson['errors'] != null) {
-//        NetworkUtils.showSnackBar(_scaffoldKey, 'Invalid Email/Password');
-//      } else {
-//        AuthUtils.insertDetails(_sharedPreferences, responseJson);
-//        Navigator.of(_scaffoldKey.currentContext).pop();
-//        Navigator.of(_scaffoldKey.currentContext).push(
-//          MaterialPageRoute(
-//            builder: (BuildContext context) => HomePage(),
-//          ),
-//        );
-//      }
-//      _hideLoading();
+      _formSubmitting();
     } else {
       setState(() {
-//        _isLoading = false;
-//        _emailError;
-//        _passwordError;
+        loading = false;
       });
     }
   }
@@ -342,10 +381,11 @@ class _CreateNoticeState extends State<CreateNotice> {
                         highlightColor: Colors.transparent,
                         splashColor: Theme.Colors.loginGradientEnd,
                         textColor: Colors.white,
-                        color: Colors.lightBlueAccent,
+                        color:
+                            loading ? Colors.white12 : Colors.lightBlueAccent,
                         label: Text("Submit"),
-                        onPressed: _submitNewNotice,
-                        icon: Icon(Icons.save),
+                        onPressed: loading ? () {} : _submitNewNotice,
+                        icon: Icon(loading ? Icons.cached : Icons.save),
                       ),
                     ),
                   ],
@@ -384,8 +424,8 @@ class _CreateNoticeState extends State<CreateNotice> {
       ByteData byteData = await asset.getByteData();
       if (byteData != null) {
         List<int> imageData = byteData.buffer.asUint8List();
-        MultipartFile multipartImage =
-            MultipartFile.fromBytes(imageData, filename: asset.name);
+        UploadFileInfo multipartImage =
+            UploadFileInfo.fromBytes(imageData, asset.name);
         files['images_$count'] = multipartImage;
         count += 1;
         print(count);
