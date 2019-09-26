@@ -72,8 +72,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
     if (profile['profile'] != null) {
       profileUrl = profile['profile'];
     }
+    print(profile['username']);
     String username =
-        profile['username'] == "" ? "" : '@' + profile['username'].toString();
+        profile['username'] == null ? "" : '@' + profile['username'].toString();
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
