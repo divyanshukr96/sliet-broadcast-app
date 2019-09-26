@@ -176,12 +176,7 @@ class _LoginPageState extends State<LoginPage>
         await AuthUtils.insertDetails(_sharedPreferences, responseJson);
         final value = jsonEncode(await NetworkUtils.get('/api/auth/user'));
         _sharedPreferences.setString('profile', value);
-        Navigator.of(_scaffoldKey.currentContext).pop();
-        Navigator.of(_scaffoldKey.currentContext).push(
-          MaterialPageRoute(
-            builder: (BuildContext context) => HomePage(),
-          ),
-        );
+        Navigator.pushNamedAndRemoveUntil(context, "/home", (r) => false);
       }
 //      _hideLoading();
     } else {

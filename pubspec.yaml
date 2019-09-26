@@ -34,6 +34,7 @@ dependencies:
   multi_image_picker: ^4.5.5
   splashscreen: ^1.2.0
   image_picker_modern: ^0.4.12+3
+  photo_view: ^0.5.0
 
 dev_dependencies:
   flutter_test:

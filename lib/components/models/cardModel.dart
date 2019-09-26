@@ -3,6 +3,7 @@ import 'dart:core';
 class CardModelData {
   String id;
   String nameOfUploader;
+  String userProfile;
   String titleOfEvent;
   String dateOfNoticeUpload;
   String timeOfNoticeUpload;
@@ -15,6 +16,7 @@ class CardModelData {
   CardModelData(
       this.id,
       this.nameOfUploader,
+      this.userProfile,
       this.titleOfEvent,
       this.dateOfNoticeUpload,
       this.timeOfNoticeUpload,

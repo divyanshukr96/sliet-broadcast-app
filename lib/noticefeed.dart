@@ -42,6 +42,7 @@ class _NoticeFeedState extends State<NoticeFeed> {
       CardModelData card = CardModelData(
           i['id'],
           i['user'],
+          i['profile'],
           i['title'],
           i['created_at'].split(" ")[0],
           i['created_at'].split(" ")[1],
@@ -118,6 +119,7 @@ class _NoticeFeedState extends State<NoticeFeed> {
             padding: const EdgeInsets.symmetric(vertical: 2.0),
             itemCount: snapshot.data.length,
             itemBuilder: (BuildContext context, int index) {
+              print(snapshot.data[snapshot.data.length - index - 1]);
               return NoticeCard(
                 snapshot.data[snapshot.data.length - index - 1],
               );

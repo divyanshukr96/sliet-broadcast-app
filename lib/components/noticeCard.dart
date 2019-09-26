@@ -1,5 +1,9 @@
+import 'dart:async';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:sliet_broadcast/components/models/cardModel.dart';
+import 'package:sliet_broadcast/utils/carousel.dart';
 
 class NoticeCard extends StatefulWidget {
   final CardModelData cardModelData;
@@ -42,9 +46,12 @@ class _NoticeCardState extends State<NoticeCard> {
                   //mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
                     CircleAvatar(
+                      backgroundImage: cardModelData.userProfile != null
+                          ? NetworkImage(cardModelData.userProfile)
+                          : AssetImage('assets/images/login.png'),
                       radius: 25.0,
                       backgroundColor:
-                          Colors.brown, //change this to backgroundImage
+                          Colors.black, //change this to backgroundImage
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -111,10 +118,17 @@ class _NoticeCardState extends State<NoticeCard> {
         Icons.keyboard_arrow_up,
       );
 
-      imageForCard = FadeInImage.assetNetwork(
-        placeholder: 'assets/images/imageloading1.gif',
-        image: cardModelData.imageUrlNotice[0],
-        fit: BoxFit.cover,
+      imageForCard = CarouselSlider(
+        height: MediaQuery.of(context).size.height * .6,
+        aspectRatio: MediaQuery.of(context).size.aspectRatio,
+        viewportFraction: 1.0,
+        items: cardModelData.imageUrlNotice.map((image) {
+          return Builder(
+            builder: (BuildContext context) {
+              return PhotoView(imageProvider: NetworkImage(image));
+            },
+          );
+        }).toList(),
       );
     } else {
       numberOfLines = 2;
