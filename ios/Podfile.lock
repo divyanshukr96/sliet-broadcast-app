@@ -8,6 +8,8 @@ PODS:
     - Flutter
     - Reachability
   - Flutter (1.0.0)
+  - image_picker_modern (0.0.1):
+    - Flutter
   - multi_image_picker (4.5.5):
     - BSImagePicker (~> 2.10.1)
     - Flutter
@@ -18,6 +20,7 @@ PODS:
 DEPENDENCIES:
   - connectivity (from `.symlinks/plugins/connectivity/ios`)
   - Flutter (from `.symlinks/flutter/ios`)
+  - image_picker_modern (from `.symlinks/plugins/image_picker_modern/ios`)
   - multi_image_picker (from `.symlinks/plugins/multi_image_picker/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
 
@@ -33,6 +36,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/connectivity/ios"
   Flutter:
     :path: ".symlinks/flutter/ios"
+  image_picker_modern:
+    :path: ".symlinks/plugins/image_picker_modern/ios"
   multi_image_picker:
     :path: ".symlinks/plugins/multi_image_picker/ios"
   shared_preferences:
@@ -44,6 +49,7 @@ SPEC CHECKSUMS:
   BSImageView: a149459433a2687157d034c78e059d30ac7f2544
   connectivity: c72716e202a1225ec4810740d5cb56b8ae3bf4cc
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  image_picker_modern: 40bc7d164e23451a0417e302e514746a2b81c269
   multi_image_picker: de8f87f0afabf05065b6247940459fcecab4b363
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   shared_preferences: 1feebfa37bb57264736e16865e7ffae7fc99b523

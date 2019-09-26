@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as prefix0;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sliet_broadcast/components/edit_profile.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
 import 'package:sliet_broadcast/utils/network_utils.dart';
 
@@ -300,7 +302,9 @@ class ProfileDetails extends StatelessWidget {
           child: Padding(
             padding: EdgeInsets.only(top: 10.0),
             child: FlatButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).push(prefix0.MaterialPageRoute(builder: (BuildContext context)=> EditProfile()));
+                },
                 child: Text(
                   "Edit Profile",
                   textAlign: TextAlign.center,
