@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as prefix0;
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -386,9 +387,18 @@ class _LoginPageState extends State<LoginPage>
           Padding(
             padding: EdgeInsets.only(top: 10.0),
             child: FlatButton(
-                onPressed: () {},
+                onPressed: () {
+
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: new Text('Dear User'),
+                      content: Text('Please visit ACSS section in Computer Department to confirm your identity and get your password changed.'),
+                    ),
+                  );
+                },
                 child: Text(
-                  "Forgot Password?",
+                  "Forgot Password",
                   style: TextStyle(
                       decoration: TextDecoration.underline,
                       color: Colors.white,
