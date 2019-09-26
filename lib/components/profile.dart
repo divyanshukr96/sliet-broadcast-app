@@ -34,13 +34,13 @@ class _ProfileState extends State<Profile> {
         height: 100.0,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(imgUrl),
+            image: NetworkImage(imgUrl),
             fit: BoxFit.cover,
           ),
           borderRadius: BorderRadius.circular(50.0),
           border: Border.all(
             color: Colors.white,
-            width: 10.0,
+            width: 2.0,
           ),
         ),
       ),

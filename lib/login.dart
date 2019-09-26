@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart' as prefix0;
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -72,8 +71,8 @@ class _LoginPageState extends State<LoginPage>
                     tileMode: TileMode.clamp),
               ),
               child: Container(
-                margin: prefix0.EdgeInsets.only(
-                    top: prefix0.MediaQuery.of(context).size.height * 0.1),
+                margin: EdgeInsets.only(
+                    top: MediaQuery.of(context).size.height * 0.1),
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
                   children: <Widget>[
@@ -174,10 +173,10 @@ class _LoginPageState extends State<LoginPage>
       } else if (responseJson['errors'] != null) {
         NetworkUtils.showSnackBar(_scaffoldKey, 'Invalid Email/Password');
       } else {
-        AuthUtils.insertDetails(_sharedPreferences, responseJson);
-        Navigator.of(_scaffoldKey.currentContext).pop();
+        await AuthUtils.insertDetails(_sharedPreferences, responseJson);
         final value = jsonEncode(await NetworkUtils.get('/api/auth/user'));
         _sharedPreferences.setString('profile', value);
+        Navigator.of(_scaffoldKey.currentContext).pop();
         Navigator.of(_scaffoldKey.currentContext).push(
           MaterialPageRoute(
             builder: (BuildContext context) => HomePage(),

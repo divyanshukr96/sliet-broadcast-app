@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as prefix0;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sliet_broadcast/components/drawerItem.dart';
 import 'package:sliet_broadcast/components/profile.dart';
 import 'package:sliet_broadcast/login.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
@@ -43,9 +42,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
       final value = jsonEncode(await NetworkUtils.get('/api/auth/user'));
       prefs.setString('profile', value);
     }
-    setState(() {
-      profile = jsonDecode(value);
-    });
+    if (value != 0) {
+      setState(() {
+        profile = jsonDecode(value);
+      });
+    }
   }
 
   _fetchSessionAndNavigate() async {
@@ -74,7 +75,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
     }
 
     String username =
-    profile['username'] == null? "" : '@' + profile['username'].toString();
+        profile['username'] == null ? "" : '@' + profile['username'].toString();
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
