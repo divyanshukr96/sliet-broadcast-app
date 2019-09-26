@@ -183,12 +183,7 @@ class LoginLogout extends StatelessWidget {
             ),
             leading: Icon(Icons.account_circle),
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (BuildContext context) => Profile(),
-                ),
-              );
+              Navigator.popAndPushNamed(context, '/profile');
             },
           ),
           ListTile(

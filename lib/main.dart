@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sliet_broadcast/components/profile.dart';
 import 'package:sliet_broadcast/homepage.dart';
 import 'package:splashscreen/splashscreen.dart';
 
@@ -9,23 +10,34 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(
-        seconds: 4,
-        navigateAfterSeconds: HomePage(),
-        title: new Text('Together we can make a difference',
-          style: new TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18.0
-          ),
-        ),
-        image:  Image.asset('assets/images/splash_screen.png'),
-        //backgroundGradient: new LinearGradient(colors: [Colors.cyan, Colors.blue], begin: Alignment.topLeft, end: Alignment.bottomRight),
-        backgroundColor: Colors.white,
-        //styleTextUnderTheLoader: new TextStyle(),
-        photoSize: 90.0,
-        //onClick: ()=>print("Flutter Egypt"),
-        //loaderColor: Colors.red,
+      home: new SplashingHome(),
+//      initialRoute: '/',
+      routes: {
+//        '/': (context) => SplashingHome(),
+        '/home': (context) => HomePage(),
+        '/profile': (context) => Profile(),
+      },
+    );
+  }
+}
+
+class SplashingHome extends StatelessWidget {
+  const SplashingHome({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SplashScreen(
+      seconds: 4,
+      navigateAfterSeconds: HomePage(),
+      title: new Text(
+        'Together we can make a difference',
+        style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
       ),
+      image: Image.asset('assets/images/splash_screen.png'),
+      backgroundColor: Colors.white,
+      photoSize: 90.0,
     );
   }
 }

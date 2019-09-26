@@ -296,14 +296,18 @@ class ProfileDetails extends StatelessWidget {
         //_buildButtons(),
 //                    _buildNoticesByUser(),
 
-        SizedBox(height: 200.0),
+        SizedBox(height: 150.0),
         Align(
           alignment: Alignment(0, -1),
           child: Padding(
             padding: EdgeInsets.only(top: 10.0),
             child: FlatButton(
                 onPressed: () {
-                  Navigator.of(context).push(prefix0.MaterialPageRoute(builder: (BuildContext context)=> EditProfile()));
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => EditProfile(profile),
+                    ),
+                  );
                 },
                 child: Text(
                   "Edit Profile",
