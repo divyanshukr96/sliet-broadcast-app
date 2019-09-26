@@ -223,7 +223,7 @@ class _CreateNoticeState extends State<CreateNotice> {
       ),
       child: SafeArea(
         child: Container(
-          margin: EdgeInsets.all(16.0),
+          margin: EdgeInsets.all(8.0),
           child: Card(
             elevation: 2.0,
             color: Colors.white,

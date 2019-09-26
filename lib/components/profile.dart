@@ -1,38 +1,40 @@
+import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart' as prefix0;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
+import 'package:sliet_broadcast/utils/network_utils.dart';
 
-class Profile extends StatelessWidget {
+class Profile extends StatefulWidget {
+  @override
+  _ProfileState createState() => _ProfileState();
+}
+
+class _ProfileState extends State<Profile> {
   final String _fullName = "ACSS Department";
-  final String _username = "acss";
+
   final String _status = "Software Developer";
-  final String _bio =
-      "\"This is your department and it is very nice to give id's to people in the Institute. Plese dont come again and again to extend your ids.\"";
+
   final String _followers = "173";
+
   final String _posts = "24";
+
   final String _scores = "450";
 
-/*  Widget _buildCoverImage(Size screenSize) {
-    return Container(
-      height: screenSize.height / 2.6,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/images/login.png'),
-          fit: BoxFit.cover,
-
-        ),
-      ),
-    );
-  }*/
+  Map<String, dynamic> profile = new Map<String, dynamic>();
 
   Widget _buildProfileImage() {
+    String imgUrl = 'assets/images/login.png';
+    if (profile['profile'] != null) {
+      imgUrl = profile['profile'];
+    }
     return Center(
       child: Container(
         width: 100.0,
         height: 100.0,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/login.png'),
+            image: AssetImage(imgUrl),
             fit: BoxFit.cover,
           ),
           borderRadius: BorderRadius.circular(50.0),
@@ -42,36 +44,6 @@ class Profile extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildFullName() {
-    TextStyle _nameTextStyle = TextStyle(
-      fontFamily: 'Roboto',
-      color: Colors.white,
-      fontSize: 24.0,
-      fontWeight: FontWeight.w500,
-    );
-    return Column(
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(top: 8.0),
-          child: Text(
-            "@" + _username,
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 20.0,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            _fullName,
-            style: _nameTextStyle,
-          ),
-        ),
-      ],
     );
   }
 
@@ -141,57 +113,6 @@ class Profile extends StatelessWidget {
     );
   }
 
-  Widget _buildBio(BuildContext context) {
-    TextStyle bioTextStyle = TextStyle(
-      fontFamily: 'Spectral',
-      fontWeight: FontWeight.w400,
-      //try changing weight to w500 if not thin
-      fontStyle: FontStyle.italic,
-      color: Colors.black,
-      fontSize: 16.0,
-    );
-
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 8.0),
-      child: Card(
-        color: Colors.white,
-        child: Padding(
-          padding: const EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 8),
-          child: Text(
-            _bio,
-            textAlign: TextAlign.center,
-            style: bioTextStyle,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSeparator(Size screenSize) {
-    return Container(
-      width: screenSize.width / 1.3,
-      height: 2.0,
-      color: Colors.white,
-      margin: EdgeInsets.only(bottom: 8, top: 4.0),
-    );
-  }
-
-  Widget _buildNoticesText(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      child: Container(
-        color: Theme.Colors.loginGradientEnd,
-        padding: EdgeInsets.all(8),
-        child: Text(
-          "Notices by ${_fullName.split(" ")[0]},",
-          style: TextStyle(fontFamily: 'Roboto', fontSize: 16.0),
-        ),
-      ),
-    );
-  }
-
   Widget _buildButtons() {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
@@ -245,6 +166,12 @@ class Profile extends StatelessWidget {
   }
 
   @override
+  void initState() {
+    _getUserProfile();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
     return Scaffold(
@@ -276,15 +203,7 @@ class Profile extends StatelessWidget {
                       height: 20,
                     ),
                     _buildProfileImage(),
-                    _buildFullName(),
-//                    _buildStatus(context),
-//                    _buildStatContainer(),
-                    _buildBio(context),
-                    _buildSeparator(screenSize),
-                    _buildNoticesText(context),
-                    SizedBox(height: 8.0),
-                    //_buildButtons(),
-                    _buildNoticesByUser(),
+                    ProfileDetails(profile: profile),
                   ],
                 ),
               ),
@@ -300,6 +219,201 @@ class Profile extends StatelessWidget {
       color: Colors.white,
       height: 20,
       width: 100,
+    );
+  }
+
+  void _getUserProfile() async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = prefs.getString('profile') ?? 0;
+    if (value == 0) {
+      final value = jsonEncode(await NetworkUtils.get('/api/auth/user'));
+      prefs.setString('profile', value);
+    }
+    setState(() {
+      profile = jsonDecode(value);
+    });
+  }
+}
+
+class ProfileDetails extends StatelessWidget {
+  final profile;
+
+  const ProfileDetails({Key key, this.profile}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.of(context).size;
+    if (profile.isEmpty) {
+      return Container(
+        alignment: AlignmentDirectional.center,
+        margin: EdgeInsets.only(top: 30.0),
+        child: Container(
+          decoration: BoxDecoration(
+              color: Colors.blue[200],
+              borderRadius: BorderRadius.circular(8.0)),
+          width: 300.0,
+          height: 200.0,
+          alignment: AlignmentDirectional.center,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Center(
+                child: SizedBox(
+                  height: 50.0,
+                  width: 50.0,
+                  child: CircularProgressIndicator(
+                    value: null,
+                    strokeWidth: 7.0,
+                  ),
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.only(top: 25.0),
+                child: Center(
+                  child: Text(
+                    "loading profile...",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    return Column(
+      children: <Widget>[
+        _buildFullName(),
+//                    _buildStatus(context),
+//                    _buildStatContainer(),
+        _buildBio(context),
+        _buildSeparator(screenSize),
+        _buildNoticesText(context),
+        SizedBox(height: 8.0),
+        //_buildButtons(),
+//                    _buildNoticesByUser(),
+
+        SizedBox(height: 200.0),
+        Align(
+          alignment: Alignment(0, -1),
+          child: Padding(
+            padding: EdgeInsets.only(top: 10.0),
+            child: FlatButton(
+                onPressed: () {},
+                child: Text(
+                  "Edit Profile",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    decoration: TextDecoration.underline,
+                    color: Colors.white,
+                    fontSize: 16.0,
+                    fontFamily: "WorkSansMedium",
+                  ),
+                )),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFullName() {
+    TextStyle _nameTextStyle = TextStyle(
+      fontFamily: 'Roboto',
+      color: Colors.white,
+      fontSize: 24.0,
+      fontWeight: FontWeight.w500,
+    );
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Text(
+            "@" + profile['username'],
+            style: TextStyle(
+              color: Colors.white70,
+              fontSize: 20.0,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            profile['name'],
+            style: _nameTextStyle,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBio(BuildContext context) {
+    TextStyle bioTextStyle = TextStyle(
+      fontFamily: 'Spectral',
+      fontWeight: FontWeight.w400,
+      //try changing weight to w500 if not thin
+      fontStyle: FontStyle.italic,
+      color: Colors.black,
+      fontSize: 16.0,
+    );
+
+    if (profile['about'] == '') {
+      return SizedBox(height: 0, width: 0);
+    }
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 8.0),
+      child: Card(
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 8),
+          child: Text(
+            profile['about'],
+            textAlign: TextAlign.center,
+            style: bioTextStyle,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSeparator(Size screenSize) {
+    return Container(
+      width: screenSize.width / 1.3,
+      height: 2.0,
+      color: Colors.white,
+      margin: EdgeInsets.only(bottom: 8, top: 4.0),
+    );
+  }
+
+  Widget _buildNoticesText(BuildContext context) {
+    return Container(
+      alignment: Alignment(-.6, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              "Email:  " + profile['email'],
+              style: TextStyle(fontSize: 18.0),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              "Mobile:  " + profile['mobile'],
+              style: TextStyle(fontSize: 18.0),
+            ),
+          ),
+//          Padding(
+//            padding: const EdgeInsets.all(8.0),
+//            child: Text(
+//              "HOD:  " + profile['mobile'],
+//              style: TextStyle(fontSize: 18.0),
+//            ),
+//          ),
+        ],
+      ),
     );
   }
 }

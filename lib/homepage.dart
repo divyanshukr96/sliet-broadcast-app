@@ -107,7 +107,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget getWidget(int index) {
-    print(_pageOptions[index]);
     return _pageOptions[index];
   }
 }
