@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as prefix0;
 import 'package:flutter/services.dart';
@@ -174,6 +176,8 @@ class _LoginPageState extends State<LoginPage>
       } else {
         AuthUtils.insertDetails(_sharedPreferences, responseJson);
         Navigator.of(_scaffoldKey.currentContext).pop();
+        final value = jsonEncode(await NetworkUtils.get('/api/auth/user'));
+        _sharedPreferences.setString('profile', value);
         Navigator.of(_scaffoldKey.currentContext).push(
           MaterialPageRoute(
             builder: (BuildContext context) => HomePage(),

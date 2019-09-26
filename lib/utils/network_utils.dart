@@ -40,6 +40,7 @@ class NetworkUtils {
     prefs.setString(AuthUtils.username, 'STUDENT');
     prefs.setString(AuthUtils.userType, null);
     prefs.setBool('isAdmin', false);
+    prefs.setString('profile', null);
 
 //    Navigator.of(context).pushReplacementNamed('/');
 //    showSnackBar(context, message)
