@@ -31,13 +31,13 @@ class _MultiSelectDialogState<V> extends State<MultiSelectDialog<V>> {
     if (widget.values != null) _selectedValues.addAll(widget.values);
   }
 
-  _build(MultiSelectDialogItem<V> item) {
-    if (item.value != "ALL") {
-      _selectedValues.add(item.value);
-      print(_selectedValues);
-      return item.value;
-    }
-  }
+//  _build(MultiSelectDialogItem<V> item) {
+//    if (item.value != "ALL") {
+//      _selectedValues.add(item.value);
+//      print(_selectedValues);
+//      return item.value;
+//    }
+//  }
 
   void _onItemCheckedChange(V itemValue, bool checked) {
     setState(() {

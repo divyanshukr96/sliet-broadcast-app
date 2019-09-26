@@ -45,7 +45,6 @@ class _InternetConnectionState extends State<InternetConnection> {
 
   @override
   Widget build(BuildContext context) {
-    print(_internet);
     return InternetStatusBar(_internet);
   }
 }

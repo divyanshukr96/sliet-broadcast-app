@@ -11,7 +11,7 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  final String _fullName = "ACSS Department";
+//  final String _fullName = "ACSS Department";
 
   final String _status = "Software Developer";
 

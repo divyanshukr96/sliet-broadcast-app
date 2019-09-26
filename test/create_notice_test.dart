@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart' as prefix0;
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 
@@ -259,7 +258,6 @@ class _CreateNoticeTestState extends State<CreateNoticeTest> {
 
   Future<void> _loadAssets() async {
     List<Asset> resultList = List<Asset>();
-    String error = 'No Error Dectected';
 
     try {
       resultList = await MultiImagePicker.pickImages(
@@ -281,7 +279,7 @@ class _CreateNoticeTestState extends State<CreateNoticeTest> {
         print(t);
       }
     } on Exception catch (e) {
-      error = e.toString();
+      e.toString();
     }
 
     // If the widget was removed from the tree while the asynchronous platform

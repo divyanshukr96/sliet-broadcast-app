@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class InternetStatusBar extends StatelessWidget {
-  bool internet;
+  final bool internet;
 
   InternetStatusBar(this.internet);
 

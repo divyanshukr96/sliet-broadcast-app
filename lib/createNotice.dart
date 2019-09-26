@@ -401,7 +401,9 @@ class _CreateNoticeState extends State<CreateNotice> {
           selectCircleStrokeColor: "#000000",
         ),
       );
-    } on Exception catch (e) {}
+    } on Exception catch (e) {
+      print(e.toString());
+    }
 
     if (!mounted) return;
 

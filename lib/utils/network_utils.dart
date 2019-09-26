@@ -89,7 +89,6 @@ class NetworkUtils {
       final responseJson = json.decode(response.body);
       return responseJson;
     } catch (exception) {
-      print(exception);
       if (exception.toString().contains('SocketException')) {
         return 'NetworkError';
       } else {
@@ -101,7 +100,6 @@ class NetworkUtils {
   static dynamic post(var endPoint, Object data) async {
     var prefs = await getSharedPreference();
     var uri = host + endPoint;
-    print(data.toString());
     try {
       final response = await http.post(
         uri,
@@ -137,7 +135,7 @@ class NetworkUtils {
       ..files.add(new http.MultipartFile('avatar', _image.openRead(), length));
     http.Response response =
         await http.Response.fromStream(await request.send());
-    print("Result: ${response.body}");
+//    print("Result: ${response.body}");
     return json.decode(response.body);
   }
 
@@ -159,7 +157,6 @@ class NetworkUtils {
   Future<bool> isAuthenticated() async {
     try {
       String token = await getToken();
-      print(token.toString() + "  is_authenticated    network_utild.dart");
       return (token != null);
     } catch (onError) {
       return false;

@@ -1,10 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as prefix0;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliet_broadcast/components/drawerItem.dart';
 import 'package:sliet_broadcast/components/profile.dart';
 import 'package:sliet_broadcast/login.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
-import 'package:sliet_broadcast/utils/auth_utils.dart';
 import 'package:sliet_broadcast/utils/network_utils.dart';
 
 class HomeDrawer extends StatefulWidget {
@@ -18,32 +20,43 @@ class _HomeDrawerState extends State<HomeDrawer> {
 
   NetworkUtils networkUtils = new NetworkUtils();
 
+  Map<String, dynamic> profile = new Map<String, dynamic>();
+
   bool authenticated = false;
 
   @override
   void initState() {
+    _getUserProfile();
     networkUtils.isAuthenticated().then((onValue) {
-      print(onValue.toString() + " on sucess home_drawer.dart initstate");
       setState(() {
         authenticated = onValue;
       });
     });
-
     super.initState();
-    print(
-        "helo------------------------------------------------------------------------");
     _fetchSessionAndNavigate();
+  }
+
+  void _getUserProfile() async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = prefs.getString('profile') ?? 0;
+    if (value == 0) {
+      final value = jsonEncode(await NetworkUtils.get('/api/auth/user'));
+      prefs.setString('profile', value);
+    }
+    setState(() {
+      profile = jsonDecode(value);
+    });
   }
 
   _fetchSessionAndNavigate() async {
     _sharedPreferences = await _prefs;
 //    authenticated = AuthUtils.isAuthenticated(_sharedPreferences);
-    if (authenticated) {
-      print('is authentication');
-    } else {
-      print(
-          '------------------------------- not authentication -----------------------');
-    }
+//    if (authenticated) {
+//      print('is authentication');
+//    } else {
+//      print(
+//          '------------------------------- not authentication -----------------------');
+//    }
     if (authenticated != null) {
 //      Navigator.of(_scaffoldKey.currentContext).push(
 //        MaterialPageRoute(
@@ -55,6 +68,12 @@ class _HomeDrawerState extends State<HomeDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    String profileUrl = 'assets/images/login.png';
+    if (profile['profile'] != null) {
+      profileUrl = profile['profile'];
+    }
+    String username =
+        profile['username'] == "" ? "" : '@' + profile['username'].toString();
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -76,25 +95,35 @@ class _HomeDrawerState extends State<HomeDrawer> {
                     Container(
                       width: 50.0,
                       height: 50.0,
-                      decoration: new BoxDecoration(
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        image: new DecorationImage(
+                        image: DecorationImage(
                           fit: BoxFit.fill,
-                          image: new NetworkImage(
-                            "https://i.imgur.com/BoN9kdC.png",
+                          image: NetworkImage(profileUrl),
+                        ),
+                      ),
+                    ),
+                    prefix0.Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.only(left: 16.0, bottom: 8.0),
+                          child: Text(
+                            profile['name'] ?? "",
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 20.0),
                           ),
                         ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16.0),
-                      child: Text(
-                        'Guest User',
-                        style: TextStyle(
-                          color: Colors.white,
+                        Padding(
+                          padding: EdgeInsets.only(left: 16.0, top: 4.0),
+                          child: Text(
+                            username,
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                      ],
+                    )
                   ],
                 ),
                 Spacer(),
@@ -114,9 +143,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
             sharedPreferences: _sharedPreferences,
             authenticated: authenticated,
           ),
-          DrawerItem('Terms & Conditions', Icon(Icons.library_books), context,
-                  testFunction)
-              .getItem(),
+//          DrawerItem('Terms & Conditions', Icon(Icons.library_books), context,
+//                  testFunction)
+//              .getItem(),
         ],
       ),
     );
