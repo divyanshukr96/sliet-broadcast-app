@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart' as prefix0;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sliet_broadcast/components/change_password.dart';
 import 'package:sliet_broadcast/components/edit_profile.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
 import 'package:sliet_broadcast/utils/network_utils.dart';
@@ -26,17 +26,18 @@ class _ProfileState extends State<Profile> {
   Map<String, dynamic> profile = new Map<String, dynamic>();
 
   Widget _buildProfileImage() {
-    String imgUrl = 'assets/images/login.png';
+    ImageProvider profileUrl = AssetImage('assets/images/login.png');
     if (profile['profile'] != null) {
-      imgUrl = profile['profile'];
+      profileUrl = NetworkImage(profile['profile']);
     }
+
     return Center(
       child: Container(
         width: 100.0,
         height: 100.0,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: NetworkImage(imgUrl),
+            image: profileUrl,
             fit: BoxFit.cover,
           ),
           borderRadius: BorderRadius.circular(50.0),
@@ -296,30 +297,49 @@ class ProfileDetails extends StatelessWidget {
         //_buildButtons(),
 //                    _buildNoticesByUser(),
 
-        SizedBox(height: 150.0),
-        Align(
-          alignment: Alignment(0, -1),
-          child: Padding(
-            padding: EdgeInsets.only(top: 10.0),
-            child: FlatButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (BuildContext context) => EditProfile(profile),
-                    ),
-                  );
-                },
-                child: Text(
-                  "Edit Profile",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    decoration: TextDecoration.underline,
-                    color: Colors.white,
-                    fontSize: 16.0,
-                    fontFamily: "WorkSansMedium",
+
+        Padding(
+          padding: EdgeInsets.only(top: 10.0),
+          child: FlatButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => ChangePassword(),
                   ),
-                )),
-          ),
+                );
+              },
+              child: Text(
+                "Change Password",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  decoration: TextDecoration.underline,
+                  color: Colors.white,
+                  fontSize: 16.0,
+                  fontFamily: "WorkSansMedium",
+                ),
+              )),
+        ),
+
+        Padding(
+          padding: EdgeInsets.only(top: 0.0),
+          child: FlatButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => EditProfile(profile),
+                  ),
+                );
+              },
+              child: Text(
+                "Edit Profile",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  decoration: TextDecoration.underline,
+                  color: Colors.white,
+                  fontSize: 16.0,
+                  fontFamily: "WorkSansMedium",
+                ),
+              )),
         ),
       ],
     );

@@ -48,6 +48,13 @@ class _EditProfileState extends State<EditProfile> {
 
   @override
   Widget build(BuildContext context) {
+
+    ImageProvider profileUrl = AssetImage('assets/images/login.png');
+    if (_profile != null) {
+      profileUrl = NetworkImage(_profile);
+    }
+
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -67,7 +74,7 @@ class _EditProfileState extends State<EditProfile> {
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: _image == null
-                        ? NetworkImage(_profile)
+                        ? profileUrl
                         : Image.file(_image).image,
                     fit: BoxFit.cover,
                   ),

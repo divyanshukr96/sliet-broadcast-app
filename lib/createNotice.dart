@@ -1,11 +1,16 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart' as prefix0;
 import 'package:flutter/services.dart';
 
 import 'package:intl/intl.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:sliet_broadcast/components/department_selection.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
 import 'package:sliet_broadcast/utils/network_utils.dart';
@@ -19,8 +24,10 @@ class _CreateNoticeState extends State<CreateNotice> {
   List<Asset> images = List<Asset>();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   NetworkUtils networkUtils = new NetworkUtils();
+  ProgressDialog pr;
   bool authenticated = false;
   bool loading = false;
+  var percentage;
 
   // department selection variable
   var selectedDepartment;
@@ -104,8 +111,12 @@ class _CreateNoticeState extends State<CreateNotice> {
     String token = await networkUtils.getToken();
 
     final form = _formKey.currentState;
-    var _department = [];
-    if (selectedDepartment != null) _department = selectedDepartment.toList();
+    List<String> _department;
+    if (selectedDepartment != null) {
+      setState(() {
+        _department = selectedDepartment.toList();
+      });
+    }
     _department.removeWhere((value) => value == "ALL");
 
     if (_descriptionController.text == "" && files.length == 0) {
@@ -123,7 +134,7 @@ class _CreateNoticeState extends State<CreateNotice> {
       _formSubmitting();
       return Scaffold.of(context).showSnackBar(SnackBar(
         content: Text(
-          'Department field is required ...',
+          'Department field is required.',
           style: TextStyle(color: Colors.white70),
         ),
         backgroundColor: Colors.deepOrange,
@@ -142,10 +153,12 @@ class _CreateNoticeState extends State<CreateNotice> {
             : null,
         'time': _timeController.text,
         'public_notice': selectedRadio,
-        'department': _department,
+        'department': _department.toList(),
         'files': files,
       });
 
+      pr.style(message: 'Uploading Notice...');
+      pr.show();
       try {
         dio.options.headers['Authorization'] = "Token " + token;
         dio.options.headers['content-type'] =
@@ -155,9 +168,12 @@ class _CreateNoticeState extends State<CreateNotice> {
           NetworkUtils.productionHost + "/api/notice/",
           data: formData,
           // upload progress can be updated here
-//          onSendProgress: (int sent, int total) {
-//            print("$sent $total");
-//          },
+          onSendProgress: (int sent, int total) {
+            var per = percentage = ((sent / total) * 100).toInt();
+//            pr.update(
+////              message: 'Uploading Notice... $per %',
+////            );
+          },
         );
 
         if (response.statusCode == 201) {
@@ -167,22 +183,25 @@ class _CreateNoticeState extends State<CreateNotice> {
             _descriptionController.clear();
             _venueController.clear();
             _dateController.clear();
-            _titleController.clear();
+            _timeController.clear();
             selectedRadio = 1;
             selectedDepartment = null;
           });
           _department.clear();
           files.clear();
           images.clear();
-          Scaffold.of(context).showSnackBar(SnackBar(
-            content: Text(
-              'Notice successfully uploaded ...',
-              style: TextStyle(color: Colors.white70, fontSize: 18.0),
-            ),
-            backgroundColor: Colors.green,
-          ));
+          pr.hide().then((isHidden) {
+            Scaffold.of(context).showSnackBar(SnackBar(
+              content: Text(
+                'Notice successfully uploaded',
+                style: TextStyle(color: Colors.white70, fontSize: 18.0),
+              ),
+              backgroundColor: Colors.green,
+            ));
+          });
         }
       } on DioError catch (e) {
+        pr.hide();
         if (e.response != null) {
           if (e.response.data != null)
             Scaffold.of(context).showSnackBar(SnackBar(
@@ -208,6 +227,8 @@ class _CreateNoticeState extends State<CreateNotice> {
 
   @override
   Widget build(BuildContext context) {
+    pr = new ProgressDialog(context);
+
     return Container(
 //      height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
@@ -402,7 +423,7 @@ class _CreateNoticeState extends State<CreateNotice> {
         ),
       );
     } on Exception catch (e) {
-      print(e.toString());
+
     }
 
     if (!mounted) return;
@@ -438,10 +459,15 @@ class _CreateNoticeState extends State<CreateNotice> {
   //Sets date in the field
   Future<Null> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(2015, 8),
-        lastDate: DateTime(2101));
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(
+        DateTime.now().year,
+        DateTime.now().month,
+        DateTime.now().day,
+      ),
+      lastDate: DateTime(2101),
+    );
 
     if (picked != null && picked != selectedDate)
       setState(() {

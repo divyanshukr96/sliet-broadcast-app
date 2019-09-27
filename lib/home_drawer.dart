@@ -1,9 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart' as prefix0;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sliet_broadcast/components/profile.dart';
 import 'package:sliet_broadcast/login.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
 import 'package:sliet_broadcast/utils/network_utils.dart';
@@ -69,9 +67,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
 
   @override
   Widget build(BuildContext context) {
-    String profileUrl = 'assets/images/login.png';
+    ImageProvider profileUrl = AssetImage('assets/images/login.png');
     if (profile['profile'] != null) {
-      profileUrl = profile['profile'];
+      profileUrl = NetworkImage(profile['profile']);
     }
 
     String username =
@@ -101,16 +99,16 @@ class _HomeDrawerState extends State<HomeDrawer> {
                         shape: BoxShape.circle,
                         image: DecorationImage(
                           fit: BoxFit.fill,
-                          image: NetworkImage(profileUrl),
+                          image: profileUrl,
                         ),
                       ),
                     ),
-                    prefix0.Column(
+                    Column(
                       children: <Widget>[
                         Padding(
                           padding: EdgeInsets.only(left: 16.0, bottom: 8.0),
                           child: Text(
-                            profile['name'] ?? "",
+                            profile['name'] ?? "Guest User",
                             style:
                                 TextStyle(color: Colors.white, fontSize: 20.0),
                           ),

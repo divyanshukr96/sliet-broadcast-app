@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as prefix0;
 import 'package:sliet_broadcast/components/models/cardModel.dart';
 import 'package:sliet_broadcast/components/noticeCard.dart';
 import 'dart:async';
@@ -36,6 +37,7 @@ class _NoticeFeedState extends State<NoticeFeed> {
   }
 
   Future<List<CardModelData>> _getNotices() async {
+    cardsList.clear();
     var jsonData = await NetworkUtils.get(noticeUrl);
 
     for (var i in jsonData) {
@@ -115,11 +117,21 @@ class _NoticeFeedState extends State<NoticeFeed> {
             ],
           );
         } else {
+          if (snapshot.data.length < 1) {
+            return Container(
+              child: Text(
+                "Welcome to SLIET Broadcast App",
+                style: TextStyle(
+                  fontSize: 22.0,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            );
+          }
           return ListView.builder(
             padding: const EdgeInsets.symmetric(vertical: 2.0),
             itemCount: snapshot.data.length,
             itemBuilder: (BuildContext context, int index) {
-              print(snapshot.data[snapshot.data.length - index - 1]);
               return NoticeCard(
                 snapshot.data[snapshot.data.length - index - 1],
               );
