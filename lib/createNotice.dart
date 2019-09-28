@@ -27,6 +27,7 @@ class _CreateNoticeState extends State<CreateNotice> {
   ProgressDialog pr;
   bool authenticated = false;
   bool loading = false;
+  bool _isEvent = false;
   var percentage;
 
   // department selection variable
@@ -157,6 +158,7 @@ class _CreateNoticeState extends State<CreateNotice> {
       FormData formData = new FormData.from({
         'title': _titleController.text,
         'description': _descriptionController.text,
+        'is_event': _isEvent,
         'venue': _venueController.text,
         'date': _dateController.text != ''
             ? DateFormat("yyyy-MM-dd")
@@ -198,6 +200,7 @@ class _CreateNoticeState extends State<CreateNotice> {
             _timeController.clear();
             selectedRadio = 1;
             selectedDepartment = null;
+            _isEvent = false;
           });
           _department.clear();
           files.clear();
@@ -287,97 +290,23 @@ class _CreateNoticeState extends State<CreateNotice> {
                     TitleInput(titleController: _titleController),
                     DescriptionInput(
                         descriptionController: _descriptionController),
-                    VenueInput(venueController: _venueController),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Flexible(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TextFormField(
-                              controller: _timeController,
-                              onTap: () {
-                                _selectTime(context);
-                              },
-                              readOnly: true,
-                              style: TextStyle(
-                                  fontFamily: "WorkSansSemiBold",
-                                  fontSize: 16.0,
-                                  color: Colors.black),
-                              decoration: InputDecoration(
-                                labelText: "Time",
-                                hintStyle: TextStyle(
-                                    fontFamily: "WorkSansSemiBold",
-                                    fontSize: 17.0),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.lightBlueAccent,
-                                      width: 1.0),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.blue, width: 1.0),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Flexible(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TextFormField(
-                              controller: _dateController,
-                              onTap: () {
-                                _selectDate(context);
-                              },
-                              readOnly: true,
-                              style: TextStyle(
-                                  fontFamily: "WorkSansSemiBold",
-                                  fontSize: 16.0,
-                                  color: Colors.black),
-                              decoration: InputDecoration(
-                                labelText: "Date",
-                                hintStyle: TextStyle(
-                                    fontFamily: "WorkSansSemiBold",
-                                    fontSize: 17.0),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.lightBlueAccent,
-                                      width: 1.0),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.blue, width: 1.0),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                    CheckboxListTile(
+                      dense: true,
+                      title: Text('Add Event Venue with Dtae & Time'),
+                      value: _isEvent,
+                      controlAffinity: ListTileControlAffinity.leading,
+                      onChanged: (bool value) {
+                        if (!_isEvent) {
+                          _venueController.clear();
+                          _dateController.clear();
+                          _timeController.clear();
+                        }
+                        setState(() {
+                          _isEvent = !_isEvent;
+                        });
+                      },
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Radio(
-                          value: 1,
-                          groupValue: selectedRadio,
-                          activeColor: Colors.blue,
-                          onChanged: (val) {
-                            _setSelectedRadio(val);
-                          },
-                        ),
-                        Text('Public'),
-                        Radio(
-                          value: 0,
-                          groupValue: selectedRadio,
-                          activeColor: Colors.blue,
-                          onChanged: (val) {
-                            _setSelectedRadio(val);
-                          },
-                        ),
-                        Text('Faculty only'),
-                      ],
-                    ),
+                    buildVenueDateTime(context),
                     RaisedButton(
                       textColor: Colors.white,
                       color: Colors.lightBlueAccent,
@@ -393,12 +322,15 @@ class _CreateNoticeState extends State<CreateNotice> {
                       onPressed: _loadAssets,
                       icon: Icon(Icons.cloud_upload),
                     ),
-                    ImagesView(images: images, remove: (int index){
-                      images.removeAt(index);
-                      setState(() {
-                        images = images;
-                      });
-                    },),
+                    ImagesView(
+                      images: images,
+                      remove: (int index) {
+                        images.removeAt(index);
+                        setState(() {
+                          images = images;
+                        });
+                      },
+                    ),
                     Padding(
                       padding: const EdgeInsets.only(top: 16.0),
                       child: RaisedButton.icon(
@@ -419,6 +351,99 @@ class _CreateNoticeState extends State<CreateNotice> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget buildVenueDateTime(BuildContext context) {
+    if (!_isEvent) return SizedBox(height: 0.0);
+    return Column(
+      children: <Widget>[
+        VenueInput(venueController: _venueController),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: _timeController,
+                  onTap: () {
+                    _selectTime(context);
+                  },
+                  readOnly: true,
+                  style: TextStyle(
+                      fontFamily: "WorkSansSemiBold",
+                      fontSize: 16.0,
+                      color: Colors.black),
+                  decoration: InputDecoration(
+                    labelText: "Time",
+                    hintStyle: TextStyle(
+                        fontFamily: "WorkSansSemiBold", fontSize: 17.0),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Colors.lightBlueAccent, width: 1.0),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blue, width: 1.0),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: _dateController,
+                  onTap: () {
+                    _selectDate(context);
+                  },
+                  readOnly: true,
+                  style: TextStyle(
+                      fontFamily: "WorkSansSemiBold",
+                      fontSize: 16.0,
+                      color: Colors.black),
+                  decoration: InputDecoration(
+                    labelText: "Date",
+                    hintStyle: TextStyle(
+                        fontFamily: "WorkSansSemiBold", fontSize: 17.0),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Colors.lightBlueAccent, width: 1.0),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blue, width: 1.0),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Radio(
+              value: 1,
+              groupValue: selectedRadio,
+              activeColor: Colors.blue,
+              onChanged: (val) {
+                _setSelectedRadio(val);
+              },
+            ),
+            Text('Public'),
+            Radio(
+              value: 0,
+              groupValue: selectedRadio,
+              activeColor: Colors.blue,
+              onChanged: (val) {
+                _setSelectedRadio(val);
+              },
+            ),
+            Text('Faculty only'),
+          ],
+        ),
+      ],
     );
   }
 
