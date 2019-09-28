@@ -119,7 +119,7 @@ class _CreateNoticeState extends State<CreateNotice> {
     }
     _department.removeWhere((value) => value == "ALL");
 
-    if (_titleController.text == "" ) {
+    if (_titleController.text == "") {
       _formSubmitting();
       return Scaffold.of(context).showSnackBar(SnackBar(
         content: Text(
@@ -393,7 +393,12 @@ class _CreateNoticeState extends State<CreateNotice> {
                       onPressed: _loadAssets,
                       icon: Icon(Icons.cloud_upload),
                     ),
-                    ImagesView(images: images),
+                    ImagesView(images: images, remove: (int index){
+                      images.removeAt(index);
+                      setState(() {
+                        images = images;
+                      });
+                    },),
                     Padding(
                       padding: const EdgeInsets.only(top: 16.0),
                       child: RaisedButton.icon(
@@ -434,9 +439,7 @@ class _CreateNoticeState extends State<CreateNotice> {
           selectCircleStrokeColor: "#000000",
         ),
       );
-    } on Exception catch (e) {
-
-    }
+    } on Exception catch (e) {}
 
     if (!mounted) return;
 
@@ -622,13 +625,17 @@ class TitleInput extends StatelessWidget {
   }
 }
 
+typedef VoidCallback = void Function(int);
+
 class ImagesView extends StatelessWidget {
   const ImagesView({
     Key key,
     @required this.images,
+    @required this.remove,
   }) : super(key: key);
 
   final List<Asset> images;
+  final VoidCallback remove;
 
   @override
   Widget build(BuildContext context) {
@@ -642,10 +649,25 @@ class ImagesView extends StatelessWidget {
         mainAxisSpacing: 4,
         children: List.generate(images.length, (index) {
           Asset asset = images[index];
-          return AssetThumb(
-            asset: asset,
-            width: 100,
-            height: 100,
+          return Stack(
+            children: <Widget>[
+              AssetThumb(
+                asset: asset,
+                width: 120,
+                height: 120,
+              ),
+              Positioned(
+                top: -11,
+                right: -11,
+                child: IconButton(
+                  icon: Icon(Icons.close),
+                  color: Colors.red,
+                  onPressed: () {
+                    remove(index);
+                  },
+                ),
+              )
+            ],
           );
         }),
       ),
