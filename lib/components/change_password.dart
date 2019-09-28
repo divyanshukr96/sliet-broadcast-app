@@ -54,7 +54,7 @@ class _ChangePasswordState extends State<ChangePassword> {
           form.reset();
           loginPasswordController.clear();
           currentPasswordController.clear();
-          Navigator.pop(context);
+          _backAction();
         }
       } on DioError catch (e) {
 //        print(e.response.data['detail']);
@@ -204,7 +204,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                       alignment: Alignment.bottomCenter,
                       child: FlatButton(
                         splashColor: Colors.lightBlue,
-                        onPressed: () {},
+                        onPressed: _backAction,
                         child: Text(
                           "Back",
                           textAlign: TextAlign.center,
@@ -231,4 +231,9 @@ class _ChangePasswordState extends State<ChangePassword> {
       _obscureTextLogin = !_obscureTextLogin;
     });
   }
+
+  void _backAction(){
+    Navigator.pop(context);
+  }
+
 }

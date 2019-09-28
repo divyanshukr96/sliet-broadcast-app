@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as prefix0;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliet_broadcast/components/change_password.dart';
 import 'package:sliet_broadcast/components/edit_profile.dart';
@@ -297,7 +298,6 @@ class ProfileDetails extends StatelessWidget {
         //_buildButtons(),
 //                    _buildNoticesByUser(),
 
-
         Padding(
           padding: EdgeInsets.only(top: 10.0),
           child: FlatButton(
@@ -321,7 +321,7 @@ class ProfileDetails extends StatelessWidget {
         ),
 
         Padding(
-          padding: EdgeInsets.only(top: 0.0),
+          padding: EdgeInsets.only(bottom: 16.0),
           child: FlatButton(
               onPressed: () {
                 Navigator.of(context).push(
@@ -393,10 +393,10 @@ class ProfileDetails extends StatelessWidget {
       child: Card(
         color: Colors.white,
         child: Padding(
-          padding: const EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 8),
+          padding: const EdgeInsets.all(16.0),
           child: Text(
             profile['about'],
-            textAlign: TextAlign.center,
+            textAlign: TextAlign.justify,
             style: bioTextStyle,
           ),
         ),
@@ -409,30 +409,39 @@ class ProfileDetails extends StatelessWidget {
       width: screenSize.width / 1.3,
       height: 2.0,
       color: Colors.white,
-      margin: EdgeInsets.only(bottom: 8, top: 4.0),
+      margin: EdgeInsets.only(bottom: 8.0, top: 8.0),
     );
   }
 
   Widget _buildNoticesText(BuildContext context) {
     return Container(
-      alignment: Alignment(-.6, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              "Email:  " + profile['email'],
-              style: TextStyle(fontSize: 18.0),
+      width: MediaQuery.of(context).size.width,
+      margin: EdgeInsets.symmetric(horizontal: 8.0),
+      child: Card(
+        color: Colors.white,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
+              child: Text(
+                "Email:  " + profile['email'],
+                style: TextStyle(fontSize: 18.0),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              "Mobile:  " + profile['mobile'],
-              style: TextStyle(fontSize: 18.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 8.0,
+              ),
+              child: Text(
+                "Mobile:  " + profile['mobile'],
+                style: TextStyle(fontSize: 18.0),
+              ),
             ),
-          ),
 //          Padding(
 //            padding: const EdgeInsets.all(8.0),
 //            child: Text(
@@ -440,7 +449,8 @@ class ProfileDetails extends StatelessWidget {
 //              style: TextStyle(fontSize: 18.0),
 //            ),
 //          ),
-        ],
+          ],
+        ),
       ),
     );
   }

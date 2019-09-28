@@ -46,8 +46,7 @@ class _NoticeFeedState extends State<NoticeFeed> {
           i['user'],
           i['profile'],
           i['title'],
-          i['created_at'].split(" ")[0],
-          i['created_at'].split(" ")[1],
+          i['created_at'],
           i['images'],
           i['time'],
           i['date'],
@@ -118,14 +117,29 @@ class _NoticeFeedState extends State<NoticeFeed> {
           );
         } else {
           if (snapshot.data.length < 1) {
-            return Container(
-              child: Text(
-                "Welcome to SLIET Broadcast App",
-                style: TextStyle(
-                  fontSize: 22.0,
-                  fontWeight: FontWeight.w500,
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  width: 100.0,
+                  height: 100.0,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/login.png'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
-              ),
+                SizedBox(height: 16.0),
+                Text(
+                  "Welcome to SLIET Broadcast App",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22.0,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             );
           }
           return ListView.builder(

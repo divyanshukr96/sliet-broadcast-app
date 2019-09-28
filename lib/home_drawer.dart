@@ -72,8 +72,6 @@ class _HomeDrawerState extends State<HomeDrawer> {
       profileUrl = NetworkImage(profile['profile']);
     }
 
-    String username =
-        profile['username'] == null ? "" : '@' + profile['username'].toString();
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -113,15 +111,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                                 TextStyle(color: Colors.white, fontSize: 20.0),
                           ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 16.0, top: 4.0),
-                          child: Text(
-                            username,
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
+                        UserName(username: profile['username']),
                       ],
                     )
                   ],
@@ -153,6 +143,37 @@ class _HomeDrawerState extends State<HomeDrawer> {
 
   void testFunction() {
     print('hello ');
+  }
+}
+
+class UserName extends StatelessWidget {
+  const UserName({
+    Key key,
+    @required this.username,
+  }) : super(key: key);
+
+  final String username;
+
+  @override
+  Widget build(BuildContext context) {
+    if (username == null)
+      return SizedBox(
+        height: 0.0,
+      );
+    return GestureDetector(
+      onTap: () {
+        Navigator.popAndPushNamed(context, '/profile');
+      },
+      child: Padding(
+        padding: EdgeInsets.only(left: 16.0, top: 4.0),
+        child: Text(
+          "@" + username,
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
   }
 }
 

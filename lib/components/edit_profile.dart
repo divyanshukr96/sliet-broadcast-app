@@ -169,7 +169,7 @@ class _EditProfileState extends State<EditProfile> {
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 12.0),
+                margin: EdgeInsets.only(top: 12.0, bottom: 30.0),
                 decoration: new BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(5.0)),
                   gradient: new LinearGradient(

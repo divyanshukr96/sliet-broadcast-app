@@ -111,7 +111,7 @@ class _CreateNoticeState extends State<CreateNotice> {
     String token = await networkUtils.getToken();
 
     final form = _formKey.currentState;
-    List<String> _department;
+    List<String> _department = new List<String>();
     if (selectedDepartment != null) {
       setState(() {
         _department = selectedDepartment.toList();
@@ -119,11 +119,23 @@ class _CreateNoticeState extends State<CreateNotice> {
     }
     _department.removeWhere((value) => value == "ALL");
 
+    if (_titleController.text == "" ) {
+      _formSubmitting();
+      return Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text(
+          'Notice title field is required!',
+          style: TextStyle(color: Colors.white70),
+        ),
+        backgroundColor: Colors.deepOrange,
+        duration: Duration(seconds: 2),
+      ));
+    }
+
     if (_descriptionController.text == "" && files.length == 0) {
       _formSubmitting();
       return Scaffold.of(context).showSnackBar(SnackBar(
         content: Text(
-          'Notice Description / Image field required!',
+          'Notice Description / Image field is required!',
           style: TextStyle(color: Colors.white70),
         ),
         backgroundColor: Colors.deepOrange,
@@ -483,6 +495,12 @@ class _CreateNoticeState extends State<CreateNotice> {
     final TimeOfDay picked = await showTimePicker(
       initialTime: TimeOfDay(hour: now.hour, minute: now.minute),
       context: context,
+      builder: (BuildContext context, Widget child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child,
+        );
+      },
     );
 
     if (picked != null)

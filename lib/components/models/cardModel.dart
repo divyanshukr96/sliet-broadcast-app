@@ -19,7 +19,6 @@ class CardModelData {
       this.userProfile,
       this.titleOfEvent,
       this.dateOfNoticeUpload,
-      this.timeOfNoticeUpload,
       this.imageUrlNotice,
       this.timeOfEvent,
       this.dateOfEvent,
