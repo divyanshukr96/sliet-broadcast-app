@@ -8,8 +8,10 @@ import 'auth_utils.dart';
 
 class NetworkUtils {
   static final String host = productionHost;
-  static final String productionHost = 'http://192.168.137.1:8000';
-  static final String developmentHost = 'http://192.168.137.1:8000';
+//  static final String productionHost = 'http://192.168.137.1:8000';
+//  static final String developmentHost = 'http://192.168.137.1:8000';
+  static final String productionHost = 'http://slietbroadcast.in';
+  static final String developmentHost = 'http://slietbroadcast.in';
 
   static Future<SharedPreferences> _shPrefs = SharedPreferences.getInstance();
 

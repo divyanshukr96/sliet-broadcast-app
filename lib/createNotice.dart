@@ -292,7 +292,7 @@ class _CreateNoticeState extends State<CreateNotice> {
                         descriptionController: _descriptionController),
                     CheckboxListTile(
                       dense: true,
-                      title: Text('Add Event Venue with Dtae & Time'),
+                      title: Text('Add event venue with date & time'),
                       value: _isEvent,
                       controlAffinity: ListTileControlAffinity.leading,
                       onChanged: (bool value) {

@@ -29,11 +29,12 @@ dependencies:
   http: ^0.12.0+2
   dio: ^2.1.0
   datetime_picker_formfield: ^0.4.3
+  image_picker: ^0.6.1+4
   connectivity: ^0.4.4
   shared_preferences: ^0.5.3+4
   multi_image_picker: ^4.5.5
   splashscreen: ^1.2.0
-  image_picker_modern: ^0.4.12+3
+
   photo_view: ^0.5.0
   progress_dialog: ^1.2.0
 
