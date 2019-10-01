@@ -16,6 +16,7 @@ class CardModelData {
   final public;
   List departments;
   final imageList;
+  final caEditNotice;
 
   CardModelData(
       this.id,
@@ -31,5 +32,6 @@ class CardModelData {
       this.aboutEvent,
       this.public,
       this.departments,
-      this.imageList);
+      this.imageList,
+      this.caEditNotice);
 }

@@ -163,32 +163,7 @@ class NoticeCardHeader extends StatelessWidget {
           ),
         ),
 
-        Align(
-          alignment: Alignment.topLeft,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 10.0),
-            child: InkResponse(
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => EditNotice(
-                      notice: cardModelData,
-                    ),
-                  ),
-                );
-              },
-              radius: 16.0,
-              splashColor: Colors.lightBlue,
-              child: IconTheme.merge(
-                data: IconThemeData(
-                  size: 18.0,
-                  color: Colors.grey,
-                ),
-                child: Icon(Icons.edit),
-              ),
-            ),
-          ),
-        ),
+        NoticeEditButton(cardModelData: cardModelData),
 
 //        Align(
 //          alignment: Alignment.topLeft,
@@ -209,6 +184,45 @@ class NoticeCardHeader extends StatelessWidget {
 //                    ),
       ],
     );
+  }
+}
+
+class NoticeEditButton extends StatelessWidget {
+  const NoticeEditButton({
+    Key key,
+    @required this.cardModelData,
+  }) : super(key: key);
+
+  final CardModelData cardModelData;
+
+  @override
+  Widget build(BuildContext context) {
+    if (cardModelData.caEditNotice)
+      return Align(
+        alignment: Alignment.topLeft,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 10.0),
+          child: InkResponse(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (BuildContext context) => EditNotice(
+                    notice: cardModelData,
+                  ),
+                ),
+              );
+            },
+            radius: 16.0,
+            splashColor: Colors.lightBlue,
+            child: IconTheme.merge(
+              data: IconThemeData(size: 18.0, color: Colors.grey),
+              child: Icon(Icons.edit),
+            ),
+          ),
+        ),
+      );
+    else
+      return SizedBox(height: 0.0);
   }
 }
 

@@ -54,7 +54,8 @@ class _NoticeFeedState extends State<NoticeFeed> {
           i['description'],
           i['public_notice'],
           i['department'],
-          i['images_list']);
+          i['images_list'],
+          i['can_edit']);
 
       cardsList.add(card);
     }
