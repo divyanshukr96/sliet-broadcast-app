@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:sliet_broadcast/components/edit_notice.dart';
 import 'package:sliet_broadcast/components/models/cardModel.dart';
 import 'package:sliet_broadcast/utils/carousel.dart';
 
@@ -99,13 +100,12 @@ class _NoticeCardState extends State<NoticeCard> {
           }).toList(),
         ),
       );
-    }else if(numberOfLines == 3){
+    } else if (numberOfLines == 3) {
       numberOfLines = 1000;
       iconForText = Icon(
         Icons.keyboard_arrow_up,
       );
-    }
-    else {
+    } else {
       numberOfLines = 3;
       iconForText = Icon(
         Icons.keyboard_arrow_down,
@@ -131,6 +131,7 @@ class NoticeCardHeader extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.max,
       //mainAxisAlignment: MainAxisAlignment.spaceAround,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         CircleAvatar(
           backgroundImage: cardModelData.userProfile != null
@@ -161,7 +162,43 @@ class NoticeCardHeader extends StatelessWidget {
             ),
           ),
         ),
-        Spacer(),
+
+        Align(
+          alignment: Alignment.topLeft,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 10.0),
+            child: InkResponse(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => EditNotice(),
+                  ),
+                );
+              },
+              radius: 16.0,
+              splashColor: Colors.lightBlue,
+              child: IconTheme.merge(
+                data: IconThemeData(
+                  size: 18.0,
+                  color: Colors.grey,
+                ),
+                child: Icon(Icons.edit),
+              ),
+            ),
+          ),
+        ),
+
+//        Align(
+//          alignment: Alignment.topLeft,
+//          child: IconButton(
+//            padding: EdgeInsets.all(0.0),
+//            icon: Icon(Icons.edit),
+//            color: Colors.grey,
+//            onPressed: () {},
+//          ),
+//        ),
+
+//        Spacer(),
 //                    Column(
 //                      crossAxisAlignment: CrossAxisAlignment.end,
 //                      children: <Widget>[

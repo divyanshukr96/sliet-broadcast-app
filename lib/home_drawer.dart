@@ -101,18 +101,25 @@ class _HomeDrawerState extends State<HomeDrawer> {
                         ),
                       ),
                     ),
-                    Column(
-                      children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.only(left: 16.0, bottom: 8.0),
-                          child: Text(
-                            profile['name'] ?? "Guest User",
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 20.0),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.only(left: 16.0, bottom: 8.0),
+                            child: Text(
+                              profile['name'] ?? "Guest User",
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20.0,
+                              ),
+                            ),
                           ),
-                        ),
-                        UserName(username: profile['username']),
-                      ],
+                          UserName(username: profile['username']),
+                        ],
+                      ),
                     )
                   ],
                 ),
