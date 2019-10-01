@@ -1,12 +1,20 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sliet_broadcast/components/models/cardModel.dart';
 import 'package:sliet_broadcast/components/notice_form.dart';
 import 'package:sliet_broadcast/utils/network_utils.dart';
 import 'package:sliet_broadcast/utils/auth_utils.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
 
 class EditNotice extends StatefulWidget {
+  const EditNotice({
+    Key key,
+    @required this.notice,
+  }) : super(key: key);
+
+  final CardModelData notice;
+
   @override
   _EditNoticeState createState() => _EditNoticeState();
 }
@@ -18,8 +26,8 @@ class _EditNoticeState extends State<EditNotice> {
   bool loading = false;
 
   int selectedRadio;
-  bool _isEvent = false;
-  var selectedDepartment;
+  bool _isEvent = true;
+  Set<String> selectedDepartment = Set<String>();
   final _dateController = TextEditingController();
   final _timeController = TextEditingController();
 
@@ -33,9 +41,6 @@ class _EditNoticeState extends State<EditNotice> {
   final FocusNode myFocusNodePasswordLogin = FocusNode();
   TextEditingController currentPasswordController = new TextEditingController();
   TextEditingController loginPasswordController = new TextEditingController();
-
-  bool _obscureTextLogin = true;
-  bool _obscureTextLoginCurrent = true;
 
   _submitNewNotice() async {
     Response response;
@@ -76,6 +81,30 @@ class _EditNoticeState extends State<EditNotice> {
         loading = false;
       });
     }
+  }
+
+  @override
+  void initState() {
+    final notice = widget.notice;
+    _titleController.text = notice.titleOfEvent;
+    _descriptionController.text = notice.aboutEvent;
+
+    _isEvent = notice.isEvent;
+    _venueController.text = notice.venueForEvent;
+    _timeController.text = notice.timeOfEvent;
+    _dateController.text = notice.dateOfEvent;
+
+    selectedRadio = notice.public ? 1 : 0;
+
+    try {
+      notice.departments.forEach((e) {
+        selectedDepartment.add(e);
+      });
+    } catch (e) {
+      print('Error $e');
+    }
+
+    super.initState();
   }
 
   @override
@@ -127,8 +156,8 @@ class _EditNoticeState extends State<EditNotice> {
                       height: 24.0,
                       color: Colors.black,
                     ),
-                    TitleInput(controller: TextEditingController()),
-                    DescriptionInput(controller: TextEditingController()),
+                    TitleInput(controller: _titleController),
+                    DescriptionInput(controller: _descriptionController),
                     CheckboxListTile(
                       dense: true,
                       title: Text('Add event venue with date & time'),
@@ -147,6 +176,7 @@ class _EditNoticeState extends State<EditNotice> {
                     ),
                     buildVenueDateTime(context),
                     DepartmentSelection(
+                      edit: true,
                       value: selectedDepartment,
                       selectedDepartment: (departments) {
                         setState(() {
@@ -211,12 +241,6 @@ class _EditNoticeState extends State<EditNotice> {
         ),
       ],
     );
-  }
-
-  void _toggleLogin() {
-    setState(() {
-      _obscureTextLogin = !_obscureTextLogin;
-    });
   }
 
   void _backAction() {

@@ -48,10 +48,14 @@ class _NoticeFeedState extends State<NoticeFeed> {
           i['title'],
           i['created_at'],
           i['images'],
+          i['is_event'],
+          i['venue'],
           i['time'],
           i['date'],
-          i['venue'],
-          i['description']);
+          i['description'],
+          i['public_notice'],
+          i['department'],
+          i['images_list']);
 
       cardsList.add(card);
     }

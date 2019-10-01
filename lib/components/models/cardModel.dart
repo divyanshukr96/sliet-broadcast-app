@@ -8,10 +8,14 @@ class CardModelData {
   String dateOfNoticeUpload;
   String timeOfNoticeUpload;
   List imageUrlNotice;
+  final isEvent;
+  String venueForEvent;
   String timeOfEvent;
   String dateOfEvent;
-  String venueForEvent;
   String aboutEvent;
+  final public;
+  List departments;
+  final imageList;
 
   CardModelData(
       this.id,
@@ -20,8 +24,12 @@ class CardModelData {
       this.titleOfEvent,
       this.dateOfNoticeUpload,
       this.imageUrlNotice,
+      this.isEvent,
+      this.venueForEvent,
       this.timeOfEvent,
       this.dateOfEvent,
-      this.venueForEvent,
-      this.aboutEvent);
+      this.aboutEvent,
+      this.public,
+      this.departments,
+      this.imageList);
 }

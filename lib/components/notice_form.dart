@@ -300,8 +300,11 @@ class DepartmentSelection extends StatefulWidget {
     Key key,
     @required this.selectedDepartment,
     @required this.value,
-  }) : super(key: key);
+    bool edit,
+  })  : _edit = edit ?? false,
+        super(key: key);
 
+  final bool _edit;
   final value;
   final VoidCallback selectedDepartment;
 
@@ -319,11 +322,15 @@ class _DepartmentSelectionState extends State<DepartmentSelection> {
   }
 
   _fetchDepartment() async {
-    var responseJson = await NetworkUtils.get("/api/public/department");
-    if (responseJson.toString() != null)
-      setState(() {
-        departments = responseJson;
-      });
+    try {
+      var responseJson = await NetworkUtils.get("/api/public/department");
+      if (responseJson != null)
+        setState(() {
+          departments = responseJson;
+        });
+    } catch (e) {
+      print('Error $e');
+    }
   }
 
   @override
@@ -356,6 +363,9 @@ class _DepartmentSelectionState extends State<DepartmentSelection> {
         );
       },
     );
-    widget.selectedDepartment(selectedValues);
+    if (widget._edit && selectedValues == null)
+      widget.selectedDepartment(widget.value);
+    else
+      widget.selectedDepartment(selectedValues);
   }
 }

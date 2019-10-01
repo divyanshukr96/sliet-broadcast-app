@@ -171,7 +171,9 @@ class NoticeCardHeader extends StatelessWidget {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (BuildContext context) => EditNotice(),
+                    builder: (BuildContext context) => EditNotice(
+                      notice: cardModelData,
+                    ),
                   ),
                 );
               },
