@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart' as prefix0;
 import 'package:sliet_broadcast/components/models/cardModel.dart';
 import 'package:sliet_broadcast/components/noticeCard.dart';
 import 'dart:async';

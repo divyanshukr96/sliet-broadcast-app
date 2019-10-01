@@ -57,7 +57,7 @@ class _ChangePasswordState extends State<ChangePassword> {
           _backAction();
         }
       } on DioError catch (e) {
-//        print(e.response.data['detail']);
+        print("Error $e");
       }
     } else {
       setState(() {

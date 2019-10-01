@@ -195,9 +195,13 @@ class DateAndTime extends StatelessWidget {
 
   Future<Null> _selectTime(BuildContext context) async {
     final now = DateTime.now();
-
+    TimeOfDay __initTime = TimeOfDay(hour: now.hour, minute: now.minute);
+    if (_time.text != "") {
+      final dd = _time.text.split(':');
+      __initTime = TimeOfDay(hour: int.parse(dd[0]), minute: int.parse(dd[1]));
+    }
     final TimeOfDay picked = await showTimePicker(
-      initialTime: TimeOfDay(hour: now.hour, minute: now.minute),
+      initialTime: __initTime,
       context: context,
       builder: (BuildContext context, Widget child) {
         return MediaQuery(
@@ -284,6 +288,53 @@ class ImagesView extends StatelessWidget {
                   color: Colors.red,
                   onPressed: () {
                     remove(index);
+                  },
+                ),
+              )
+            ],
+          );
+        }),
+      ),
+    );
+  }
+}
+
+class NetworkImagesView extends StatelessWidget {
+  const NetworkImagesView({
+    Key key,
+    @required this.images,
+    @required this.delete,
+  }) : super(key: key);
+
+  final images;
+  final VoidCallback delete;
+
+  @override
+  Widget build(BuildContext context) {
+    double height = (images.length / 3).ceilToDouble() * 120.0;
+    if (images.length <= 0) return SizedBox(height: 0.0);
+    return Container(
+      height: height,
+      child: GridView.count(
+        crossAxisCount: 3,
+        crossAxisSpacing: 4,
+        mainAxisSpacing: 4,
+        children: List.generate(images.length, (index) {
+          return Stack(
+            children: <Widget>[
+              Image.network(
+                images[index]['url'],
+                fit: BoxFit.cover,
+                height: 120,
+              ),
+              Positioned(
+                top: -8,
+                right: -8,
+                child: IconButton(
+                  icon: Icon(Icons.close),
+                  color: Colors.red,
+                  onPressed: () {
+                    delete(index);
                   },
                 ),
               )

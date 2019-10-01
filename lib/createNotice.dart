@@ -353,7 +353,9 @@ class _CreateNoticeState extends State<CreateNotice> {
           selectCircleStrokeColor: "#000000",
         ),
       );
-    } on Exception catch (e) {}
+    } on Exception catch (e) {
+      print('Error $e');
+    }
 
     if (!mounted) return;
 

@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:sliet_broadcast/components/models/cardModel.dart';
 import 'package:sliet_broadcast/components/notice_form.dart';
 import 'package:sliet_broadcast/utils/network_utils.dart';
-import 'package:sliet_broadcast/utils/auth_utils.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
 
 class EditNotice extends StatefulWidget {
@@ -22,6 +24,12 @@ class EditNotice extends StatefulWidget {
 class _EditNoticeState extends State<EditNotice> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   NetworkUtils networkUtils = new NetworkUtils();
+  Dio dio = new Dio();
+  String noticeId;
+  ProgressDialog pr;
+
+  List networkImages;
+  List<Asset> images = List<Asset>();
 
   bool loading = false;
 
@@ -35,46 +43,89 @@ class _EditNoticeState extends State<EditNotice> {
   TextEditingController _descriptionController = new TextEditingController();
   TextEditingController _venueController = new TextEditingController();
 
-  ///////////////////////////////////////////////////
-
-  final FocusNode currentFocusNodePassword = FocusNode();
-  final FocusNode myFocusNodePasswordLogin = FocusNode();
-  TextEditingController currentPasswordController = new TextEditingController();
-  TextEditingController loginPasswordController = new TextEditingController();
-
   _submitNewNotice() async {
     Response response;
-    Dio dio = new Dio();
-    String token = await networkUtils.getToken();
-
     final form = _formKey.currentState;
+    List<String> _department = new List<String>();
+    try {
+      if (selectedDepartment != null) {
+        setState(() {
+          _department = selectedDepartment.toList();
+        });
+      }
+      _department.removeWhere((value) => value == "ALL");
+    } catch (e) {
+      print('Error $e');
+    }
+
+    if (_descriptionController.text == "" &&
+        (files.length == 0 || networkImages.length == 0)) {
+//      _formSubmitting();
+      return Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text(
+          'Notice Description / Image field is required!',
+          style: TextStyle(color: Colors.white70),
+        ),
+        backgroundColor: Colors.deepOrange,
+        duration: Duration(seconds: 2),
+      ));
+    }
+
+    if (_titleController.text == "") {
+//      _formSubmitting();
+      return Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text(
+          'Notice title field is required!',
+          style: TextStyle(color: Colors.white70),
+        ),
+        backgroundColor: Colors.deepOrange,
+        duration: Duration(seconds: 2),
+      ));
+    }
+
+    if (_department.length == 0) {
+//      _formSubmitting();
+      return Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text(
+          'Department field is required.',
+          style: TextStyle(color: Colors.white70),
+        ),
+        backgroundColor: Colors.deepOrange,
+        duration: Duration(seconds: 2),
+      ));
+    }
 
     if (form.validate()) {
+      pr.style(message: 'Updating Notice...');
+      pr.show();
       try {
-        dio.options.headers['Authorization'] = "Token " + token;
-        dio.options.headers['content-type'] =
-            "application/x-www-form-urlencoded";
-        dio.options.headers['Accept'] = "application/json";
+        FormData formData = new FormData.from({
+          'title': _titleController.text,
+          'description': _descriptionController.text,
+          'is_event': _isEvent,
+          'venue': _venueController.text,
+          'date': _dateController.text != ''
+              ? DateFormat("yyyy-MM-dd")
+                  .format(DateFormat("dd-MM-yyyy").parse(_dateController.text))
+                  .toString()
+              : null,
+          'time': _timeController.text,
+          'public_notice': selectedRadio,
+          'department': _department.toList(),
+          'files': files,
+        });
+
         response = await dio.patch(
-          NetworkUtils.productionHost + "/api/auth/user/password",
-          data: FormData.from({
-            'password': currentPasswordController.text,
-            'new_password': loginPasswordController.text,
-          }),
-        );
+            NetworkUtils.productionHost + "/api/notice/$noticeId/",
+            data: formData);
 
         if (response.statusCode == 200) {
-          final prefs = await SharedPreferences.getInstance();
-          if (response.data['token'] != null) {
-            prefs.setString(AuthUtils.authTokenKey, response.data['token']);
-          }
-          form.reset();
-          loginPasswordController.clear();
-          currentPasswordController.clear();
-          _backAction();
+          pr.hide().then((isHidden) {
+            _backAction();
+          });
         }
       } on DioError catch (e) {
-//        print(e.response.data['detail']);
+        print('Erorr $e');
       }
     } else {
       setState(() {
@@ -86,16 +137,20 @@ class _EditNoticeState extends State<EditNotice> {
   @override
   void initState() {
     final notice = widget.notice;
+    noticeId = notice.id;
     _titleController.text = notice.titleOfEvent;
     _descriptionController.text = notice.aboutEvent;
 
     _isEvent = notice.isEvent;
     _venueController.text = notice.venueForEvent;
     _timeController.text = notice.timeOfEvent;
-    _dateController.text = notice.dateOfEvent;
+    _dateController.text = DateFormat("dd-MM-yyyy")
+        .format(DateFormat("yyyy-MM-dd").parse(notice.dateOfEvent))
+        .toString();
 
     selectedRadio = notice.public ? 1 : 0;
 
+    networkImages = notice.imageList;
     try {
       notice.departments.forEach((e) {
         selectedDepartment.add(e);
@@ -104,11 +159,39 @@ class _EditNoticeState extends State<EditNotice> {
       print('Error $e');
     }
 
+    _setNetwork();
+
     super.initState();
+  }
+
+  void _setNetwork() async {
+    String token = await networkUtils.getToken();
+    dio.options.headers['Authorization'] = "Token " + token;
+    dio.options.headers['content-type'] = "application/x-www-form-urlencoded";
+    dio.options.headers['Accept'] = "application/json";
+  }
+
+  Future<dynamic> _deleteNetworkImage(index) async {
+    Response response;
+    try {
+      String imageId = networkImages[index]['id'];
+      response = await dio.delete(
+        NetworkUtils.host + "/api/notice/$noticeId/image/$imageId",
+      );
+      if (response.statusCode == 204) {
+        networkImages.removeAt(index);
+        setState(() {
+          networkImages = networkImages;
+        });
+      }
+    } on DioError catch (error) {
+      print('Error $error');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    pr = new ProgressDialog(context);
     return Container(
 //      height: MediaQuery.of(context).size.height * .2,
       padding: EdgeInsets.all(8.0),
@@ -185,6 +268,58 @@ class _EditNoticeState extends State<EditNotice> {
                       },
                     ),
                     Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: NetworkImagesView(
+                        images: networkImages ?? [],
+                        delete: (index) {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text(
+                                  "Warning !",
+                                  style: TextStyle(color: Colors.orange),
+                                ),
+                                content: Text(
+                                  "Are you sure want to delete this image?",
+                                ),
+                                actions: <Widget>[
+                                  FlatButton(
+                                    child: new Text("No"),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  FlatButton(
+                                    child: new Text("Yes"),
+                                    onPressed: () async {
+                                      await _deleteNetworkImage(index);
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                    ImagesView(
+                      images: images,
+                      remove: (index) {
+                        images.removeAt(index);
+                        setState(() {
+                          images = images;
+                        });
+                      },
+                    ),
+                    RaisedButton(
+                      textColor: Colors.white,
+                      color: Colors.lightBlueAccent,
+                      child: Text("Add images"),
+                      onPressed: _loadAssets,
+                    ),
+                    Padding(
                       padding: const EdgeInsets.only(top: 16.0),
                       child: RaisedButton(
                         highlightColor: Colors.transparent,
@@ -192,8 +327,21 @@ class _EditNoticeState extends State<EditNotice> {
                         textColor: Colors.white,
                         color:
                             loading ? Colors.white12 : Colors.lightBlueAccent,
-                        child: Text("Change Password"),
+                        child: Text("Update Notice"),
                         onPressed: loading ? () {} : _submitNewNotice,
+                      ),
+                    ),
+                    FlatButton(
+                      splashColor: Colors.lightBlue,
+                      onPressed: _backAction,
+                      child: Text(
+                        "Back",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          decoration: TextDecoration.underline,
+                          fontSize: 18.0,
+                          fontFamily: "WorkSansMedium",
+                        ),
                       ),
                     ),
                   ],
@@ -242,6 +390,48 @@ class _EditNoticeState extends State<EditNotice> {
       ],
     );
   }
+
+  Future<void> _loadAssets() async {
+    files.clear();
+    List<Asset> resultList = List<Asset>();
+
+    try {
+      resultList = await MultiImagePicker.pickImages(
+        maxImages: 10,
+        enableCamera: true,
+        selectedAssets: images,
+        cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat"),
+        materialOptions: MaterialOptions(
+          actionBarColor: "#40C4FF",
+          allViewTitle: "All Photos",
+          useDetailsView: false,
+          selectCircleStrokeColor: "#000000",
+        ),
+      );
+    } on Exception catch (e) {
+      print('Error $e');
+    }
+
+    if (!mounted) return;
+
+    int count = 0;
+    for (var asset in resultList) {
+      ByteData byteData = await asset.getByteData();
+      if (byteData != null) {
+        List<int> imageData = byteData.buffer.asUint8List();
+        UploadFileInfo multipartImage =
+            UploadFileInfo.fromBytes(imageData, asset.name);
+        files['images_$count'] = multipartImage;
+        count += 1;
+      }
+    }
+
+    setState(() {
+      images = resultList;
+    });
+  }
+
+  var files = {};
 
   void _backAction() {
     Navigator.pop(context);
