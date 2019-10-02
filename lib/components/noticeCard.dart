@@ -14,9 +14,9 @@ class NoticeCard extends StatefulWidget {
 }
 
 class _NoticeCardState extends State<NoticeCard> {
-  CardModelData cardModelData;
+  CardModelData notice;
 
-  _NoticeCardState(this.cardModelData);
+  _NoticeCardState(this.notice);
 
   int numberOfLines = 3;
 
@@ -40,12 +40,13 @@ class _NoticeCardState extends State<NoticeCard> {
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              NoticeCardHeader(cardModelData: cardModelData),
+              NoticeCardHeader(notice: notice),
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  cardModelData.titleOfEvent,
+                  notice.titleOfEvent,
                   textAlign: TextAlign.start,
+                  style: TextStyle(fontSize: 16.0),
                 ),
               ),
               Container(
@@ -54,13 +55,12 @@ class _NoticeCardState extends State<NoticeCard> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Text(
-                  cardModelData.aboutEvent,
+                  notice.aboutEvent,
                   overflow: TextOverflow.ellipsis,
                   maxLines: numberOfLines,
-                  style: TextStyle(fontSize: 16.0),
                 ),
               ),
-              EventTime(cardModelData: cardModelData),
+              EventTime(notice: notice),
               Row(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -79,7 +79,7 @@ class _NoticeCardState extends State<NoticeCard> {
   }
 
   void changeLines() {
-    if ((numberOfLines == 3) && (cardModelData.imageUrlNotice != null)) {
+    if ((numberOfLines == 3) && (notice.imageUrlNotice != null)) {
       numberOfLines = 1000;
       iconForText = Icon(
         Icons.keyboard_arrow_up,
@@ -91,7 +91,7 @@ class _NoticeCardState extends State<NoticeCard> {
           height: MediaQuery.of(context).size.height * .6,
           aspectRatio: MediaQuery.of(context).size.aspectRatio,
           viewportFraction: 1.0,
-          items: cardModelData.imageUrlNotice.map((image) {
+          items: notice.imageUrlNotice.map((image) {
             return Builder(
               builder: (BuildContext context) {
                 return PhotoView(imageProvider: NetworkImage(image));
@@ -121,10 +121,10 @@ class _NoticeCardState extends State<NoticeCard> {
 class NoticeCardHeader extends StatelessWidget {
   const NoticeCardHeader({
     Key key,
-    @required this.cardModelData,
+    @required this.notice,
   }) : super(key: key);
 
-  final CardModelData cardModelData;
+  final CardModelData notice;
 
   @override
   Widget build(BuildContext context) {
@@ -134,8 +134,8 @@ class NoticeCardHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         CircleAvatar(
-          backgroundImage: cardModelData.userProfile != null
-              ? NetworkImage(cardModelData.userProfile)
+          backgroundImage: notice.userProfile != null
+              ? NetworkImage(notice.userProfile)
               : AssetImage('assets/images/login.png'),
           radius: 25.0,
           backgroundColor: Colors.black, //change this to backgroundImage
@@ -148,40 +148,21 @@ class NoticeCardHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  cardModelData.nameOfUploader,
+                  notice.nameOfUploader,
                   textAlign: TextAlign.start,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
-                  cardModelData.dateOfNoticeUpload,
+                  notice.dateOfNoticeUpload,
                   style: TextStyle(fontSize: 11.0),
                 ),
               ],
             ),
           ),
         ),
-
-        NoticeEditButton(cardModelData: cardModelData),
-
-//        Align(
-//          alignment: Alignment.topLeft,
-//          child: IconButton(
-//            padding: EdgeInsets.all(0.0),
-//            icon: Icon(Icons.edit),
-//            color: Colors.grey,
-//            onPressed: () {},
-//          ),
-//        ),
-
-//        Spacer(),
-//                    Column(
-//                      crossAxisAlignment: CrossAxisAlignment.end,
-//                      children: <Widget>[
-//                        Text(cardModelData.timeOfNoticeUpload),
-//                      ],
-//                    ),
+        NoticeEditButton(notice: notice),
       ],
     );
   }
@@ -190,24 +171,24 @@ class NoticeCardHeader extends StatelessWidget {
 class NoticeEditButton extends StatelessWidget {
   const NoticeEditButton({
     Key key,
-    @required this.cardModelData,
+    @required this.notice,
   }) : super(key: key);
 
-  final CardModelData cardModelData;
+  final CardModelData notice;
 
   @override
   Widget build(BuildContext context) {
-    if (cardModelData.caEditNotice)
+    if (notice.caEditNotice)
       return Align(
         alignment: Alignment.topLeft,
         child: Padding(
           padding: const EdgeInsets.only(left: 10.0),
           child: InkResponse(
-            onTap: () {
-              Navigator.of(context).push(
+            onTap: () async {
+              await Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (BuildContext context) => EditNotice(
-                    notice: cardModelData,
+                    notice: notice,
                   ),
                 ),
               );
@@ -229,71 +210,57 @@ class NoticeEditButton extends StatelessWidget {
 class EventTime extends StatelessWidget {
   const EventTime({
     Key key,
-    @required this.cardModelData,
+    @required this.notice,
   }) : super(key: key);
 
-  final CardModelData cardModelData;
+  final CardModelData notice;
 
   @override
   Widget build(BuildContext context) {
-    if (cardModelData.timeOfEvent != null)
+    if (notice.dateOfEvent != null || notice.venueForEvent != null) {
+      String eventTime = "- - - - - - - -";
+      if (notice.dateOfEvent != null) {
+        eventTime = notice.dateOfEvent;
+        if (notice.timeOfEvent != null) eventTime += ", " + notice.timeOfEvent;
+      }
       return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          Column(
-            children: <Widget>[
-              Text(
-                'TIME',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF1976D2),
-                ),
-              ),
-              Text(cardModelData.timeOfEvent),
-            ],
-          ),
-          VerticalDivider(
-            color: Colors.deepOrange,
-            width: 10.0,
-            thickness: 20.0,
-            endIndent: 0.1,
-            indent: 0.1,
-          ),
-          VenueName(cardModelData: cardModelData),
-        ],
-      );
-    else
-      return SizedBox(
-        height: 0,
-        width: 0,
-      );
-  }
-}
-
-class VenueName extends StatelessWidget {
-  const VenueName({
-    Key key,
-    @required this.cardModelData,
-  }) : super(key: key);
-
-  final CardModelData cardModelData;
-
-  @override
-  Widget build(BuildContext context) {
-    if (cardModelData.venueForEvent != null)
-      return Column(
-        children: <Widget>[
-          Text(
-            'VENUE',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1976D2),
+          Expanded(
+            child: Column(
+              children: <Widget>[
+                Text('DATE & TIME',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1976D2),
+                    )),
+                Text(eventTime),
+              ],
             ),
           ),
-          Text(cardModelData.venueForEvent),
+          Container(
+            height: 35.0,
+            width: 1.0,
+            color: Colors.orange,
+            margin: const EdgeInsets.only(left: 10.0, right: 10.0),
+          ),
+          Expanded(
+            child: Column(
+              children: <Widget>[
+                Text(
+                  'VENUE',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1976D2),
+                  ),
+                ),
+                Text(notice.venueForEvent ?? "- - - - - -"),
+              ],
+            ),
+          ),
         ],
       );
-    else
+    } else
       return SizedBox(
         height: 0,
         width: 0,

@@ -17,10 +17,20 @@ class _HomePageState extends State<HomePage> {
   bool authenticated = false;
   String userType = "STUDENT";
 
-  int _selectedTab;
-  Widget currentPage;
+  final _controller = PageController();
+  int _index = 0;
 
-  List<Widget> _pageOptions;
+  dynamic _pageOptions = <Widget>[PublicFeed()];
+
+  _HomePageState() {
+    _controller.addListener(() {
+      if (_controller.page.round() != _index) {
+        setState(() {
+          _index = _controller.page.round();
+        });
+      }
+    });
+  }
 
   @override
   void initState() {
@@ -29,16 +39,36 @@ class _HomePageState extends State<HomePage> {
         authenticated = onValue;
       });
     });
-    networkUtils.getUserType().then((onValue) {
+    _pageViewAdd();
+    super.initState();
+  }
+
+  void _pageViewAdd() async {
+    await networkUtils.getUserType().then((onValue) {
       setState(() {
         userType = onValue;
       });
     });
+    if (["DEPARTMENT", "SOCIETY"].contains(userType)) {
+      await _pageOptions.add(CreateNotice());
+    }
+    if (["FACULTY"].contains(userType)) {
+      await _pageOptions.add(PrivateFeed());
+    }
+    if (["DEPARTMENT", "SOCIETY"].contains(userType)) {
+      await _pageOptions.add(PublishedNotice());
+    }
+  }
 
-    super.initState();
-    _selectedTab = 0;
-    _pageOptions = [PublicFeed()];
-    currentPage = PublicFeed();
+  void _showPageIndex(int index) {
+    setState(() {
+      _index = index;
+    });
+    _controller.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOutCubic,
+    );
   }
 
   @override
@@ -48,13 +78,9 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text('SLIET Broadcast'),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            InternetConnection(),
-            currentPage,
-          ],
-        ),
+      body: PageView(
+        controller: _controller,
+        children: _pageOptions,
       ),
       drawer: HomeDrawer(),
       bottomNavigationBar: authenticated &&
@@ -70,43 +96,28 @@ class _HomePageState extends State<HomePage> {
       icon: Icon(Icons.public),
       title: Text('Public'),
     ));
-
     if (["DEPARTMENT", "SOCIETY"].contains(userType)) {
-      _pageOptions.add(CreateNotice());
       items.add(BottomNavigationBarItem(
         icon: Icon(Icons.add_circle_outline),
         title: Text('Add Notice'),
       ));
     }
-
     if (["FACULTY"].contains(userType)) {
-      _pageOptions.add(PrivateFeed());
       items.add(BottomNavigationBarItem(
         icon: Icon(Icons.vpn_key),
         title: Text('Private'),
       ));
     }
     if (["DEPARTMENT", "SOCIETY"].contains(userType)) {
-      _pageOptions.add(PublishedNotice());
       items.add(BottomNavigationBarItem(
         icon: Icon(Icons.publish),
         title: Text('Published'),
       ));
     }
-
     return BottomNavigationBar(
-      currentIndex: _selectedTab,
-      onTap: (int index) {
-        setState(() {
-          _selectedTab = index;
-          currentPage = _pageOptions[index];
-        });
-      },
+      currentIndex: _index,
+      onTap: (int index) => _showPageIndex(index),
       items: items,
     );
-  }
-
-  Widget getWidget(int index) {
-    return _pageOptions[index];
   }
 }

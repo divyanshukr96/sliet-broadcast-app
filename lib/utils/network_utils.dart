@@ -10,9 +10,9 @@ class NetworkUtils {
   static final String host = productionHost;
   static final String productionHost = 'http://192.168.137.1:8000';
   static final String developmentHost = 'http://192.168.137.1:8000';
-
-//  static final String productionHost = 'http://slietbroadcast.in';
-//  static final String developmentHost = 'http://slietbroadcast.in';
+//
+//  static final String productionHost = 'https://slietbroadcast.in';
+//  static final String developmentHost = 'https://slietbroadcast.in';
 
   static Future<SharedPreferences> _shPrefs = SharedPreferences.getInstance();
 
@@ -95,7 +95,7 @@ class NetworkUtils {
       return responseJson;
     } catch (exception) {
       if (exception.toString().contains('SocketException')) {
-        return 'NetworkError';
+        return null;
       } else {
         return null;
       }

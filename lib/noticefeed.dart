@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:sliet_broadcast/components/models/cardModel.dart';
 import 'package:sliet_broadcast/components/noticeCard.dart';
 import 'dart:async';
-
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
 import 'package:sliet_broadcast/utils/network_utils.dart';
 
@@ -41,21 +40,22 @@ class _NoticeFeedState extends State<NoticeFeed> {
 
     for (var i in jsonData) {
       CardModelData card = CardModelData(
-          i['id'],
-          i['user'],
-          i['profile'],
-          i['title'],
-          i['created_at'],
-          i['images'],
-          i['is_event'],
-          i['venue'],
-          i['time'],
-          i['date'],
-          i['description'],
-          i['public_notice'],
-          i['department'],
-          i['images_list'],
-          i['can_edit']);
+        id: i['id'],
+        nameOfUploader: i['user'],
+        userProfile: i['profile'],
+        titleOfEvent: i['title'],
+        aboutEvent: i['description'],
+        isEvent: i['is_event'],
+        venueForEvent: i['venue'],
+        timeOfEvent: i['time'],
+        dateOfEvent: i['date'],
+        public: i['public_notice'],
+        departments: i['department'],
+        imageUrlNotice: i['images'],
+        imageList: i['images_list'],
+        caEditNotice: i['can_edit'],
+        dateOfNoticeUpload: i['created_at'],
+      );
 
       cardsList.add(card);
     }

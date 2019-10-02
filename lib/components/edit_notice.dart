@@ -21,9 +21,11 @@ class EditNotice extends StatefulWidget {
   _EditNoticeState createState() => _EditNoticeState();
 }
 
-class _EditNoticeState extends State<EditNotice> {
+class _EditNoticeState extends State<EditNotice>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   NetworkUtils networkUtils = new NetworkUtils();
+  AnimationController _animationController;
   Dio dio = new Dio();
   String noticeId;
   ProgressDialog pr;
@@ -136,6 +138,18 @@ class _EditNoticeState extends State<EditNotice> {
 
   @override
   void initState() {
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 3100),
+    );
+
+    _initNoticeData();
+    _setNetwork();
+
+    super.initState();
+  }
+
+  _initNoticeData() {
     final notice = widget.notice;
     noticeId = notice.id;
     _titleController.text = notice.titleOfEvent;
@@ -144,9 +158,8 @@ class _EditNoticeState extends State<EditNotice> {
     _isEvent = notice.isEvent;
     _venueController.text = notice.venueForEvent;
     _timeController.text = notice.timeOfEvent;
-    _dateController.text = DateFormat("dd-MM-yyyy")
-        .format(DateFormat("yyyy-MM-dd").parse(notice.dateOfEvent))
-        .toString();
+
+    _dateController.text = notice.dateOfEvent;
 
     selectedRadio = notice.public ? 1 : 0;
 
@@ -158,10 +171,6 @@ class _EditNoticeState extends State<EditNotice> {
     } catch (e) {
       print('Error $e');
     }
-
-    _setNetwork();
-
-    super.initState();
   }
 
   void _setNetwork() async {
@@ -192,159 +201,162 @@ class _EditNoticeState extends State<EditNotice> {
   @override
   Widget build(BuildContext context) {
     pr = new ProgressDialog(context);
-    return Container(
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (context, child) => Container(
 //      height: MediaQuery.of(context).size.height * .2,
-      padding: EdgeInsets.all(8.0),
-      width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-          colors: [
-            Theme.Colors.loginGradientEnd,
-            Theme.Colors.loginGradientStart,
-          ],
+        padding: EdgeInsets.all(8.0),
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Theme.Colors.loginGradientEnd,
+              Theme.Colors.loginGradientStart,
+            ],
+          ),
         ),
-      ),
-      child: SingleChildScrollView(
-        child: SafeArea(
-          child: Card(
-            elevation: 2.0,
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4.0),
-            ),
-            child: Form(
-              key: _formKey,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 12.0),
-                        child: Text(
-                          'Edit Notice',
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.w500,
+        child: SingleChildScrollView(
+          child: SafeArea(
+            child: Card(
+              elevation: 2.0,
+              color: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4.0),
+              ),
+              child: Form(
+                key: _formKey,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 12.0, horizontal: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 12.0),
+                          child: Text(
+                            'Edit Notice',
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    Divider(
-                      height: 24.0,
-                      color: Colors.black,
-                    ),
-                    TitleInput(controller: _titleController),
-                    DescriptionInput(controller: _descriptionController),
-                    CheckboxListTile(
-                      dense: true,
-                      title: Text('Add event venue with date & time'),
-                      value: _isEvent,
-                      controlAffinity: ListTileControlAffinity.leading,
-                      onChanged: (bool value) {
-                        if (!_isEvent) {
-                          _venueController.clear();
-                          _dateController.clear();
-                          _timeController.clear();
-                        }
-                        setState(() {
-                          _isEvent = !_isEvent;
-                        });
-                      },
-                    ),
-                    buildVenueDateTime(context),
-                    DepartmentSelection(
-                      edit: true,
-                      value: selectedDepartment,
-                      selectedDepartment: (departments) {
-                        setState(() {
-                          selectedDepartment = departments;
-                        });
-                      },
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      child: NetworkImagesView(
-                        images: networkImages ?? [],
-                        delete: (index) {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text(
-                                  "Warning !",
-                                  style: TextStyle(color: Colors.orange),
-                                ),
-                                content: Text(
-                                  "Are you sure want to delete this image?",
-                                ),
-                                actions: <Widget>[
-                                  FlatButton(
-                                    child: new Text("No"),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                  FlatButton(
-                                    child: new Text("Yes"),
-                                    onPressed: () async {
-                                      await _deleteNetworkImage(index);
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
-                          );
+                      Divider(
+                        height: 24.0,
+                        color: Colors.black,
+                      ),
+                      TitleInput(controller: _titleController),
+                      DescriptionInput(controller: _descriptionController),
+                      CheckboxListTile(
+                        dense: true,
+                        title: Text('Add event venue with date & time'),
+                        value: _isEvent,
+                        controlAffinity: ListTileControlAffinity.leading,
+                        onChanged: (bool value) {
+                          if (!_isEvent) {
+                            _venueController.clear();
+                            _dateController.clear();
+                            _timeController.clear();
+                          }
+                          setState(() {
+                            _isEvent = !_isEvent;
+                          });
                         },
                       ),
-                    ),
-                    ImagesView(
-                      images: images,
-                      remove: (index) {
-                        images.removeAt(index);
-                        setState(() {
-                          images = images;
-                        });
-                      },
-                    ),
-                    RaisedButton(
-                      textColor: Colors.white,
-                      color: Colors.lightBlueAccent,
-                      child: Text("Add images"),
-                      onPressed: _loadAssets,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16.0),
-                      child: RaisedButton(
-                        highlightColor: Colors.transparent,
-                        splashColor: Theme.Colors.loginGradientEnd,
-                        textColor: Colors.white,
-                        color:
-                            loading ? Colors.white12 : Colors.lightBlueAccent,
-                        child: Text("Update Notice"),
-                        onPressed: loading ? () {} : _submitNewNotice,
+                      buildVenueDateTime(context),
+                      DepartmentSelection(
+                        edit: true,
+                        value: selectedDepartment,
+                        selectedDepartment: (departments) {
+                          setState(() {
+                            selectedDepartment = departments;
+                          });
+                        },
                       ),
-                    ),
-                    FlatButton(
-                      splashColor: Colors.lightBlue,
-                      onPressed: _backAction,
-                      child: Text(
-                        "Back",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          decoration: TextDecoration.underline,
-                          fontSize: 18.0,
-                          fontFamily: "WorkSansMedium",
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        child: NetworkImagesView(
+                          images: networkImages ?? [],
+                          delete: (index) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text(
+                                    "Warning !",
+                                    style: TextStyle(color: Colors.orange),
+                                  ),
+                                  content: Text(
+                                    "Are you sure want to delete this image?",
+                                  ),
+                                  actions: <Widget>[
+                                    FlatButton(
+                                      child: new Text("No"),
+                                      onPressed: () async {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    FlatButton(
+                                      child: new Text("Yes"),
+                                      onPressed: () async {
+                                        await _deleteNetworkImage(index);
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
                         ),
                       ),
-                    ),
-                  ],
+                      ImagesView(
+                        images: images,
+                        remove: (index) {
+                          images.removeAt(index);
+                          setState(() {
+                            images = images;
+                          });
+                        },
+                      ),
+                      RaisedButton(
+                        textColor: Colors.white,
+                        color: Colors.lightBlueAccent,
+                        child: Text("Add images"),
+                        onPressed: _loadAssets,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: RaisedButton(
+                          highlightColor: Colors.transparent,
+                          splashColor: Theme.Colors.loginGradientEnd,
+                          textColor: Colors.white,
+                          color:
+                              loading ? Colors.white12 : Colors.lightBlueAccent,
+                          child: Text("Update Notice"),
+                          onPressed: loading ? () {} : _submitNewNotice,
+                        ),
+                      ),
+                      FlatButton(
+                        splashColor: Colors.lightBlue,
+                        onPressed: _backAction,
+                        child: Text(
+                          "Back",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            fontSize: 18.0,
+                            fontFamily: "WorkSansMedium",
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

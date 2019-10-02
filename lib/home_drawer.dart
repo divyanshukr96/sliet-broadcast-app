@@ -36,11 +36,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
   void _getUserProfile() async {
     final prefs = await SharedPreferences.getInstance();
     final value = prefs.getString('profile') ?? 0;
-    if (value == 0) {
+    if (value == 0 || value == 'null') {
       final value = jsonEncode(await NetworkUtils.get('/api/auth/user'));
       prefs.setString('profile', value);
     }
-    if (value != 0) {
+    if (value != 0 && value != 'null') {
       setState(() {
         profile = jsonDecode(value);
       });

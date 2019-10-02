@@ -19,7 +19,7 @@ class CardModelData {
   final caEditNotice;
 
   CardModelData(
-      this.id,
+      {this.id,
       this.nameOfUploader,
       this.userProfile,
       this.titleOfEvent,
@@ -33,5 +33,5 @@ class CardModelData {
       this.public,
       this.departments,
       this.imageList,
-      this.caEditNotice);
+      this.caEditNotice});
 }
