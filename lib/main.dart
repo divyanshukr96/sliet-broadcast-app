@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sliet_broadcast/components/profile.dart';
 import 'package:sliet_broadcast/homepage.dart';
 import 'package:splashscreen/splashscreen.dart';
@@ -8,15 +9,18 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: new SplashingHome(),
+    return MultiProvider(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: SplashingHome(),
 //      initialRoute: '/',
-      routes: {
+        routes: {
 //        '/': (context) => SplashingHome(),
-        '/home': (context) => HomePage(),
-        '/profile': (context) => Profile(),
-      },
+          '/home': (context) => HomePage(),
+          '/profile': (context) => Profile(),
+        },
+      ),
+      providers: <SingleChildCloneableWidget>[],
     );
   }
 }

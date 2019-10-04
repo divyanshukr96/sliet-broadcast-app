@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:sliet_broadcast/components/edit_notice.dart';
-import 'package:sliet_broadcast/components/models/cardModel.dart';
+import 'package:sliet_broadcast/components/models/notice.dart';
 import 'package:sliet_broadcast/utils/carousel.dart';
 
 class NoticeCard extends StatefulWidget {
-  final CardModelData cardModelData;
+  final Notice cardModelData;
 
   NoticeCard(this.cardModelData);
 
@@ -14,7 +14,7 @@ class NoticeCard extends StatefulWidget {
 }
 
 class _NoticeCardState extends State<NoticeCard> {
-  CardModelData notice;
+  Notice notice;
 
   _NoticeCardState(this.notice);
 
@@ -124,7 +124,7 @@ class NoticeCardHeader extends StatelessWidget {
     @required this.notice,
   }) : super(key: key);
 
-  final CardModelData notice;
+  final Notice notice;
 
   @override
   Widget build(BuildContext context) {
@@ -174,7 +174,7 @@ class NoticeEditButton extends StatelessWidget {
     @required this.notice,
   }) : super(key: key);
 
-  final CardModelData notice;
+  final Notice notice;
 
   @override
   Widget build(BuildContext context) {
@@ -213,7 +213,7 @@ class EventTime extends StatelessWidget {
     @required this.notice,
   }) : super(key: key);
 
-  final CardModelData notice;
+  final Notice notice;
 
   @override
   Widget build(BuildContext context) {

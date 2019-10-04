@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sliet_broadcast/components/models/cardModel.dart';
+import 'package:sliet_broadcast/components/models/notice.dart';
 import 'package:sliet_broadcast/components/noticeCard.dart';
 import 'dart:async';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
@@ -22,7 +22,7 @@ class _NoticeFeedState extends State<NoticeFeed> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       new GlobalKey<RefreshIndicatorState>();
 
-  List<CardModelData> cardsList = [];
+  List<Notice> cardsList = [];
 
   Future<Null> refreshList(_context) async {
     _getNotices().then((newData) {
@@ -34,29 +34,12 @@ class _NoticeFeedState extends State<NoticeFeed> {
     return null;
   }
 
-  Future<List<CardModelData>> _getNotices() async {
+  Future<List<Notice>> _getNotices() async {
     cardsList.clear();
     var jsonData = await NetworkUtils.get(noticeUrl);
 
-    for (var i in jsonData) {
-      CardModelData card = CardModelData(
-        id: i['id'],
-        nameOfUploader: i['user'],
-        userProfile: i['profile'],
-        titleOfEvent: i['title'],
-        aboutEvent: i['description'],
-        isEvent: i['is_event'],
-        venueForEvent: i['venue'],
-        timeOfEvent: i['time'],
-        dateOfEvent: i['date'],
-        public: i['public_notice'],
-        departments: i['department'],
-        imageUrlNotice: i['images'],
-        imageList: i['images_list'],
-        caEditNotice: i['can_edit'],
-        dateOfNoticeUpload: i['created_at'],
-      );
-
+    for (var notice in jsonData) {
+      Notice card = Notice.fromMap(notice);
       cardsList.add(card);
     }
 

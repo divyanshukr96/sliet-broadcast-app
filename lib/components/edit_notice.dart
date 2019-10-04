@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:progress_dialog/progress_dialog.dart';
-import 'package:sliet_broadcast/components/models/cardModel.dart';
+import 'package:sliet_broadcast/components/models/notice.dart';
 import 'package:sliet_broadcast/components/notice_form.dart';
 import 'package:sliet_broadcast/utils/network_utils.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
@@ -15,7 +15,7 @@ class EditNotice extends StatefulWidget {
     @required this.notice,
   }) : super(key: key);
 
-  final CardModelData notice;
+  final Notice notice;
 
   @override
   _EditNoticeState createState() => _EditNoticeState();
