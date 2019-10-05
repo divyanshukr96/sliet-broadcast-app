@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sliet_broadcast/components/profile.dart';
 import 'package:sliet_broadcast/homepage.dart';
+import 'package:sliet_broadcast/utils/noticeHelper.dart';
 import 'package:splashscreen/splashscreen.dart';
 
 void main() => runApp(MyApp());
@@ -20,7 +21,11 @@ class MyApp extends StatelessWidget {
           '/profile': (context) => Profile(),
         },
       ),
-      providers: <SingleChildCloneableWidget>[],
+      providers: <SingleChildCloneableWidget>[
+        ChangeNotifierProvider(
+          builder: (_) => NoticeNotifier(),
+        ),
+      ],
     );
   }
 }

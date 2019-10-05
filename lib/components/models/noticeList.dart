@@ -5,19 +5,26 @@ class Notices {
   final int totalNotices;
   final int pageNumber;
   final int pageSize;
+  dynamic nextPage;
+  dynamic previousPage;
+  dynamic lastNotice;
 
   Notices({
     this.notices,
     this.totalNotices,
     this.pageNumber,
     this.pageSize,
+    this.nextPage,
+    this.previousPage,
   });
 
-  Notices.fromMap(Map<dynamic, dynamic> map)
+  Notices.fromMap(dynamic map)
       : notices = List<Notice>.from(
-          map['notices'].map((notice) => Notice.fromMap(notice)),
+          map['results'].map((notice) => Notice.fromMap(notice)),
         ),
-        totalNotices = map['t'],
+        totalNotices = map['count'],
         pageNumber = map[''],
-        pageSize = map[''];
+        pageSize = map[''],
+        nextPage = map['next'],
+        previousPage = map['previous'];
 }
