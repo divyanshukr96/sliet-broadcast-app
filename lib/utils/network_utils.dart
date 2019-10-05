@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -10,6 +11,7 @@ class NetworkUtils {
   static final String host = productionHost;
   static final String productionHost = 'http://192.168.137.1:8000';
   static final String developmentHost = 'http://192.168.137.1:8000';
+
 //
 //  static final String productionHost = 'https://slietbroadcast.in';
 //  static final String developmentHost = 'https://slietbroadcast.in';
@@ -175,6 +177,32 @@ class NetworkUtils {
       return userType;
     } catch (onError) {
       return "STUDENT";
+    }
+  }
+
+  static Future fetchData(String url) async {
+    Dio dio = new Dio();
+    Response response;
+    try {
+      var token = await getTokenStatic();
+      dio.options.headers['Authorization'] = "Token " + token;
+    } catch (e) {
+      print('Error $e');
+    }
+
+    try {
+      response = await dio.get('$host/api$url');
+      if (response.statusCode != 200) {
+        print('Error ${response.statusCode}: $url');
+        throw HttpException(
+          'Invalid response ${response.statusCode}',
+          uri: Uri.parse(url),
+        );
+      }
+      return response;
+    } on DioError catch (error) {
+      response = error.response;
+      return response;
     }
   }
 }

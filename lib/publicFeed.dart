@@ -4,6 +4,6 @@ import 'package:sliet_broadcast/noticefeed.dart';
 class PublicFeed extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return NoticeFeed('/api/public/notice');
+    return NoticeFeed('/public/notice');
   }
 }

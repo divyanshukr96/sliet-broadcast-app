@@ -4,7 +4,6 @@ import 'package:sliet_broadcast/home_drawer.dart';
 import 'package:sliet_broadcast/privateFeed.dart';
 import 'package:sliet_broadcast/publicFeed.dart';
 import 'package:sliet_broadcast/published_notice.dart';
-import 'package:sliet_broadcast/utils/internet_connection.dart';
 import 'package:sliet_broadcast/utils/network_utils.dart';
 
 class HomePage extends StatefulWidget {

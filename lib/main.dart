@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sliet_broadcast/components/profile.dart';
 import 'package:sliet_broadcast/homepage.dart';
-import 'package:sliet_broadcast/utils/noticeHelper.dart';
+import 'package:sliet_broadcast/provider/privateNoticeNotifier.dart';
+import 'package:sliet_broadcast/provider/publicNoticeNotifier.dart';
 import 'package:splashscreen/splashscreen.dart';
 
 void main() => runApp(MyApp());
@@ -23,7 +24,10 @@ class MyApp extends StatelessWidget {
       ),
       providers: <SingleChildCloneableWidget>[
         ChangeNotifierProvider(
-          builder: (_) => NoticeNotifier(),
+          builder: (_) => PublicNoticeNotifier(),
+        ),
+        ChangeNotifierProvider(
+          builder: (_) => PrivateNoticeNotifier(),
         ),
       ],
     );

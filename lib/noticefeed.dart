@@ -1,25 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sliet_broadcast/components/models/notice.dart';
+import 'package:sliet_broadcast/components/models/noticeList.dart';
 import 'package:sliet_broadcast/components/noticeCard.dart';
+import 'package:sliet_broadcast/provider/privateNoticeNotifier.dart';
+import 'package:sliet_broadcast/provider/publicNoticeNotifier.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
 import 'package:sliet_broadcast/utils/network_utils.dart';
-import 'package:sliet_broadcast/utils/noticeHelper.dart';
-import 'components/models/noticeList.dart';
 
 class NoticeFeed extends StatefulWidget {
   final String noticeLink;
+  final dynamic private;
 
-  NoticeFeed(this.noticeLink);
+  NoticeFeed(this.noticeLink, {this.private});
 
   @override
-  _NoticeFeedState createState() => _NoticeFeedState(noticeLink);
+  _NoticeFeedState createState() =>
+      _NoticeFeedState(noticeLink, private == true);
 }
 
-class _NoticeFeedState extends State<NoticeFeed> {
-  final String noticeUrl;
+class _NoticeFeedState extends State<NoticeFeed>
+    with SingleTickerProviderStateMixin {
 
-  _NoticeFeedState(this.noticeUrl);
+  final String noticeUrl;
+  bool private = false;
+
+  _NoticeFeedState(this.noticeUrl, this.private);
 
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       new GlobalKey<RefreshIndicatorState>();
@@ -69,31 +75,9 @@ class _NoticeFeedState extends State<NoticeFeed> {
         },
         child: SafeArea(
           child: Center(
-            child: Consumer<NoticeNotifier>(
-              builder: (context, notices, notFound) {
-                if (notices.fetched) notices.fetchPublicNotice();
-//                return Container(
-//                  margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
-//                  child: FlatButton(
-//                    color: Color(0xFFDCDCDC),
-//                    shape: RoundedRectangleBorder(
-//                      borderRadius: BorderRadius.circular(8.0),
-//                    ),
-//                    child: Text(
-//                      "Load More",
-//                      style: TextStyle(color: Colors.black54),
-//                    ),
-//                    onPressed: () {
-//                      notices.loadMore();
-//                    },
-//                  ),
-//                );
-                return notices.publicNotices != null
-                    ? NoticeList(notices.publicNotices, notices)
-                    : notFound;
-              },
-              child: NoticeNotFound(),
-            ),
+            child: private
+                ? PrivateNotices(noticeUrl: noticeUrl)
+                : PublicNotices(noticeUrl: noticeUrl),
           ),
         ),
       ),
@@ -101,15 +85,63 @@ class _NoticeFeedState extends State<NoticeFeed> {
   }
 }
 
+class PublicNotices extends StatelessWidget {
+  const PublicNotices({
+    Key key,
+    @required this.noticeUrl,
+  }) : super(key: key);
+
+  final String noticeUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<PublicNoticeNotifier>(
+      builder: (context, notices, notFound) {
+        notices.noticePath = noticeUrl;
+        if (notices.fetched) notices.fetchPublicNotice();
+        return notices.publicNotices != null
+            ? NoticeList(notices.publicNotices, notices, 'public1212')
+            : notFound;
+      },
+      child: NoticeNotFound(),
+    );
+  }
+}
+
+class PrivateNotices extends StatelessWidget {
+  const PrivateNotices({
+    Key key,
+    @required this.noticeUrl,
+  }) : super(key: key);
+
+  final String noticeUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<PrivateNoticeNotifier>(
+      builder: (context, notices, notFound) {
+        notices.noticePath = noticeUrl;
+        if (notices.fetched) notices.fetchPublicNotice();
+        return notices.publicNotices != null
+            ? NoticeList(notices.publicNotices, notices, 'private002')
+            : notFound;
+      },
+      child: NoticeNotFound(),
+    );
+  }
+}
+
 class NoticeList extends StatelessWidget {
-  NoticeList(this.notices, this.provider);
+  NoticeList(this.notices, this.provider, this._key);
 
   final Notices notices;
   final provider;
+  final _key;
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      key: new PageStorageKey(_key),
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       itemCount: notices.notices.length + 1,
       itemBuilder: (BuildContext context, int index) {
