@@ -129,6 +129,29 @@ class NetworkUtils {
     }
   }
 
+  static dynamic delete(var endPoint) async {
+    var prefs = await getSharedPreference();
+    var uri = host + endPoint;
+    try {
+      final response = await http.delete(
+        uri,
+        headers: {
+          'Authorization': 'Token ' + prefs.getString(AuthUtils.authTokenKey)
+        },
+      );
+      final responseJson = json.decode(response.body);
+      if (response.statusCode == 400) return {'errors': responseJson};
+      return responseJson;
+    } catch (exception) {
+//      print(exception);
+//      if (exception.toString().contains('SocketException')) {
+//        return 'NetworkError';
+//      } else {
+//        return null;
+//      }
+    }
+  }
+
   static getSharedPreference() async {
     SharedPreferences _sharedPreferences;
     _sharedPreferences = await _shPrefs;

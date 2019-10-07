@@ -1,9 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sliet_broadcast/components/channelList.dart';
 import 'package:sliet_broadcast/login.dart';
-import 'package:sliet_broadcast/style/theme.dart' as Theme;
 import 'package:sliet_broadcast/utils/network_utils.dart';
 
 class HomeDrawer extends StatefulWidget {
@@ -76,66 +75,100 @@ class _HomeDrawerState extends State<HomeDrawer> {
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          DrawerHeader(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-                  child: Text(
-                    'SLIET BROADCAST',
-                    style: TextStyle(color: Colors.white, fontSize: 20.0),
+          UserAccountsDrawerHeader(
+            accountName: Text(
+              profile['name'] ?? "Guest User",
+              style: TextStyle(fontSize: 18.0),
+            ),
+            accountEmail: UserName(username: profile['username']),
+            currentAccountPicture: GestureDetector(
+              onTap: () {
+                if (authenticated)
+                  Navigator.popAndPushNamed(context, '/profile');
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    fit: BoxFit.fill,
+                    image: profileUrl,
                   ),
                 ),
-                Spacer(),
-                Row(
-                  children: <Widget>[
-                    Container(
-                      width: 50.0,
-                      height: 50.0,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          fit: BoxFit.fill,
-                          image: profileUrl,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.only(left: 16.0, bottom: 8.0),
-                            child: Text(
-                              profile['name'] ?? "Guest User",
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20.0,
-                              ),
-                            ),
-                          ),
-                          UserName(username: profile['username']),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-                Spacer(),
-              ],
+              ),
             ),
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-              begin: Alignment.topRight,
-              end: Alignment.bottomLeft,
-              colors: [
-                Theme.Colors.loginGradientEnd,
-                Theme.Colors.loginGradientStart,
-              ],
-            )),
           ),
+          ExpansionTile(
+            title: Text('Channels'),
+            children: <Widget>[
+              ListTile(
+                title: Text('Administration'),
+                leading: SizedBox(width: 0),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => ChannelList(
+                          'Administration', '/api/channel?admin=true'),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                title: Text('Department'),
+                leading: SizedBox(width: 0),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => ChannelList(
+                          'Department', '/api/channel?type=DEPARTMENT'),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                title: Text('Society'),
+                leading: SizedBox(width: 0),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (BuildContext context) =>
+                          ChannelList('Society', '/api/channel?type=SOCIETY'),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                title: Text('Other'),
+                leading: SizedBox(width: 0),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => ChannelList(
+                          'Broadcast Channel', '/api/channel?type=CHANNEL'),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+
+          ListTile(
+            title: Text('Following'),
+            leading: Icon(Icons.people),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (BuildContext context) =>
+                      ChannelList('Following', '/api/channel/following'),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            title: Text('Bookmarks'),
+            leading: Icon(Icons.bookmark),
+            onTap: () {},
+          ),
+
           LoginLogout(
             sharedPreferences: _sharedPreferences,
             authenticated: authenticated,
@@ -171,15 +204,7 @@ class UserName extends StatelessWidget {
       onTap: () {
         Navigator.popAndPushNamed(context, '/profile');
       },
-      child: Padding(
-        padding: EdgeInsets.only(left: 16.0, top: 4.0),
-        child: Text(
-          "@" + username,
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        ),
-      ),
+      child: Text("@" + username),
     );
   }
 }

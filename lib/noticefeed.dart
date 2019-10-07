@@ -21,7 +21,6 @@ class NoticeFeed extends StatefulWidget {
 
 class _NoticeFeedState extends State<NoticeFeed>
     with SingleTickerProviderStateMixin {
-
   final String noticeUrl;
   bool private = false;
 
@@ -103,7 +102,26 @@ class PublicNotices extends StatelessWidget {
             ? NoticeList(notices.publicNotices, notices, 'public1212')
             : notFound;
       },
-      child: NoticeNotFound(),
+      child: Stack(
+        children: <Widget>[
+          NoticeNotFound(),
+          Positioned(
+            bottom: 30.0,
+            left: 0.0,
+            right: 0.0,
+            child: Align(
+              child: FloatingActionButton(
+                backgroundColor: Colors.white70,
+                foregroundColor: Colors.black38,
+                onPressed: () {
+
+                },
+                child: Icon(Icons.refresh),
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 }
@@ -189,12 +207,15 @@ class NoticeNotFound extends StatelessWidget {
           ),
         ),
         SizedBox(height: 16.0),
-        Text(
-          "Welcome to SLIET Broadcast App",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 22.0,
-            fontWeight: FontWeight.w500,
+        Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Text(
+            "No data available!",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 22.0,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
       ],
