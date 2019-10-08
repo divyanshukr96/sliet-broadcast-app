@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliet_broadcast/components/channelList.dart';
+import 'package:sliet_broadcast/components/register.dart';
 import 'package:sliet_broadcast/login.dart';
 import 'package:sliet_broadcast/utils/network_utils.dart';
 
@@ -252,26 +253,51 @@ class LoginLogout extends StatelessWidget {
         ],
       );
     }
-    return ListTile(
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            'Login',
-            style: TextStyle(),
+    return Column(
+      children: <Widget>[
+        ListTile(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                'Login',
+                style: TextStyle(),
+              ),
+            ],
           ),
-        ],
-      ),
-      leading: Icon(Icons.person_outline),
-      onTap: () {
-        Navigator.pop(context);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (BuildContext context) => LoginPage(),
+          leading: Icon(Icons.person_outline),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (BuildContext context) => LoginPage(),
+              ),
+            );
+          },
+        ),
+        ListTile(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                'Register',
+                style: TextStyle(),
+              ),
+            ],
           ),
-        );
-      },
+          leading: Icon(Icons.person_outline),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (BuildContext context) => Register(),
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }

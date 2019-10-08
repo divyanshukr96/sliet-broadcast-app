@@ -375,10 +375,7 @@ class _DepartmentSelectionState extends State<DepartmentSelection> {
   _fetchDepartment() async {
     try {
       var responseJson = await NetworkUtils.get("/api/public/department");
-      if (responseJson != null)
-        setState(() {
-          departments = responseJson;
-        });
+      if (responseJson != null) departments = responseJson;
     } catch (e) {
       print('Error $e');
     }

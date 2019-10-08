@@ -190,106 +190,108 @@ class _CreateNoticeState extends State<CreateNotice> {
   Widget build(BuildContext context) {
     pr = new ProgressDialog(context);
 
-    return Container(
+    return SingleChildScrollView(
+      child: Container(
 //      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
-          colors: [
-            Theme.Colors.loginGradientEnd,
-            Theme.Colors.loginGradientStart,
-          ],
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Theme.Colors.loginGradientEnd,
+              Theme.Colors.loginGradientStart,
+            ],
+          ),
         ),
-      ),
-      child: SafeArea(
-        child: Container(
-          margin: EdgeInsets.all(8.0),
-          child: Card(
-            elevation: 2.0,
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            child: Form(
-              key: _formKey,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 12.0),
-                        child: Text(
-                          'Add new Notice',
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.w500,
+        child: SafeArea(
+          child: Container(
+            margin: EdgeInsets.all(8.0),
+            child: Card(
+              elevation: 2.0,
+              color: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Form(
+                key: _formKey,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 12.0),
+                          child: Text(
+                            'Add new Notice',
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    Divider(),
-                    TitleInput(controller: _titleController),
-                    DescriptionInput(controller: _descriptionController),
-                    CheckboxListTile(
-                      dense: true,
-                      title: Text('Add event venue with date & time'),
-                      value: _isEvent,
-                      controlAffinity: ListTileControlAffinity.leading,
-                      onChanged: (bool value) {
-                        if (!_isEvent) {
-                          _venueController.clear();
-                          _dateController.clear();
-                          _timeController.clear();
-                        }
-                        setState(() {
-                          _isEvent = !_isEvent;
-                        });
-                      },
-                    ),
-                    buildVenueDateTime(context),
-                    DepartmentSelection(
-                      value: selectedDepartment,
-                      selectedDepartment: (departments) {
-                        setState(() {
-                          selectedDepartment = departments;
-                        });
-                      },
-                    ),
-                    RaisedButton.icon(
-                      textColor: Colors.white,
-                      color: Colors.lightBlueAccent,
-                      label: Text("Select images"),
-                      onPressed: _loadAssets,
-                      icon: Icon(Icons.cloud_upload),
-                    ),
-                    ImagesView(
-                      images: images,
-                      remove: (index) {
-                        images.removeAt(index);
-                        setState(() {
-                          images = images;
-                        });
-                      },
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16.0),
-                      child: RaisedButton.icon(
-                        highlightColor: Colors.transparent,
-                        splashColor: Theme.Colors.loginGradientEnd,
-                        textColor: Colors.white,
-                        color:
-                            loading ? Colors.white12 : Colors.lightBlueAccent,
-                        label: Text("Submit"),
-                        onPressed: loading ? () {} : _submitNewNotice,
-                        icon: Icon(loading ? Icons.cached : Icons.save),
+                      Divider(),
+                      TitleInput(controller: _titleController),
+                      DescriptionInput(controller: _descriptionController),
+                      CheckboxListTile(
+                        dense: true,
+                        title: Text('Add event venue with date & time'),
+                        value: _isEvent,
+                        controlAffinity: ListTileControlAffinity.leading,
+                        onChanged: (bool value) {
+                          if (!_isEvent) {
+                            _venueController.clear();
+                            _dateController.clear();
+                            _timeController.clear();
+                          }
+                          setState(() {
+                            _isEvent = !_isEvent;
+                          });
+                        },
                       ),
-                    ),
-                  ],
+                      buildVenueDateTime(context),
+                      DepartmentSelection(
+                        value: selectedDepartment,
+                        selectedDepartment: (departments) {
+                          setState(() {
+                            selectedDepartment = departments;
+                          });
+                        },
+                      ),
+                      RaisedButton.icon(
+                        textColor: Colors.white,
+                        color: Colors.lightBlueAccent,
+                        label: Text("Select images"),
+                        onPressed: _loadAssets,
+                        icon: Icon(Icons.cloud_upload),
+                      ),
+                      ImagesView(
+                        images: images,
+                        remove: (index) {
+                          images.removeAt(index);
+                          setState(() {
+                            images = images;
+                          });
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: RaisedButton.icon(
+                          highlightColor: Colors.transparent,
+                          splashColor: Theme.Colors.loginGradientEnd,
+                          textColor: Colors.white,
+                          color:
+                              loading ? Colors.white12 : Colors.lightBlueAccent,
+                          label: Text("Submit"),
+                          onPressed: loading ? () {} : _submitNewNotice,
+                          icon: Icon(loading ? Icons.cached : Icons.save),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

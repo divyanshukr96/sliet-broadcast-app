@@ -48,13 +48,13 @@ class _HomePageState extends State<HomePage> {
         userType = onValue;
       });
     });
-    if (["DEPARTMENT", "SOCIETY"].contains(userType)) {
+    if (["DEPARTMENT", "SOCIETY", "CHANNEL"].contains(userType)) {
       await _pageOptions.add(CreateNotice());
     }
     if (["FACULTY"].contains(userType)) {
       await _pageOptions.add(PrivateFeed());
     }
-    if (["DEPARTMENT", "SOCIETY"].contains(userType)) {
+    if (["DEPARTMENT", "SOCIETY", "CHANNEL"].contains(userType)) {
       await _pageOptions.add(PublishedNotice());
     }
   }
@@ -83,7 +83,7 @@ class _HomePageState extends State<HomePage> {
       ),
       drawer: HomeDrawer(),
       bottomNavigationBar: authenticated &&
-              ["FACULTY", "DEPARTMENT", "SOCIETY"].contains(userType)
+              ["FACULTY", "DEPARTMENT", "SOCIETY", "CHANNEL"].contains(userType)
           ? buildBottomNavigationBar()
           : null,
     );
@@ -95,7 +95,7 @@ class _HomePageState extends State<HomePage> {
       icon: Icon(Icons.public),
       title: Text('Public'),
     ));
-    if (["DEPARTMENT", "SOCIETY"].contains(userType)) {
+    if (["DEPARTMENT", "SOCIETY", "CHANNEL"].contains(userType)) {
       items.add(BottomNavigationBarItem(
         icon: Icon(Icons.add_circle_outline),
         title: Text('Add Notice'),
@@ -107,7 +107,7 @@ class _HomePageState extends State<HomePage> {
         title: Text('Private'),
       ));
     }
-    if (["DEPARTMENT", "SOCIETY"].contains(userType)) {
+    if (["DEPARTMENT", "SOCIETY", "CHANNEL"].contains(userType)) {
       items.add(BottomNavigationBarItem(
         icon: Icon(Icons.publish),
         title: Text('Published'),
