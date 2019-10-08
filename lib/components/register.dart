@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:progress_dialog/progress_dialog.dart';
+import 'package:sliet_broadcast/components/terms_conditions.dart';
+import 'package:sliet_broadcast/style/theme.dart' as Theme;
 import 'package:sliet_broadcast/utils/network_utils.dart';
 
 class Register extends StatefulWidget {
@@ -151,24 +153,12 @@ class _RegisterState extends State<Register> {
             ),
             backgroundColor: Colors.green,
           ));
-          Future.delayed(const Duration(milliseconds: 500), () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: new Text("Alert Dialog title"),
-                  content: new Text("Alert Dialog body"),
-                  actions: <Widget>[
-                    // usually buttons at the bottom of the dialog
-                    new FlatButton(
-                      child: new Text("Close"),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
-                );
-              },
+          Future.delayed(const Duration(milliseconds: 1000), () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (BuildContext context) => RegistrationSuccess(),
+              ),
             );
           });
         }
@@ -192,7 +182,6 @@ class _RegisterState extends State<Register> {
         print('Error $e');
       }
     }
-    print('end================================');
     pr.hide();
   }
 
@@ -301,7 +290,7 @@ class _RegisterState extends State<Register> {
                   ],
                   validator: (value) {
                     if (value.isEmpty) {
-                      return 'Please enter your belonging batch year';
+                      return 'Please enter your batch';
                     }
                     if ((int.parse(value) > DateTime.now().year) ||
                         value.length < 4) {
@@ -309,7 +298,7 @@ class _RegisterState extends State<Register> {
                     }
                     if ((int.parse(value) == DateTime.now().year) &&
                         DateTime.now().month < 6) {
-                      return 'Entered batch year is invalid';
+                      return 'Entered value is invalid';
                     }
                     return null;
                   },
@@ -344,12 +333,18 @@ class _RegisterState extends State<Register> {
                     _selectDate(context);
                   },
                 ),
-                RaisedButton(
-                  onPressed: () {
-                    _handleSubmit();
-                  },
-                  child: Text('Submit'),
-                )
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: RaisedButton(
+                    color: Colors.blueAccent,
+                    textColor: Colors.white,
+                    onPressed: () {
+                      _handleSubmit();
+                    },
+                    child: Text('Register'),
+                  ),
+                ),
+                SizedBox(height: 8.0)
               ],
             ),
           ),
@@ -357,7 +352,6 @@ class _RegisterState extends State<Register> {
       ),
     );
   }
-
 
   @override
   void dispose() {
@@ -373,7 +367,7 @@ class _RegisterState extends State<Register> {
   }
 
   Padding buildDepartmentField() {
-    if(!FocusScope.of(context).hasFocus)
+    if (!FocusScope.of(context).hasFocus)
       FocusScope.of(context).requestFocus(new FocusNode());
 
     var value;
@@ -411,9 +405,6 @@ class _RegisterState extends State<Register> {
                 .toList(),
             onChanged: (String value) {
               setState(() => _departmentController.text = value);
-
-//              dynamic selected = _departments.where((d) => d['username'] == value).toList();
-//              setState(() => _departmentController.text = selected[0]['name']);
             },
             hint: Text(value != null ? value : 'Select Your Department'),
           ),
@@ -469,9 +460,10 @@ class _RegisterState extends State<Register> {
 
   Padding buildGenderRow() {
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16.0,
-        vertical: 8.0,
+      padding: const EdgeInsets.only(
+        left: 16.0,
+        top: 8.0,
+        bottom: 8.0,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -491,7 +483,7 @@ class _RegisterState extends State<Register> {
                 ),
               ),
               Flexible(
-                flex: 8,
+                flex: 14,
                 child: RadioListTile<String>(
                   title: new Text('Male'),
                   value: 'MALE',
@@ -504,7 +496,7 @@ class _RegisterState extends State<Register> {
                 ),
               ),
               Flexible(
-                flex: 9,
+                flex: 15,
                 child: RadioListTile<String>(
                   title: new Text('Female'),
                   value: 'FEMALE',
@@ -615,6 +607,124 @@ class InputTextForm extends StatelessWidget {
           ),
           focusedErrorBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.redAccent, width: 1.0),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class RegistrationSuccess extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: [
+            Theme.Colors.loginGradientEnd,
+            Theme.Colors.loginGradientStart,
+          ],
+        ),
+      ),
+      child: SafeArea(
+        child: Card(
+          color: Colors.transparent,
+          margin: EdgeInsets.all(16.0),
+//          elevation: 5.0,
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  width: 120.0,
+                  height: 120.0,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/login.png'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(
+                    'Thank you for registering with us.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 22.0,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(
+                    'Your account will be activated after your details have been verified by the Administrator.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 17.0,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(
+                    'It may take some time for the verification to complete.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.white60,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 24.0),
+                FlatButton(
+                  splashColor: Colors.lightBlue,
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) => TermsAndConditions(),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    "Read terms and conditions",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white54,
+                      decoration: TextDecoration.underline,
+                      fontSize: 16.0,
+                      fontFamily: "WorkSansMedium",
+                    ),
+                  ),
+                ),
+                SizedBox(height: 24.0),
+                FlatButton(
+                  splashColor: Colors.lightBlue,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    "Back",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18.0,
+                      fontFamily: "WorkSansMedium",
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

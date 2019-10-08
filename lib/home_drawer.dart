@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliet_broadcast/components/channelList.dart';
+import 'package:sliet_broadcast/components/drawerItem.dart';
 import 'package:sliet_broadcast/components/register.dart';
+import 'package:sliet_broadcast/components/terms_conditions.dart';
 import 'package:sliet_broadcast/login.dart';
 import 'package:sliet_broadcast/utils/network_utils.dart';
 
@@ -151,7 +153,6 @@ class _HomeDrawerState extends State<HomeDrawer> {
               ),
             ],
           ),
-
           ListTile(
             title: Text('Following'),
             leading: Icon(Icons.people),
@@ -169,14 +170,27 @@ class _HomeDrawerState extends State<HomeDrawer> {
             leading: Icon(Icons.bookmark),
             onTap: () {},
           ),
-
           LoginLogout(
             sharedPreferences: _sharedPreferences,
             authenticated: authenticated,
           ),
-//          DrawerItem('Terms & Conditions', Icon(Icons.library_books), context,
-//                  testFunction)
-//              .getItem(),
+          ListTile(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Text('Terms & Conditions'),
+              ],
+            ),
+            leading: Icon(Icons.library_books),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => TermsAndConditions(),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -255,6 +269,28 @@ class LoginLogout extends StatelessWidget {
     }
     return Column(
       children: <Widget>[
+        Divider(),
+        ListTile(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                'Register',
+                style: TextStyle(),
+              ),
+            ],
+          ),
+          leading: Icon(Icons.create),
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (BuildContext context) => Register(),
+              ),
+            );
+          },
+        ),
         ListTile(
           title: Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -272,27 +308,6 @@ class LoginLogout extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (BuildContext context) => LoginPage(),
-              ),
-            );
-          },
-        ),
-        ListTile(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                'Register',
-                style: TextStyle(),
-              ),
-            ],
-          ),
-          leading: Icon(Icons.person_outline),
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (BuildContext context) => Register(),
               ),
             );
           },
