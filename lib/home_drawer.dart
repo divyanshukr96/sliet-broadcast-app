@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliet_broadcast/components/channelList.dart';
-import 'package:sliet_broadcast/components/drawerItem.dart';
 import 'package:sliet_broadcast/components/register.dart';
 import 'package:sliet_broadcast/components/terms_conditions.dart';
 import 'package:sliet_broadcast/login.dart';
@@ -153,23 +152,12 @@ class _HomeDrawerState extends State<HomeDrawer> {
               ),
             ],
           ),
-          ListTile(
-            title: Text('Following'),
-            leading: Icon(Icons.people),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (BuildContext context) =>
-                      ChannelList('Following', '/api/channel/following'),
-                ),
-              );
-            },
-          ),
-          ListTile(
-            title: Text('Bookmarks'),
-            leading: Icon(Icons.bookmark),
-            onTap: () {},
-          ),
+          FollowingButton(authenticated: authenticated),
+//          ListTile(
+//            title: Text('Bookmarks'),
+//            leading: Icon(Icons.bookmark),
+//            onTap: () {},
+//          ),
           LoginLogout(
             sharedPreferences: _sharedPreferences,
             authenticated: authenticated,
@@ -195,9 +183,32 @@ class _HomeDrawerState extends State<HomeDrawer> {
       ),
     );
   }
+}
 
-  void testFunction() {
-    print('hello ');
+class FollowingButton extends StatelessWidget {
+  const FollowingButton({
+    Key key,
+    @required this.authenticated,
+  }) : super(key: key);
+
+  final bool authenticated;
+
+  @override
+  Widget build(BuildContext context) {
+    if (authenticated)
+      return ListTile(
+        title: Text('Following'),
+        leading: Icon(Icons.people),
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (BuildContext context) =>
+                  ChannelList('Following', '/api/channel/following'),
+            ),
+          );
+        },
+      );
+    return SizedBox(height: 0.0);
   }
 }
 

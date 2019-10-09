@@ -49,11 +49,12 @@ class NetworkUtils {
 
 //    Navigator.of(context).pushReplacementNamed('/');
 //    showSnackBar(context, message)
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (BuildContext context) => HomePage(),
-      ),
-    );
+    Navigator.pushNamedAndRemoveUntil(context, "/home", (r) => false);
+//    Navigator.of(context).push(
+//      MaterialPageRoute(
+//        builder: (BuildContext context) => HomePage(),
+//      ),
+//    );
   }
 
   static showSnackBar(GlobalKey<ScaffoldState> scaffoldKey, String message) {
@@ -84,7 +85,7 @@ class NetworkUtils {
   }
 
   static get(var endPoint) async {
-    var prefs = await getSharedPreference();
+    var prefs = await SharedPreferences.getInstance();
     var uri = host + endPoint;
     String token = prefs.getString(AuthUtils.authTokenKey);
     try {
@@ -105,7 +106,7 @@ class NetworkUtils {
   }
 
   static dynamic post(var endPoint, Object data) async {
-    var prefs = await getSharedPreference();
+    var prefs = await SharedPreferences.getInstance();
     var uri = host + endPoint;
     try {
       final response = await http.post(
@@ -130,7 +131,7 @@ class NetworkUtils {
   }
 
   static dynamic delete(var endPoint) async {
-    var prefs = await getSharedPreference();
+    var prefs = await SharedPreferences.getInstance();
     var uri = host + endPoint;
     try {
       final response = await http.delete(
@@ -195,7 +196,7 @@ class NetworkUtils {
 
   Future<String> getUserType() async {
     try {
-      var prefs = await getSharedPreference();
+      var prefs = await SharedPreferences.getInstance();
       String userType = prefs.getString(AuthUtils.userType);
       return userType;
     } catch (onError) {

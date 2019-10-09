@@ -39,7 +39,6 @@ class _ChannelListState extends State<ChannelList> {
 
   @override
   Widget build(BuildContext context) {
-    print(channelList);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title ?? 'Channel'),

@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sliet_broadcast/homepage.dart';
 import 'package:sliet_broadcast/publicFeed.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
 import 'package:sliet_broadcast/utils/auth_utils.dart';
@@ -28,7 +30,6 @@ class _LoginPageState extends State<LoginPage>
 
   final FocusNode myFocusNodePassword = FocusNode();
   final FocusNode myFocusNodeEmail = FocusNode();
-  final FocusNode myFocusNodeName = FocusNode();
 
   TextEditingController loginEmailController = new TextEditingController();
   TextEditingController loginPasswordController = new TextEditingController();
@@ -128,7 +129,6 @@ class _LoginPageState extends State<LoginPage>
   void dispose() {
     myFocusNodePassword.dispose();
     myFocusNodeEmail.dispose();
-    myFocusNodeName.dispose();
     _pageController?.dispose();
     super.dispose();
   }
@@ -159,6 +159,8 @@ class _LoginPageState extends State<LoginPage>
   }
 
   _authenticateUser() async {
+    Response response;
+    Dio dio = new Dio();
 //    _showLoading();
     final form = _formKey.currentState;
     if (form.validate()) {
@@ -173,8 +175,17 @@ class _LoginPageState extends State<LoginPage>
         NetworkUtils.showSnackBar(_scaffoldKey, 'Invalid Email/Password');
       } else {
         await AuthUtils.insertDetails(_sharedPreferences, responseJson);
-        final value = jsonEncode(await NetworkUtils.get('/api/auth/user'));
-        _sharedPreferences.setString('profile', value);
+
+        dio.options.headers['Authorization'] = "Token " + responseJson['token'];
+        dio.options.headers['content-type'] = "application/json";
+        dio.options.headers['Accept'] = "application/json";
+        try {
+          response = await dio.get(
+            NetworkUtils.host + "/api/auth/user",
+          );
+          _sharedPreferences.setString('profile', jsonEncode(response.data));
+        } on DioError catch (e) {} catch (e) {}
+
         Navigator.pushNamedAndRemoveUntil(context, "/home", (r) => false);
       }
 //      _hideLoading();
@@ -381,12 +392,12 @@ class _LoginPageState extends State<LoginPage>
             padding: EdgeInsets.only(top: 10.0),
             child: FlatButton(
                 onPressed: () {
-
                   showDialog(
                     context: context,
                     builder: (_) => AlertDialog(
                       title: new Text('Dear User'),
-                      content: Text('Please visit ACSS section in Computer Department to confirm your identity and get your password changed.'),
+                      content: Text(
+                          'Please visit ACSS section in Computer Department to confirm your identity and get your password changed.'),
                     ),
                   );
                 },
