@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:sliet_broadcast/components/models/notice.dart';
 import 'package:sliet_broadcast/components/models/noticeList.dart';
 import 'package:sliet_broadcast/components/noticeCard.dart';
+import 'package:sliet_broadcast/main.dart';
 import 'package:sliet_broadcast/provider/privateNoticeNotifier.dart';
 import 'package:sliet_broadcast/provider/publicNoticeNotifier.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
@@ -32,6 +33,13 @@ class _NoticeFeedState extends State<NoticeFeed>
   List<Notice> cardsList = [];
 
   Future<Null> refreshList(_context) async {
+    print('hjgjhh');
+    Navigator.pushReplacement(
+      _context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => SplashingHome(),
+      ),
+    );
     _getNotices().then((newData) {
       setState(() {
         cardsList.clear();
@@ -94,32 +102,39 @@ class PublicNotices extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool loading = true;
     return Consumer<PublicNoticeNotifier>(
       builder: (context, notices, notFound) {
         notices.noticePath = noticeUrl;
-        if (notices.fetched) notices.fetchPublicNotice();
+        if (notices.fetched)
+          notices.fetchPublicNotice();
+        else
+          Future.delayed(const Duration(minutes: 5), () {
+            notices.fetchPublicNotice();
+          });
+        loading = notices.loading;
         return notices.publicNotices != null
             ? NoticeList(notices.publicNotices, notices, 'public1212')
             : notFound;
       },
       child: Stack(
         children: <Widget>[
-          NoticeNotFound(),
-          Positioned(
-            bottom: 30.0,
-            left: 0.0,
-            right: 0.0,
-            child: Align(
-              child: FloatingActionButton(
-                backgroundColor: Colors.white70,
-                foregroundColor: Colors.black38,
-                onPressed: () {
-
-                },
-                child: Icon(Icons.refresh),
-              ),
-            ),
-          )
+          NoticeNotFound(loading: loading,),
+//          Positioned(
+//            bottom: 30.0,
+//            left: 0.0,
+//            right: 0.0,
+//            child: Align(
+//              child: FloatingActionButton(
+//                backgroundColor: Colors.white70,
+//                foregroundColor: Colors.black38,
+//                onPressed: () {
+//
+//                },
+//                child: Icon(Icons.refresh),
+//              ),
+//            ),
+//          )
         ],
       ),
     );
@@ -136,15 +151,22 @@ class PrivateNotices extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool loading = true;
     return Consumer<PrivateNoticeNotifier>(
       builder: (context, notices, notFound) {
         notices.noticePath = noticeUrl;
-        if (notices.fetched) notices.fetchPublicNotice();
+        if (notices.fetched)
+          notices.fetchPublicNotice();
+        else
+          Future.delayed(const Duration(minutes: 5), () {
+            notices.fetchPublicNotice();
+          });
+        loading = notices.loading;
         return notices.publicNotices != null
             ? NoticeList(notices.publicNotices, notices, 'private002')
             : notFound;
       },
-      child: NoticeNotFound(),
+      child: NoticeNotFound(loading: loading,),
     );
   }
 }
@@ -189,7 +211,10 @@ class NoticeList extends StatelessWidget {
 class NoticeNotFound extends StatelessWidget {
   const NoticeNotFound({
     Key key,
-  }) : super(key: key);
+    bool loading = false,
+  })  : _loading = loading,
+        super(key: key);
+  final bool _loading;
 
   @override
   Widget build(BuildContext context) {
@@ -206,11 +231,18 @@ class NoticeNotFound extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(height: 16.0),
+        _loading ? Column(
+          children: <Widget>[
+            SizedBox(height: 24.0),
+            CircularProgressIndicator(
+              backgroundColor: Colors.white54,
+            ),
+          ],
+        ) : SizedBox(height: 24.0),
         Padding(
-          padding: const EdgeInsets.only(top: 8.0),
+          padding: const EdgeInsets.only(top: 16.0),
           child: Text(
-            "No data available!",
+            _loading ? "Loading ..." : "No data available!",
             style: TextStyle(
               color: Colors.white,
               fontSize: 22.0,

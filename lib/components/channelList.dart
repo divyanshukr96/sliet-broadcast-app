@@ -17,6 +17,7 @@ class ChannelList extends StatefulWidget {
 
 class _ChannelListState extends State<ChannelList> {
   List<dynamic> channelList;
+  bool loading = true;
 
   @override
   void initState() {
@@ -35,6 +36,7 @@ class _ChannelListState extends State<ChannelList> {
     } catch (e) {
       print('Error $e');
     }
+    loading = false;
   }
 
   @override
@@ -57,7 +59,7 @@ class _ChannelListState extends State<ChannelList> {
         ),
         padding: EdgeInsets.all(8.0),
         child: channelList == null || channelList.length == 0
-            ? NoticeNotFound()
+            ? NoticeNotFound(loading: loading,)
             : ListView.builder(
                 itemCount: channelList != null ? channelList.length : 0,
                 itemBuilder: (BuildContext context, int index) {
@@ -170,6 +172,7 @@ class _FollowButtonState extends State<FollowButton> {
 
   @override
   Widget build(BuildContext context) {
+    if (!widget.channel['auth']) return SizedBox(height: 0.0);
     return Align(
       alignment: Alignment.centerRight,
       child: MaterialButton(
