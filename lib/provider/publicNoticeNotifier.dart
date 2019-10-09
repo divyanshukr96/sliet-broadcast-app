@@ -49,10 +49,11 @@ class PublicNoticeNotifier with ChangeNotifier {
         _publicNotices = notice;
         _lastNoticeFetched(_resData);
       }
-      _fetched = false;
+
     } catch (e) {
       print('Error $e');
     }
+    _fetched = false;
     _loading = false;
     notifyListeners();
   }

@@ -36,7 +36,18 @@ class TitleInput extends StatelessWidget {
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.blue, width: 1.0),
           ),
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red, width: 1.0),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.redAccent, width: 1.0),
+          ),
         ),
+        validator: (value) {
+          if (value.isEmpty) return 'Notice title field is required.';
+          if (value.length < 10) return 'Title must be more than 5 charater.';
+          return null;
+        },
       ),
     );
   }

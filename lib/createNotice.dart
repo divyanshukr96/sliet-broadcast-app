@@ -23,6 +23,7 @@ class _CreateNoticeState extends State<CreateNotice> {
   bool authenticated = false;
   bool loading = false;
   bool _isEvent = false;
+  bool _visible = true;
   var percentage;
 
   // department selection variable
@@ -72,18 +73,6 @@ class _CreateNoticeState extends State<CreateNotice> {
     }
     _department.removeWhere((value) => value == "ALL");
 
-    if (_titleController.text == "") {
-      _formSubmitting();
-      return Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text(
-          'Notice title field is required!',
-          style: TextStyle(color: Colors.white70),
-        ),
-        backgroundColor: Colors.deepOrange,
-        duration: Duration(seconds: 2),
-      ));
-    }
-
     if (_descriptionController.text == "" && files.length == 0) {
       _formSubmitting();
       return Scaffold.of(context).showSnackBar(SnackBar(
@@ -119,6 +108,7 @@ class _CreateNoticeState extends State<CreateNotice> {
             : null,
         'time': _timeController.text,
         'public_notice': selectedRadio,
+        'visible': _visible,
         'department': _department.toList(),
         'files': files,
       });
@@ -147,6 +137,7 @@ class _CreateNoticeState extends State<CreateNotice> {
             selectedRadio = 1;
             selectedDepartment = null;
             _isEvent = false;
+            _visible = true;
           });
           _department.clear();
           files.clear();
@@ -238,7 +229,10 @@ class _CreateNoticeState extends State<CreateNotice> {
                       DescriptionInput(controller: _descriptionController),
                       CheckboxListTile(
                         dense: true,
-                        title: Text('Add event venue with date & time'),
+                        title: Text(
+                          'Add event venue with date & time',
+                          style: TextStyle(fontSize: 15.0),
+                        ),
                         value: _isEvent,
                         controlAffinity: ListTileControlAffinity.leading,
                         onChanged: (bool value) {
@@ -253,6 +247,78 @@ class _CreateNoticeState extends State<CreateNotice> {
                         },
                       ),
                       buildVenueDateTime(context),
+                      Divider(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          SizedBox(
+                            width: 18.0,
+                          ),
+                          Text(
+                            'Choose viewer : ',
+                            textAlign: TextAlign.start,
+                          ),
+                          Radio(
+                            value: 1,
+                            groupValue: selectedRadio,
+                            activeColor: Colors.blue,
+                            onChanged: (val) {
+                              setState(() {
+                                selectedRadio = val;
+                              });
+                            },
+                          ),
+                          Text('Public'),
+                          Radio(
+                            value: 0,
+                            groupValue: selectedRadio,
+                            activeColor: Colors.blue,
+                            onChanged: (val) {
+                              setState(() {
+                                _visible = false;
+                                selectedRadio = val;
+                              });
+                            },
+                          ),
+                          Text('Faculty only'),
+                        ],
+                      ),
+                      Divider(),
+                      selectedRadio == 0
+                          ? SizedBox(height: 0.0)
+                          : Wrap(
+                              children: <Widget>[
+                                CheckboxListTile(
+                                  dense: true,
+                                  title: Text(
+                                    'Make notice visible to all users.',
+                                    style: TextStyle(fontSize: 15.0),
+                                  ),
+                                  secondary: GestureDetector(
+                                    child: Icon(Icons.help_outline, size: 20.0),
+                                    onTap: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            content: Text(
+                                              'This notice is visible to all users whether it is from SLIET or not.',
+                                            ),
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
+                                  value: _visible,
+                                  controlAffinity:
+                                      ListTileControlAffinity.leading,
+                                  onChanged: (bool value) {
+                                    setState(() => _visible = !_visible);
+                                  },
+                                ),
+                                Divider(),
+                              ],
+                            ),
                       DepartmentSelection(
                         value: selectedDepartment,
                         selectedDepartment: (departments) {
@@ -307,33 +373,6 @@ class _CreateNoticeState extends State<CreateNotice> {
       children: <Widget>[
         VenueInput(controller: _venueController),
         DateAndTime(time: _timeController, date: _dateController),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Radio(
-              value: 1,
-              groupValue: selectedRadio,
-              activeColor: Colors.blue,
-              onChanged: (val) {
-                setState(() {
-                  selectedRadio = val;
-                });
-              },
-            ),
-            Text('Public'),
-            Radio(
-              value: 0,
-              groupValue: selectedRadio,
-              activeColor: Colors.blue,
-              onChanged: (val) {
-                setState(() {
-                  selectedRadio = val;
-                });
-              },
-            ),
-            Text('Faculty only'),
-          ],
-        ),
       ],
     );
   }

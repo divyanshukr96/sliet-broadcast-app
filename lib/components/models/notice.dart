@@ -14,6 +14,7 @@ class Notice {
   String dateOfEvent;
   String aboutEvent;
   final public;
+  final visible;
   List departments;
   final imageList;
   final caEditNotice;
@@ -31,6 +32,7 @@ class Notice {
     this.dateOfEvent,
     this.aboutEvent,
     this.public,
+    this.visible,
     this.departments,
     this.imageList,
     this.caEditNotice,
@@ -47,6 +49,7 @@ class Notice {
         timeOfEvent = map['time'],
         dateOfEvent = map['date'],
         public = map['public_notice'],
+        visible = map['visible'],
         departments = map['department'],
         imageUrlNotice = map['images'],
         imageList = map['images_list'],

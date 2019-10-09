@@ -4,11 +4,11 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'package:sliet_broadcast/homepage.dart';
 import 'auth_utils.dart';
 
 class NetworkUtils {
   static final String host = productionHost;
+
 //  static final String productionHost = 'http://192.168.137.1:8000';
 //  static final String developmentHost = 'http://192.168.137.1:8000';
 
@@ -38,14 +38,8 @@ class NetworkUtils {
     }
   }
 
-  static logoutUser(BuildContext context, SharedPreferences prefs) {
-    prefs.setString(AuthUtils.authTokenKey, null);
-    prefs.setInt(AuthUtils.userIdKey, null);
-    prefs.setString(AuthUtils.nameKey, null);
-    prefs.setString(AuthUtils.username, 'STUDENT');
-    prefs.setString(AuthUtils.userType, null);
-    prefs.setBool('isAdmin', false);
-    prefs.setString('profile', null);
+  static logoutUser(BuildContext context, SharedPreferences prefs) async {
+    await logout(prefs);
 
 //    Navigator.of(context).pushReplacementNamed('/');
 //    showSnackBar(context, message)
@@ -55,6 +49,16 @@ class NetworkUtils {
 //        builder: (BuildContext context) => HomePage(),
 //      ),
 //    );
+  }
+
+  static logout(SharedPreferences prefs) {
+    prefs.setString(AuthUtils.authTokenKey, null);
+    prefs.setInt(AuthUtils.userIdKey, null);
+    prefs.setString(AuthUtils.nameKey, null);
+    prefs.setString(AuthUtils.username, 'STUDENT');
+    prefs.setString(AuthUtils.userType, null);
+    prefs.setBool('isAdmin', false);
+    prefs.setString('profile', null);
   }
 
   static showSnackBar(GlobalKey<ScaffoldState> scaffoldKey, String message) {
@@ -93,7 +97,10 @@ class NetworkUtils {
         uri,
         headers: {'Authorization': token != null ? "Token " + token : ""},
       );
-      if (response.statusCode == 401) throw Error();
+      if (response.statusCode == 401) {
+        await logout(prefs);
+        throw Error();
+      }
       final responseJson = json.decode(response.body);
       return responseJson;
     } catch (exception) {
@@ -216,6 +223,7 @@ class NetworkUtils {
 
     try {
       response = await dio.get('$host/api$url');
+      if (response.statusCode == 401) await logout(await getSharedPreference());
       if (response.statusCode != 200) {
         print('Error ${response.statusCode}: $url');
         throw HttpException(
@@ -225,8 +233,11 @@ class NetworkUtils {
       }
       return response;
     } on DioError catch (error) {
+      if (response.statusCode == 401) await logout(await getSharedPreference());
       response = error.response;
       return response;
+    } catch (e) {
+      print('Error $e');
     }
   }
 }

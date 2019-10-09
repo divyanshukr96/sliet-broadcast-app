@@ -33,19 +33,18 @@ class _NoticeFeedState extends State<NoticeFeed>
   List<Notice> cardsList = [];
 
   Future<Null> refreshList(_context) async {
-    print('hjgjhh');
     Navigator.pushReplacement(
       _context,
       MaterialPageRoute(
         builder: (BuildContext context) => SplashingHome(),
       ),
     );
-    _getNotices().then((newData) {
-      setState(() {
-        cardsList.clear();
-        cardsList = newData;
-      });
-    }).catchError((onError) {});
+//    _getNotices().then((newData) {
+//      setState(() {
+//        cardsList.clear();
+//        cardsList = newData;
+//      });
+//    }).catchError((onError) {});
     return null;
   }
 
@@ -119,7 +118,9 @@ class PublicNotices extends StatelessWidget {
       },
       child: Stack(
         children: <Widget>[
-          NoticeNotFound(loading: loading,),
+          NoticeNotFound(
+            loading: loading,
+          ),
 //          Positioned(
 //            bottom: 30.0,
 //            left: 0.0,
@@ -166,7 +167,9 @@ class PrivateNotices extends StatelessWidget {
             ? NoticeList(notices.publicNotices, notices, 'private002')
             : notFound;
       },
-      child: NoticeNotFound(loading: loading,),
+      child: NoticeNotFound(
+        loading: loading,
+      ),
     );
   }
 }
@@ -231,14 +234,16 @@ class NoticeNotFound extends StatelessWidget {
             ),
           ),
         ),
-        _loading ? Column(
-          children: <Widget>[
-            SizedBox(height: 24.0),
-            CircularProgressIndicator(
-              backgroundColor: Colors.white54,
-            ),
-          ],
-        ) : SizedBox(height: 24.0),
+        _loading
+            ? Column(
+                children: <Widget>[
+                  SizedBox(height: 24.0),
+                  CircularProgressIndicator(
+                    backgroundColor: Colors.white54,
+                  ),
+                ],
+              )
+            : SizedBox(height: 24.0),
         Padding(
           padding: const EdgeInsets.only(top: 16.0),
           child: Text(

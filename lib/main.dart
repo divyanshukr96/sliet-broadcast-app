@@ -4,6 +4,7 @@ import 'package:sliet_broadcast/components/profile.dart';
 import 'package:sliet_broadcast/homepage.dart';
 import 'package:sliet_broadcast/provider/privateNoticeNotifier.dart';
 import 'package:sliet_broadcast/provider/publicNoticeNotifier.dart';
+import 'package:sliet_broadcast/utils/app_upgrader.dart';
 import 'package:splashscreen/splashscreen.dart';
 
 void main() => runApp(MyApp());
@@ -43,7 +44,7 @@ class SplashingHome extends StatelessWidget {
   Widget build(BuildContext context) {
     return SplashScreen(
       seconds: 4,
-      navigateAfterSeconds: HomePage(),
+      navigateAfterSeconds: AppUpgrade(child: HomePage()),
       title: new Text(
         'Together we can make a difference',
         style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
