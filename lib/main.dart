@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
 //      initialRoute: '/',
         routes: {
 //        '/': (context) => SplashingHome(),
-          '/home': (context) => HomePage(),
+          '/home': (context) => AppUpgrade(child: HomePage()),
           '/profile': (context) => Profile(),
         },
       ),
@@ -44,7 +44,7 @@ class SplashingHome extends StatelessWidget {
   Widget build(BuildContext context) {
     return SplashScreen(
       seconds: 4,
-      navigateAfterSeconds: AppUpgrade(child: HomePage()),
+      navigateAfterSeconds: '/home',
       title: new Text(
         'Together we can make a difference',
         style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),

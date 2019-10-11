@@ -9,12 +9,12 @@ import 'auth_utils.dart';
 class NetworkUtils {
   static final String host = productionHost;
 
-//  static final String productionHost = 'http://192.168.137.1:8000';
-//  static final String developmentHost = 'http://192.168.137.1:8000';
+  static final String productionHost = 'http://192.168.137.1:8000';
+  static final String developmentHost = 'http://192.168.137.1:8000';
 
 //
-  static final String productionHost = 'https://slietbroadcast.in';
-  static final String developmentHost = 'https://slietbroadcast.in';
+//  static final String productionHost = 'https://slietbroadcast.in';
+//  static final String developmentHost = 'https://slietbroadcast.in';
 
   static Future<SharedPreferences> _shPrefs = SharedPreferences.getInstance();
 
@@ -39,7 +39,7 @@ class NetworkUtils {
   }
 
   static logoutUser(BuildContext context, SharedPreferences prefs) async {
-    await logout(prefs);
+    await logout(prefs: prefs);
 
 //    Navigator.of(context).pushReplacementNamed('/');
 //    showSnackBar(context, message)
@@ -51,7 +51,12 @@ class NetworkUtils {
 //    );
   }
 
-  static logout(SharedPreferences prefs) {
+  static logout({SharedPreferences prefs}) async {
+    if (prefs is SharedPreferences) _logout(prefs);
+    _logout(await getSharedPreference());
+  }
+
+  static _logout(SharedPreferences prefs) {
     prefs.setString(AuthUtils.authTokenKey, null);
     prefs.setInt(AuthUtils.userIdKey, null);
     prefs.setString(AuthUtils.nameKey, null);
@@ -98,7 +103,7 @@ class NetworkUtils {
         headers: {'Authorization': token != null ? "Token " + token : ""},
       );
       if (response.statusCode == 401) {
-        await logout(prefs);
+        await logout(prefs: prefs);
         throw Error();
       }
       final responseJson = json.decode(response.body);
@@ -223,7 +228,7 @@ class NetworkUtils {
 
     try {
       response = await dio.get('$host/api$url');
-      if (response.statusCode == 401) await logout(await getSharedPreference());
+      if (response.statusCode == 401) await logout();
       if (response.statusCode != 200) {
         print('Error ${response.statusCode}: $url');
         throw HttpException(
@@ -233,7 +238,7 @@ class NetworkUtils {
       }
       return response;
     } on DioError catch (error) {
-      if (response.statusCode == 401) await logout(await getSharedPreference());
+      if (response.statusCode == 401) await logout();
       response = error.response;
       return response;
     } catch (e) {
