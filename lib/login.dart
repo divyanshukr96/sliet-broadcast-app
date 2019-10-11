@@ -4,9 +4,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliet_broadcast/homepage.dart';
-import 'package:sliet_broadcast/publicFeed.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
 import 'package:sliet_broadcast/utils/auth_utils.dart';
 import 'package:sliet_broadcast/utils/network_utils.dart';
@@ -24,6 +24,7 @@ class _LoginPageState extends State<LoginPage>
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   SharedPreferences _sharedPreferences;
+  ProgressDialog pr;
 
   final FocusNode myFocusNodeEmailLogin = FocusNode();
   final FocusNode myFocusNodePasswordLogin = FocusNode();
@@ -43,7 +44,8 @@ class _LoginPageState extends State<LoginPage>
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    pr = ProgressDialog(context);
+    return Scaffold(
       key: _scaffoldKey,
       body: NotificationListener<OverscrollIndicatorNotification>(
         onNotification: (overscroll) {
@@ -152,26 +154,31 @@ class _LoginPageState extends State<LoginPage>
     if (authToken != null) {
       Navigator.of(_scaffoldKey.currentContext).push(
         MaterialPageRoute(
-          builder: (BuildContext context) => PublicFeed(),
+          builder: (BuildContext context) => HomePage(),
         ),
       );
     }
   }
 
   _authenticateUser() async {
+    pr.style(message: 'Authenticating ...');
     Response response;
     Dio dio = new Dio();
 //    _showLoading();
     final form = _formKey.currentState;
     if (form.validate()) {
+      pr.show();
       var responseJson = await NetworkUtils.authenticateUser(
           loginEmailController.text, loginPasswordController.text);
 
       if (responseJson == null) {
+        await pr.hide();
         NetworkUtils.showSnackBar(_scaffoldKey, 'Something went wrong!');
       } else if (responseJson == 'NetworkError') {
+        await pr.hide();
         NetworkUtils.showSnackBar(_scaffoldKey, null);
       } else if (responseJson['errors'] != null) {
+        await pr.hide();
         NetworkUtils.showSnackBar(_scaffoldKey, 'Invalid Email/Password');
       } else {
         await AuthUtils.insertDetails(_sharedPreferences, responseJson);
@@ -180,22 +187,16 @@ class _LoginPageState extends State<LoginPage>
         dio.options.headers['content-type'] = "application/json";
         dio.options.headers['Accept'] = "application/json";
         try {
-          response = await dio.get(
-            NetworkUtils.host + "/api/auth/user",
-          );
+          response = await dio.get(NetworkUtils.host + "/api/auth/user");
           _sharedPreferences.setString('profile', jsonEncode(response.data));
         } on DioError catch (e) {} catch (e) {}
-
+        await pr.hide();
         Navigator.pushNamedAndRemoveUntil(context, "/home", (r) => false);
       }
-//      _hideLoading();
-    } else {
-      setState(() {
-//        _isLoading = false;
-//        _emailError;
-//        _passwordError;
-      });
     }
+    print(pr.isShowing());
+    if (pr.isShowing()) await pr.hide();
+    print('asdjkasdkjasdksahdjhsajdg');
   }
 
   void showInSnackBar(String value) {
@@ -217,8 +218,8 @@ class _LoginPageState extends State<LoginPage>
 
   Widget _buildMenuBar(BuildContext context) {
     return Container(
-      width: 300.0,
-      height: 45.0,
+      width: 250.0,
+      height: 40.0,
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
@@ -239,7 +240,7 @@ class _LoginPageState extends State<LoginPage>
             Text(
               'SLIET Broadcast',
               style: TextStyle(
-                fontSize: 30.0,
+                fontSize: 28.0,
                 fontWeight: FontWeight.w500,
                 fontFamily: 'Montserrat',
                 foreground: Paint()..shader = Theme.Colors.primaryTextGradient,
@@ -280,6 +281,15 @@ class _LoginPageState extends State<LoginPage>
                             focusNode: myFocusNodeEmailLogin,
                             controller: loginEmailController,
                             keyboardType: TextInputType.emailAddress,
+                            inputFormatters: [
+                              BlacklistingTextInputFormatter(RegExp(" "))
+                            ],
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return 'Please enter valid username';
+                              }
+                              return null;
+                            },
                             style: TextStyle(
                                 fontFamily: "WorkSansSemiBold",
                                 fontSize: 16.0,
@@ -307,15 +317,24 @@ class _LoginPageState extends State<LoginPage>
                           padding: EdgeInsets.only(
                               top: 10.0, bottom: 20.0, left: 25.0, right: 25.0),
                           child: TextFormField(
+                            enableInteractiveSelection: false,
                             focusNode: myFocusNodePasswordLogin,
                             controller: loginPasswordController,
                             obscureText: _obscureTextLogin,
+                            inputFormatters: [
+                              BlacklistingTextInputFormatter(RegExp(" "))
+                            ],
+                            validator: (value) {
+                              if (value.isEmpty) {
+                                return 'Please enter password';
+                              }
+                              return null;
+                            },
                             style: TextStyle(
                                 fontFamily: "WorkSansSemiBold",
                                 fontSize: 16.0,
                                 color: Colors.black),
                             decoration: InputDecoration(
-//                            border: InputBorder.none,
                               icon: Icon(
                                 Icons.lock_outline,
                                 size: 22.0,
@@ -323,17 +342,18 @@ class _LoginPageState extends State<LoginPage>
                               ),
                               hintText: "Password",
                               hintStyle: TextStyle(
-                                  fontFamily: "WorkSansSemiBold",
-                                  fontSize: 17.0),
-                              suffixIcon: GestureDetector(
-                                onTap: _toggleLogin,
-                                child: Icon(
+                                fontFamily: "WorkSansSemiBold",
+                                fontSize: 17.0,
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
                                   _obscureTextLogin
                                       ? FontAwesomeIcons.eye
                                       : FontAwesomeIcons.eyeSlash,
-                                  size: 15.0,
+                                  size: 16.0,
                                   color: Colors.black,
                                 ),
+                                onPressed: _toggleLogin,
                               ),
                             ),
                           ),
@@ -360,31 +380,33 @@ class _LoginPageState extends State<LoginPage>
                     ),
                   ],
                   gradient: new LinearGradient(
-                      colors: [
-                        Theme.Colors.loginGradientEnd,
-                        Theme.Colors.loginGradientStart
-                      ],
-                      begin: const FractionalOffset(0.2, 0.2),
-                      end: const FractionalOffset(1.0, 1.0),
-                      stops: [0.0, 1.0],
-                      tileMode: TileMode.clamp),
+                    colors: [
+                      Theme.Colors.loginGradientEnd,
+                      Theme.Colors.loginGradientStart
+                    ],
+                    begin: const FractionalOffset(0.2, 0.2),
+                    end: const FractionalOffset(1.0, 1.0),
+                    stops: [0.0, 1.0],
+                    tileMode: TileMode.clamp,
+                  ),
                 ),
                 child: MaterialButton(
-                    highlightColor: Colors.transparent,
-                    splashColor: Theme.Colors.loginGradientEnd,
-                    //shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5.0))),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 42.0),
-                      child: Text(
-                        "LOGIN",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 25.0,
-                            fontFamily: "WorkSansBold"),
+                  highlightColor: Colors.transparent,
+                  splashColor: Theme.Colors.loginGradientEnd,
+                  child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 32.0),
+                    child: Text(
+                      "LOGIN",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24.0,
+                        fontFamily: "WorkSansBold",
                       ),
                     ),
-                    onPressed: _authenticateUser),
+                  ),
+                  onPressed: _authenticateUser,
+                ),
               ),
             ],
           ),

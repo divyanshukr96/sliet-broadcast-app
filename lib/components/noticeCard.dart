@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:sliet_broadcast/components/edit_notice.dart';
 import 'package:sliet_broadcast/components/models/notice.dart';
@@ -31,8 +32,9 @@ class _NoticeCardState extends State<NoticeCard> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
       child: Card(
+        elevation: 5.0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(4.0),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
@@ -52,22 +54,21 @@ class _NoticeCardState extends State<NoticeCard> {
               Container(
                 child: imageForCard,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(
-                  notice.aboutEvent,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: numberOfLines,
-                ),
-              ),
+              buildNoticeDescription(),
               EventTime(notice: notice),
               Row(
                 mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  GestureDetector(
-                    onTap: changeLines,
-                    child: iconForText,
+                  SizedBox(width: 32.0),
+                  IconButton(
+                    icon: iconForText,
+                    onPressed: changeLines,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.bookmark_border),
+                    tooltip: 'Bookmark',
+                    onPressed: () {},
                   ),
                 ],
               )
@@ -78,12 +79,23 @@ class _NoticeCardState extends State<NoticeCard> {
     );
   }
 
+  Widget buildNoticeDescription() {
+    if (notice.aboutEvent != null && notice.aboutEvent != "")
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Text(
+          notice.aboutEvent,
+          overflow: TextOverflow.ellipsis,
+          maxLines: numberOfLines,
+        ),
+      );
+    return SizedBox(height: 0.0);
+  }
+
   void changeLines() {
     if ((numberOfLines == 3) && (notice.imageUrlNotice != null)) {
       numberOfLines = 1000;
-      iconForText = Icon(
-        Icons.keyboard_arrow_up,
-      );
+      iconForText = Icon(Icons.expand_more);
 
       imageForCard = Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -102,14 +114,10 @@ class _NoticeCardState extends State<NoticeCard> {
       );
     } else if (numberOfLines == 3) {
       numberOfLines = 1000;
-      iconForText = Icon(
-        Icons.keyboard_arrow_up,
-      );
+      iconForText = Icon(Icons.expand_less);
     } else {
       numberOfLines = 3;
-      iconForText = Icon(
-        Icons.keyboard_arrow_down,
-      );
+      iconForText = Icon(Icons.expand_more);
       imageForCard = null;
     }
     setState(() {

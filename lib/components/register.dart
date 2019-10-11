@@ -153,7 +153,7 @@ class _RegisterState extends State<Register> {
             ),
             backgroundColor: Colors.green,
           ));
-          Future.delayed(const Duration(milliseconds: 1000), () {
+          Future.delayed(const Duration(milliseconds: 200), () {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -193,159 +193,170 @@ class _RegisterState extends State<Register> {
       appBar: AppBar(title: Text('New Registration')),
       body: SingleChildScrollView(
         child: Container(
-          margin: EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: <Widget>[
-                InputTextForm(
-                  controller: _nameController,
-                  focusNode: _nameFocus,
-                  label: 'Full Name',
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Please enter full name';
-                    }
-                    if (value.length < 5) {
-                      return 'Name must be more than 5 charater';
-                    }
-                    return null;
-                  },
-                ),
-                InputTextForm(
-                  controller: _emailController,
-                  focusNode: _emailFocus,
-                  label: 'Email address',
-                  keyboardType: TextInputType.emailAddress,
-                  inputFormatters: [
-                    BlacklistingTextInputFormatter(RegExp(" "))
-                  ],
-                  validator: (value) {
-                    if (value.isEmpty) return 'Please enter email address';
-                    Pattern pattern =
-                        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-                    RegExp regex = new RegExp(pattern);
-                    if (!regex.hasMatch(value))
-                      return 'Enter valid email address';
-                    return null;
-                  },
-                ),
-                InputTextForm(
-                  controller: _mobileController,
-                  focusNode: _mobileFocus,
-                  label: 'Mobile number',
-                  keyboardType: TextInputType.phone,
-                  maxLength: 10,
-                  inputFormatters: [
-                    WhitelistingTextInputFormatter.digitsOnly,
-                  ],
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Please enter mobile number';
-                    }
-                    if (value.length < 10) {
-                      return 'Mobile number should be of 10 digit';
-                    }
-                    return null;
-                  },
-                ),
-                InputTextForm(
-                  controller: _usernameController,
-                  focusNode: _usernameFocus,
-                  label: 'Username',
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Please enter username';
-                    }
-                    if (value.length < 4) {
-                      return 'Username must be more than 5 charater';
-                    }
-                    return null;
-                  },
-                ),
-                InputTextForm(
-                  controller: _passwordController,
-                  focusNode: _passwordFocus,
-                  label: 'Password',
-                  obscureText: true,
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Please enter password';
-                    }
-                    if (value.length < 6) {
-                      return 'Password must be atleast 6 charater';
-                    }
-                    return null;
-                  },
-                ),
-                buildDepartmentField(),
-                InputTextForm(
-                  controller: _batchController,
-                  focusNode: _batchFocus,
-                  label: 'Batch (YYYY)',
-                  keyboardType: TextInputType.number,
-                  maxLength: 4,
-                  inputFormatters: [
-                    WhitelistingTextInputFormatter.digitsOnly,
-                  ],
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Please enter your batch';
-                    }
-                    if ((int.parse(value) > DateTime.now().year) ||
-                        value.length < 4) {
-                      return 'Entered batch year is invalid';
-                    }
-                    if ((int.parse(value) == DateTime.now().year) &&
-                        DateTime.now().month < 6) {
-                      return 'Entered value is invalid';
-                    }
-                    return null;
-                  },
-                ),
-                InputTextForm(
-                  controller: _registrationController,
-                  focusNode: _registrationFocus,
-                  label: 'Registration number',
-                  keyboardType: TextInputType.number,
-                  maxLength: 7,
-                  inputFormatters: [
-                    WhitelistingTextInputFormatter.digitsOnly,
-                  ],
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Please enter your registration number';
-                    }
-                    if (value.length < 4) {
-                      return 'Invalid registration number';
-                    }
-                    return null;
-                  },
-                ),
-                buildProgramField(),
-                buildGenderRow(),
-                InputTextForm(
-                  controller: _dobController,
-                  focusNode: _dobFocus,
-                  label: 'DOB (YYYY-MM-DD)',
-                  readOnly: true,
-                  onTap: () {
-                    _selectDate(context);
-                  },
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: RaisedButton(
-                    color: Colors.blueAccent,
-                    textColor: Colors.white,
-                    onPressed: () {
-                      _handleSubmit();
+          margin: EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
+          child: SafeArea(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  InputTextForm(
+                    controller: _nameController,
+                    focusNode: _nameFocus,
+                    label: 'Full Name',
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter full name';
+                      }
+                      if (value.length < 5) {
+                        return 'Name must be more than 5 charater';
+                      }
+                      return null;
                     },
-                    child: Text('Register'),
                   ),
-                ),
-                SizedBox(height: 8.0)
-              ],
+                  InputTextForm(
+                    controller: _emailController,
+                    focusNode: _emailFocus,
+                    label: 'Email address',
+                    keyboardType: TextInputType.emailAddress,
+                    inputFormatters: [
+                      BlacklistingTextInputFormatter(RegExp(" "))
+                    ],
+                    validator: (value) {
+                      if (value.isEmpty) return 'Please enter email address';
+                      Pattern pattern =
+                          r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+                      RegExp regex = new RegExp(pattern);
+                      if (!regex.hasMatch(value))
+                        return 'Enter valid email address';
+                      return null;
+                    },
+                  ),
+                  InputTextForm(
+                    controller: _mobileController,
+                    focusNode: _mobileFocus,
+                    label: 'Mobile number',
+                    keyboardType: TextInputType.phone,
+                    maxLength: 10,
+                    inputFormatters: [
+                      WhitelistingTextInputFormatter.digitsOnly,
+                      BlacklistingTextInputFormatter(RegExp(" "))
+                    ],
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter mobile number';
+                      }
+                      if (value.length < 10) {
+                        return 'Mobile number should be of 10 digit';
+                      }
+                      return null;
+                    },
+                  ),
+                  InputTextForm(
+                    controller: _usernameController,
+                    focusNode: _usernameFocus,
+                    label: 'Username',
+                    inputFormatters: [
+                      BlacklistingTextInputFormatter(RegExp(" "))
+                    ],
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter username';
+                      }
+                      if (value.length < 4) {
+                        return 'Username must be more than 5 charater';
+                      }
+                      return null;
+                    },
+                  ),
+                  InputTextForm(
+                    controller: _passwordController,
+                    focusNode: _passwordFocus,
+                    label: 'Password',
+                    obscureText: true,
+                    inputFormatters: [
+                      BlacklistingTextInputFormatter(RegExp(" "))
+                    ],
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter password';
+                      }
+                      if (value.length < 6) {
+                        return 'Password must be atleast 6 charater';
+                      }
+                      return null;
+                    },
+                  ),
+                  buildDepartmentField(),
+                  InputTextForm(
+                    controller: _batchController,
+                    focusNode: _batchFocus,
+                    label: 'Batch (YYYY)',
+                    keyboardType: TextInputType.number,
+                    maxLength: 4,
+                    inputFormatters: [
+                      WhitelistingTextInputFormatter.digitsOnly,
+                      BlacklistingTextInputFormatter(RegExp(" "))
+                    ],
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter your batch';
+                      }
+                      if ((int.parse(value) > DateTime.now().year) ||
+                          value.length < 4) {
+                        return 'Entered batch year is invalid';
+                      }
+                      if ((int.parse(value) == DateTime.now().year) &&
+                          DateTime.now().month < 6) {
+                        return 'Entered value is invalid';
+                      }
+                      return null;
+                    },
+                  ),
+                  InputTextForm(
+                    controller: _registrationController,
+                    focusNode: _registrationFocus,
+                    label: 'Registration number',
+                    keyboardType: TextInputType.number,
+                    maxLength: 7,
+                    inputFormatters: [
+                      WhitelistingTextInputFormatter.digitsOnly,
+                      BlacklistingTextInputFormatter(RegExp(" "))
+                    ],
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter your registration number';
+                      }
+                      if (value.length < 4) {
+                        return 'Invalid registration number';
+                      }
+                      return null;
+                    },
+                  ),
+                  buildProgramField(),
+                  buildGenderRow(),
+                  InputTextForm(
+                    controller: _dobController,
+                    focusNode: _dobFocus,
+                    label: 'DOB (YYYY-MM-DD)',
+                    readOnly: true,
+                    onTap: () {
+                      _selectDate(context);
+                    },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: RaisedButton(
+                      color: Colors.blueAccent,
+                      textColor: Colors.white,
+                      onPressed: () {
+                        _handleSubmit();
+                      },
+                      child: Text('Register'),
+                    ),
+                  ),
+                  SizedBox(height: 8.0)
+                ],
+              ),
             ),
           ),
         ),
