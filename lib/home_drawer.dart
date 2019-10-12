@@ -196,17 +196,33 @@ class FollowingButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (authenticated)
-      return ListTile(
-        title: Text('Following'),
-        leading: Icon(Icons.people),
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (BuildContext context) =>
-                  ChannelList('Following', '/api/channel/following'),
-            ),
-          );
-        },
+      return Column(
+        children: <Widget>[
+          ListTile(
+            title: Text('Following'),
+            leading: Icon(Icons.people),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (BuildContext context) =>
+                      ChannelList('Following', '/api/channel/following'),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            title: Text('Bookmarks'),
+            leading: Icon(Icons.bookmark),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (BuildContext context) =>
+                      ChannelList('Following', '/api/channel/following'),
+                ),
+              );
+            },
+          ),
+        ],
       );
     return SizedBox(height: 0.0);
   }

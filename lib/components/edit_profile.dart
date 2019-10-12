@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
@@ -145,8 +146,12 @@ class _EditProfileState extends State<EditProfile> {
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
                     controller: _mobileController,
-                    keyboardType: TextInputType.multiline,
+                    keyboardType: TextInputType.phone,
                     maxLength: 11,
+                    inputFormatters: [
+                      BlacklistingTextInputFormatter(RegExp(" ")),
+                      WhitelistingTextInputFormatter.digitsOnly,
+                    ],
                     style: TextStyle(
                         fontFamily: "WorkSansSemiBold",
                         fontSize: 16.0,

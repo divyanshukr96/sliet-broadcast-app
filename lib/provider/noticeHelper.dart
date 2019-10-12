@@ -7,6 +7,7 @@ import 'package:sliet_broadcast/utils/network_utils.dart';
 
 class NoticeNotifier with ChangeNotifier {
   bool _fetched = true;
+  bool _loading = true;
 
   bool _private = false;
 
@@ -20,7 +21,9 @@ class NoticeNotifier with ChangeNotifier {
 
   bool get fetched => _fetched;
 
-  NoticeNotifier() {
+  bool get loading => _loading;
+
+  PublicNoticeNotifier() {
     print('dfdsfsfs');
   }
 
@@ -46,10 +49,12 @@ class NoticeNotifier with ChangeNotifier {
         _publicNotices = notice;
         _lastNoticeFetched(_resData);
       }
+
     } catch (e) {
       print('Error $e');
     }
     _fetched = false;
+    _loading = false;
     notifyListeners();
   }
 

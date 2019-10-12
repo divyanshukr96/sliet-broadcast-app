@@ -18,6 +18,7 @@ class Notice {
   List departments;
   final imageList;
   final caEditNotice;
+  final bookmark;
 
   Notice({
     this.id,
@@ -36,6 +37,7 @@ class Notice {
     this.departments,
     this.imageList,
     this.caEditNotice,
+    this.bookmark,
   });
 
   Notice.fromMap(Map<dynamic, dynamic> map)
@@ -54,5 +56,6 @@ class Notice {
         imageUrlNotice = map['images'],
         imageList = map['images_list'],
         caEditNotice = map['can_edit'],
+        bookmark = map['bookmark'],
         dateOfNoticeUpload = map['created_at'];
 }

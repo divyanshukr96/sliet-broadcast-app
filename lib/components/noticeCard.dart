@@ -1,9 +1,12 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:sliet_broadcast/components/edit_notice.dart';
 import 'package:sliet_broadcast/components/models/notice.dart';
 import 'package:sliet_broadcast/utils/carousel.dart';
+import 'package:sliet_broadcast/utils/network_utils.dart';
+import 'package:sliet_broadcast/utils/toast.dart';
 
 class NoticeCard extends StatefulWidget {
   final Notice cardModelData;
@@ -15,7 +18,9 @@ class NoticeCard extends StatefulWidget {
 }
 
 class _NoticeCardState extends State<NoticeCard> {
+  Dio _dio = Dio();
   Notice notice;
+  bool bookmark = false;
 
   _NoticeCardState(this.notice);
 
@@ -26,6 +31,12 @@ class _NoticeCardState extends State<NoticeCard> {
   );
 
   var imageForCard;
+
+  @override
+  void initState() {
+    bookmark = notice.bookmark;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,16 +71,12 @@ class _NoticeCardState extends State<NoticeCard> {
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  SizedBox(width: 32.0),
+                  SizedBox(width: 48.0),
                   IconButton(
                     icon: iconForText,
                     onPressed: changeLines,
                   ),
-                  IconButton(
-                    icon: Icon(Icons.bookmark_border),
-                    tooltip: 'Bookmark',
-                    onPressed: () {},
-                  ),
+                  buildBookmarkButton(),
                 ],
               )
             ],
@@ -77,6 +84,19 @@ class _NoticeCardState extends State<NoticeCard> {
         ),
       ),
     );
+  }
+
+  Widget buildBookmarkButton() {
+    if (numberOfLines > 3 || bookmark)
+      return IconButton(
+        icon: Icon(
+          bookmark ? Icons.bookmark : Icons.bookmark_border,
+          color: bookmark ? Colors.green : Colors.black54,
+        ),
+        tooltip: 'Bookmark',
+        onPressed: _bookmark,
+      );
+    return SizedBox(width: 48.0);
   }
 
   Widget buildNoticeDescription() {
@@ -123,6 +143,30 @@ class _NoticeCardState extends State<NoticeCard> {
     setState(() {
       numberOfLines = numberOfLines;
     });
+  }
+
+  void _bookmark() async {
+    Response response;
+    String token = await NetworkUtils.getTokenStatic();
+    if (token == null && token == "") return;
+    _dio.options.headers['Authorization'] = "Token " + token;
+
+    try {
+      response = await _dio.patch(
+        NetworkUtils.host + '/api/bookmark/${notice.id}/',
+      );
+      if (response.statusCode == 200) {
+        Toast.show(
+          response.data['success'],
+          context,
+          duration: Toast.LENGTH_LONG,
+          gravity: Toast.BOTTOM,
+        );
+        setState(() {
+          bookmark = !bookmark;
+        });
+      }
+    } catch (e) {}
   }
 }
 

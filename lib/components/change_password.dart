@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliet_broadcast/utils/network_utils.dart';
@@ -121,13 +122,18 @@ class _ChangePasswordState extends State<ChangePassword> {
                     padding: EdgeInsets.only(
                         top: 10.0, bottom: 20.0, left: 25.0, right: 25.0),
                     child: TextFormField(
+                      enableInteractiveSelection: false,
                       focusNode: currentFocusNodePassword,
                       controller: currentPasswordController,
                       obscureText: _obscureTextLoginCurrent,
+                      inputFormatters: [
+                        BlacklistingTextInputFormatter(RegExp(" ")),
+                      ],
                       style: TextStyle(
-                          fontFamily: "WorkSansSemiBold",
-                          fontSize: 16.0,
-                          color: Colors.black),
+                        fontFamily: "WorkSansSemiBold",
+                        fontSize: 16.0,
+                        color: Colors.black,
+                      ),
                       decoration: InputDecoration(
                         icon: Icon(
                           Icons.lock_outline,
@@ -159,9 +165,13 @@ class _ChangePasswordState extends State<ChangePassword> {
                     padding: EdgeInsets.only(
                         top: 10.0, bottom: 20.0, left: 25.0, right: 25.0),
                     child: TextFormField(
+                      enableInteractiveSelection: false,
                       focusNode: myFocusNodePasswordLogin,
                       controller: loginPasswordController,
                       obscureText: _obscureTextLogin,
+                      inputFormatters: [
+                        BlacklistingTextInputFormatter(RegExp(" ")),
+                      ],
                       style: TextStyle(
                           fontFamily: "WorkSansSemiBold",
                           fontSize: 16.0,
@@ -232,8 +242,7 @@ class _ChangePasswordState extends State<ChangePassword> {
     });
   }
 
-  void _backAction(){
+  void _backAction() {
     Navigator.pop(context);
   }
-
 }
