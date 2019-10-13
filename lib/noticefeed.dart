@@ -82,11 +82,11 @@ class NoticeList extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: Text(
-                        "Load More",
+                        provider.loading ? ' Loading ... ' : "Load More",
                         style: TextStyle(color: Colors.black54),
                       ),
                       onPressed: () {
-                        provider.loadMore();
+                        if (!provider.loading) provider.loadMore();
                       },
                     ),
                   )

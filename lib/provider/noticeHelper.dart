@@ -81,6 +81,8 @@ class NoticeNotifier with ChangeNotifier {
   }
 
   void loadMore() async {
+    _loading = true;
+    notifyListeners();
     try {
       dynamic _resData = await _loadNotices(after: _notices.lastNotice);
       if (_authenticated) {
@@ -93,6 +95,7 @@ class NoticeNotifier with ChangeNotifier {
         }
       }
       notifyListeners();
+      _loading = false;
       try {
         dynamic _newResData = await _loadNotices(before: _notices.firstNotice);
         if (_authenticated) {

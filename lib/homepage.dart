@@ -52,6 +52,9 @@ class _HomePageState extends State<HomePage> {
     if (["DEPARTMENT", "SOCIETY", "CHANNEL"].contains(userType)) {
       await _pageOptions.add(CreateNotice());
     }
+    if (["STUDENT"].contains(userType)) {
+      await _pageOptions.add(PrivateFeed());
+    }
     if (["FACULTY"].contains(userType)) {
       await _pageOptions.add(PrivateFeed());
     }
@@ -83,10 +86,11 @@ class _HomePageState extends State<HomePage> {
         children: _pageOptions,
       ),
       drawer: HomeDrawer(),
-      bottomNavigationBar: authenticated &&
-              ["FACULTY", "DEPARTMENT", "SOCIETY", "CHANNEL"].contains(userType)
-          ? buildBottomNavigationBar()
-          : null,
+      bottomNavigationBar: authenticated ? buildBottomNavigationBar() : null,
+//      bottomNavigationBar: authenticated &&
+//              ["FACULTY", "DEPARTMENT", "SOCIETY", "CHANNEL"].contains(userType)
+//          ? buildBottomNavigationBar()
+//          : null,
     );
   }
 
@@ -100,6 +104,12 @@ class _HomePageState extends State<HomePage> {
       items.add(BottomNavigationBarItem(
         icon: Icon(Icons.add_circle_outline),
         title: Text('Add Notice'),
+      ));
+    }
+    if (["STUDENT"].contains(userType)) {
+      items.add(BottomNavigationBarItem(
+        icon: Icon(Icons.subject),
+        title: Text('My Notice'),
       ));
     }
     if (["FACULTY"].contains(userType)) {
