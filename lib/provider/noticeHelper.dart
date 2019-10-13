@@ -7,33 +7,46 @@ import 'package:sliet_broadcast/utils/network_utils.dart';
 
 class NoticeNotifier with ChangeNotifier {
   bool _fetched = true;
-  bool _loading = true;
 
-  bool _private = false;
+  bool _loading = true;
 
   bool _authenticated = true;
 
   String _noticePath;
 
-  Notices _publicNotices;
+  Notices _notices;
 
-  Notices get publicNotices => _publicNotices;
+  List<Notice> _newNotice = List<Notice>();
+
+  bool _scrollToTop = false;
+
+  Notices get notices => _notices;
+
+  List<Notice> get newNotice => _newNotice;
 
   bool get fetched => _fetched;
 
   bool get loading => _loading;
 
-  PublicNoticeNotifier() {
-    print('dfdsfsfs');
+  void scrolledToTop() {
+    _scrollToTop = false;
+    notifyListeners();
   }
 
-  void _lastNoticeFetched(dynamic data) {
+  bool get scrollTop => _scrollToTop;
+
+  _lastNoticeFetched(dynamic data) {
     if (data['results'].length != 0)
-      _publicNotices.lastNotice = data['results'].last['datetime'];
+      _notices.lastNotice = data['results'].last['datetime'];
+  }
+
+  _firstNoticeFetched(dynamic data) {
+    if (data['results'].length != 0)
+      _notices.firstNotice = data['results'].first['datetime'];
   }
 
   set notice(Notices notices) {
-    _publicNotices = notices;
+    _notices = notices;
     notifyListeners();
   }
 
@@ -41,15 +54,24 @@ class NoticeNotifier with ChangeNotifier {
     _noticePath = notices;
   }
 
-  void fetchPublicNotice() async {
+  void refreshNotice() async {
+    _fetched = true;
+    _loading = true;
+    _notices = null;
+    notifyListeners();
+    fetchNotice();
+  }
+
+  void fetchNotice() async {
     try {
       dynamic _resData = await _loadNotices();
       if (_authenticated) {
         Notices notice = Notices.fromMap(_resData);
-        _publicNotices = notice;
-        _lastNoticeFetched(_resData);
+        _notices = notice;
+        _newNotice.clear();
+        await _firstNoticeFetched(_resData);
+        await _lastNoticeFetched(_resData);
       }
-
     } catch (e) {
       print('Error $e');
     }
@@ -60,15 +82,26 @@ class NoticeNotifier with ChangeNotifier {
 
   void loadMore() async {
     try {
-      dynamic _resData = await _loadNotices(_publicNotices.lastNotice);
+      dynamic _resData = await _loadNotices(after: _notices.lastNotice);
       if (_authenticated) {
         List<Notice> data = List<Notice>.from(
           _resData['results'].map((notice) => Notice.fromMap(notice)),
         );
-        if (_publicNotices != null) {
-          _publicNotices.notices.addAll(data);
+        if (_notices != null) {
+          _notices.notices.addAll(data);
           _lastNoticeFetched(_resData);
         }
+      }
+      notifyListeners();
+      try {
+        dynamic _newResData = await _loadNotices(before: _notices.firstNotice);
+        if (_authenticated) {
+          _newNotice = List<Notice>.from(
+            _newResData['results'].map((notice) => Notice.fromMap(notice)),
+          );
+        }
+      } catch (e) {
+        print('Error $e');
       }
       notifyListeners();
     } catch (e) {
@@ -76,11 +109,18 @@ class NoticeNotifier with ChangeNotifier {
     }
   }
 
-  Future _loadNotices([String after, String before]) async {
+  void fetchNewNotice() async {
+    if (_newNotice.length == 0) return;
+    _notices.notices.insertAll(0, _newNotice);
+    _notices.firstNotice = _newNotice.first.dateTime;
+    _newNotice.clear();
+    _scrollToTop = true;
+    notifyListeners();
+  }
+
+  Future _loadNotices({String after, String before}) async {
     _authenticated = true;
-    String url = _noticePath != null
-        ? _noticePath
-        : _private ? "/private/notice" : "/public/notice";
+    String url = _noticePath;
     if (after != null) url += "?after=$after";
     if (before != null) url += "?before=$before";
     try {

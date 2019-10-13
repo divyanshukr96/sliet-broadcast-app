@@ -5,8 +5,6 @@ import 'package:photo_view/photo_view.dart';
 import 'package:sliet_broadcast/components/edit_notice.dart';
 import 'package:sliet_broadcast/components/models/notice.dart';
 import 'package:sliet_broadcast/utils/carousel.dart';
-import 'package:sliet_broadcast/utils/network_utils.dart';
-import 'package:sliet_broadcast/utils/toast.dart';
 
 class NoticeCard extends StatefulWidget {
   final Notice cardModelData;
@@ -91,10 +89,14 @@ class _NoticeCardState extends State<NoticeCard> {
       return IconButton(
         icon: Icon(
           bookmark ? Icons.bookmark : Icons.bookmark_border,
-          color: bookmark ? Colors.green : Colors.black54,
+          color: bookmark ? Colors.blue : Colors.black54,
         ),
         tooltip: 'Bookmark',
-        onPressed: _bookmark,
+        onPressed: () {
+          notice.setBookmark(context: context).then((val) {
+            setState(() => bookmark = val);
+          });
+        },
       );
     return SizedBox(width: 48.0);
   }
@@ -143,30 +145,6 @@ class _NoticeCardState extends State<NoticeCard> {
     setState(() {
       numberOfLines = numberOfLines;
     });
-  }
-
-  void _bookmark() async {
-    Response response;
-    String token = await NetworkUtils.getTokenStatic();
-    if (token == null && token == "") return;
-    _dio.options.headers['Authorization'] = "Token " + token;
-
-    try {
-      response = await _dio.patch(
-        NetworkUtils.host + '/api/bookmark/${notice.id}/',
-      );
-      if (response.statusCode == 200) {
-        Toast.show(
-          response.data['success'],
-          context,
-          duration: Toast.LENGTH_LONG,
-          gravity: Toast.BOTTOM,
-        );
-        setState(() {
-          bookmark = !bookmark;
-        });
-      }
-    } catch (e) {}
   }
 }
 

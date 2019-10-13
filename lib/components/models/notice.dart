@@ -1,4 +1,8 @@
 import 'dart:core';
+import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:sliet_broadcast/utils/network_utils.dart';
+import 'package:sliet_broadcast/utils/toast.dart';
 
 class Notice {
   String id;
@@ -18,7 +22,8 @@ class Notice {
   List departments;
   final imageList;
   final caEditNotice;
-  final bookmark;
+  bool bookmark;
+  final dateTime;
 
   Notice({
     this.id,
@@ -38,6 +43,7 @@ class Notice {
     this.imageList,
     this.caEditNotice,
     this.bookmark,
+    this.dateTime,
   });
 
   Notice.fromMap(Map<dynamic, dynamic> map)
@@ -57,5 +63,28 @@ class Notice {
         imageList = map['images_list'],
         caEditNotice = map['can_edit'],
         bookmark = map['bookmark'],
+        dateTime = map['datetime'],
         dateOfNoticeUpload = map['created_at'];
+
+  Future<bool> setBookmark({BuildContext context}) async {
+    Dio _dio = new Dio();
+    Response response;
+    String token = await NetworkUtils.getTokenStatic();
+    if (token == null || token == "") return bookmark;
+    _dio.options.headers['Authorization'] = "Token " + token;
+    try {
+      response = await _dio.patch(NetworkUtils.host + '/api/bookmark/$id/');
+      if (response.statusCode == 200) {
+        if (context is BuildContext)
+          Toast.show(
+            response.data['success'],
+            context,
+            duration: Toast.LENGTH_LONG,
+            gravity: Toast.BOTTOM,
+          );
+        bookmark = !bookmark;
+      }
+    } catch (e) {}
+    return bookmark;
+  }
 }

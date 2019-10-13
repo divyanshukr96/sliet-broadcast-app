@@ -33,18 +33,10 @@ class _NoticeFeedState extends State<NoticeFeed>
   List<Notice> cardsList = [];
 
   Future<Null> refreshList(_context) async {
-    Navigator.pushReplacement(
-      _context,
-      MaterialPageRoute(
-        builder: (BuildContext context) => SplashingHome(),
-      ),
-    );
-//    _getNotices().then((newData) {
-//      setState(() {
-//        cardsList.clear();
-//        cardsList = newData;
-//      });
-//    }).catchError((onError) {});
+    final appState = private
+        ? Provider.of<PrivateNoticeNotifier>(context)
+        : Provider.of<PublicNoticeNotifier>(context);
+    appState.refreshNotice();
     return null;
   }
 
@@ -105,15 +97,10 @@ class PublicNotices extends StatelessWidget {
     return Consumer<PublicNoticeNotifier>(
       builder: (context, notices, notFound) {
         notices.noticePath = noticeUrl;
-        if (notices.fetched)
-          notices.fetchPublicNotice();
-        else
-          Future.delayed(const Duration(minutes: 5), () {
-            notices.fetchPublicNotice();
-          });
+        if (notices.fetched) notices.fetchNotice();
         loading = notices.loading;
-        return notices.publicNotices != null
-            ? NoticeList(notices.publicNotices, notices, 'public1212')
+        return notices.notices != null
+            ? NoticeList(notices.notices, notices, 'public1212')
             : notFound;
       },
       child: Stack(
@@ -156,15 +143,10 @@ class PrivateNotices extends StatelessWidget {
     return Consumer<PrivateNoticeNotifier>(
       builder: (context, notices, notFound) {
         notices.noticePath = noticeUrl;
-        if (notices.fetched)
-          notices.fetchPublicNotice();
-        else
-          Future.delayed(const Duration(minutes: 5), () {
-            notices.fetchPublicNotice();
-          });
+        if (notices.fetched) notices.fetchNotice();
         loading = notices.loading;
-        return notices.publicNotices != null
-            ? NoticeList(notices.publicNotices, notices, 'private002')
+        return notices.notices != null
+            ? NoticeList(notices.notices, notices, 'private002')
             : notFound;
       },
       child: NoticeNotFound(
@@ -177,36 +159,71 @@ class PrivateNotices extends StatelessWidget {
 class NoticeList extends StatelessWidget {
   NoticeList(this.notices, this.provider, this._key);
 
+  final ScrollController _scrollController = new ScrollController();
+
   final Notices notices;
   final provider;
   final _key;
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      key: new PageStorageKey(_key),
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      itemCount: notices.notices.length + 1,
-      itemBuilder: (BuildContext context, int index) {
-        return (index == notices.notices.length)
-            ? Container(
-                margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
-                child: FlatButton(
-                  color: Color(0xFFDCDCDC),
+    return Stack(
+      children: <Widget>[
+        ListView.builder(
+          key: new PageStorageKey(_key),
+          controller: _scrollController,
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          itemCount: notices.notices.length + 1,
+          itemBuilder: (BuildContext context, int index) {
+            return (index == notices.notices.length)
+                ? Container(
+                    margin:
+                        EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
+                    child: FlatButton(
+                      color: Color(0xFFDCDCDC),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: Text(
+                        "Load More",
+                        style: TextStyle(color: Colors.black54),
+                      ),
+                      onPressed: () {
+                        provider.loadMore();
+                      },
+                    ),
+                  )
+                : NoticeCard(notices.notices[index]);
+          },
+        ),
+        provider.newNotice.length >= 1
+            ? Align(
+                alignment: Alignment.topCenter,
+                child: RaisedButton(
+                  elevation: 8.0,
+                  color: Colors.blue,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(32.0),
                   ),
                   child: Text(
-                    "Load More",
-                    style: TextStyle(color: Colors.black54),
+                    "New Notice available",
+                    style: TextStyle(color: Colors.white),
                   ),
-                  onPressed: () {
-                    provider.loadMore();
+                  onPressed: () async {
+                    await provider.fetchNewNotice();
+                    if (provider.scrollTop) {
+                      _scrollController.animateTo(
+                        _scrollController.position.minScrollExtent,
+                        duration: Duration(milliseconds: 1000),
+                        curve: Curves.easeIn,
+                      );
+                      provider.scrolledToTop();
+                    }
                   },
                 ),
               )
-            : NoticeCard(notices.notices[index]);
-      },
+            : SizedBox(height: 0.0),
+      ],
     );
   }
 }

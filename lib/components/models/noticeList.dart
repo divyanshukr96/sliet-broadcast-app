@@ -8,6 +8,7 @@ class Notices {
   dynamic nextPage;
   dynamic previousPage;
   dynamic lastNotice;
+  dynamic firstNotice;
 
   Notices({
     this.notices,
