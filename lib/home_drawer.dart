@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sliet_broadcast/components/bookmark.dart';
 import 'package:sliet_broadcast/components/channelList.dart';
 import 'package:sliet_broadcast/components/register.dart';
 import 'package:sliet_broadcast/components/terms_conditions.dart';
@@ -216,9 +217,7 @@ class FollowingButton extends StatelessWidget {
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (BuildContext context) =>
-                      ChannelList('Following', '/api/channel/following'),
-                ),
+                    builder: (BuildContext context) => Bookmark()),
               );
             },
           ),

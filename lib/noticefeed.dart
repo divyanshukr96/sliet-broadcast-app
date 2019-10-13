@@ -1,38 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:sliet_broadcast/components/models/noticeList.dart';
 import 'package:sliet_broadcast/components/noticeCard.dart';
-import 'package:sliet_broadcast/provider/privateNoticeNotifier.dart';
-import 'package:sliet_broadcast/provider/publicNoticeNotifier.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
 
 class NoticeFeed extends StatefulWidget {
-  final String noticeLink;
   final dynamic private;
+  final Widget child;
+  final dynamic provider;
 
-  NoticeFeed(this.noticeLink, {this.private});
+  NoticeFeed({this.private, @required this.child, @required this.provider});
 
   @override
-  _NoticeFeedState createState() =>
-      _NoticeFeedState(noticeLink, private == true);
+  _NoticeFeedState createState() => _NoticeFeedState();
 }
 
 class _NoticeFeedState extends State<NoticeFeed>
     with SingleTickerProviderStateMixin {
-  final String noticeUrl;
-
-  bool private = false;
-
-  _NoticeFeedState(this.noticeUrl, this.private);
-
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       new GlobalKey<RefreshIndicatorState>();
 
   Future<Null> refreshList(_context) async {
-    final appState = private
-        ? Provider.of<PrivateNoticeNotifier>(context)
-        : Provider.of<PublicNoticeNotifier>(context);
-    appState.refreshNotice();
+    widget.provider.refreshNotice();
     return null;
   }
 
@@ -56,85 +44,8 @@ class _NoticeFeedState extends State<NoticeFeed>
           await refreshList(context);
         },
         child: SafeArea(
-          child: Center(
-            child: private
-                ? PrivateNotices(noticeUrl: noticeUrl)
-                : PublicNotices(noticeUrl: noticeUrl),
-          ),
+          child: widget.child,
         ),
-      ),
-    );
-  }
-}
-
-class PublicNotices extends StatelessWidget {
-  const PublicNotices({
-    Key key,
-    @required this.noticeUrl,
-  }) : super(key: key);
-
-  final String noticeUrl;
-
-  @override
-  Widget build(BuildContext context) {
-    bool loading = true;
-    return Consumer<PublicNoticeNotifier>(
-      builder: (context, notices, notFound) {
-        notices.noticePath = noticeUrl;
-        if (notices.fetched) notices.fetchNotice();
-        loading = notices.loading;
-        return notices.notices != null
-            ? NoticeList(notices.notices, notices, 'public1212')
-            : notFound;
-      },
-      child: Stack(
-        children: <Widget>[
-          NoticeNotFound(
-            loading: loading,
-          ),
-//          Positioned(
-//            bottom: 30.0,
-//            left: 0.0,
-//            right: 0.0,
-//            child: Align(
-//              child: FloatingActionButton(
-//                backgroundColor: Colors.white70,
-//                foregroundColor: Colors.black38,
-//                onPressed: () {
-//
-//                },
-//                child: Icon(Icons.refresh),
-//              ),
-//            ),
-//          )
-        ],
-      ),
-    );
-  }
-}
-
-class PrivateNotices extends StatelessWidget {
-  const PrivateNotices({
-    Key key,
-    @required this.noticeUrl,
-  }) : super(key: key);
-
-  final String noticeUrl;
-
-  @override
-  Widget build(BuildContext context) {
-    bool loading = true;
-    return Consumer<PrivateNoticeNotifier>(
-      builder: (context, notices, notFound) {
-        notices.noticePath = noticeUrl;
-        if (notices.fetched) notices.fetchNotice();
-        loading = notices.loading;
-        return notices.notices != null
-            ? NoticeList(notices.notices, notices, 'private002')
-            : notFound;
-      },
-      child: NoticeNotFound(
-        loading: loading,
       ),
     );
   }

@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sliet_broadcast/noticefeed.dart';
-import 'package:sliet_broadcast/provider/publicNoticeNotifier.dart';
+import 'package:sliet_broadcast/provider/bookmarkNoticeNotifier.dart';
 
-class PublicFeed extends StatelessWidget {
+class Bookmark extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool loading = true;
     return NoticeFeed(
-      provider: Provider.of<PublicNoticeNotifier>(context),
-      child: Consumer<PublicNoticeNotifier>(
+      provider: Provider.of<BookmarkNoticeNotifier>(context),
+      child: Consumer<BookmarkNoticeNotifier>(
         builder: (context, notices, notFound) {
-          notices.noticePath = '/v1/public/notice';
+          notices.noticePath = '/bookmark';
           if (notices.fetched) notices.fetchNotice();
           loading = notices.loading;
           return notices.notices != null
-              ? NoticeList(notices.notices, notices, 'public1212')
+              ? NoticeList(notices.notices, notices, 'bookmark')
               : notFound;
         },
         child: Center(child: NoticeNotFound(loading: loading)),
