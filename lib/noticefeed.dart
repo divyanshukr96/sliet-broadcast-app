@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sliet_broadcast/components/models/notice.dart';
 import 'package:sliet_broadcast/components/models/noticeList.dart';
 import 'package:sliet_broadcast/components/noticeCard.dart';
-import 'package:sliet_broadcast/main.dart';
 import 'package:sliet_broadcast/provider/privateNoticeNotifier.dart';
 import 'package:sliet_broadcast/provider/publicNoticeNotifier.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
-import 'package:sliet_broadcast/utils/network_utils.dart';
 
 class NoticeFeed extends StatefulWidget {
   final String noticeLink;
@@ -23,6 +20,7 @@ class NoticeFeed extends StatefulWidget {
 class _NoticeFeedState extends State<NoticeFeed>
     with SingleTickerProviderStateMixin {
   final String noticeUrl;
+
   bool private = false;
 
   _NoticeFeedState(this.noticeUrl, this.private);
@@ -30,26 +28,12 @@ class _NoticeFeedState extends State<NoticeFeed>
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       new GlobalKey<RefreshIndicatorState>();
 
-  List<Notice> cardsList = [];
-
   Future<Null> refreshList(_context) async {
     final appState = private
         ? Provider.of<PrivateNoticeNotifier>(context)
         : Provider.of<PublicNoticeNotifier>(context);
     appState.refreshNotice();
     return null;
-  }
-
-  Future<List<Notice>> _getNotices() async {
-    cardsList.clear();
-    var jsonData = await NetworkUtils.get(noticeUrl);
-
-    for (var notice in jsonData) {
-      Notice card = Notice.fromMap(notice);
-      cardsList.add(card);
-    }
-
-    return cardsList;
   }
 
   @override
@@ -177,8 +161,10 @@ class NoticeList extends StatelessWidget {
           itemBuilder: (BuildContext context, int index) {
             return (index == notices.notices.length)
                 ? Container(
-                    margin:
-                        EdgeInsets.symmetric(horizontal: 16.0, vertical: 2.0),
+                    margin: EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 2.0,
+                    ),
                     child: FlatButton(
                       color: Color(0xFFDCDCDC),
                       shape: RoundedRectangleBorder(
