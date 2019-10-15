@@ -96,6 +96,7 @@ class _CreateNoticeState extends State<CreateNotice> {
       ));
     }
     if (form.validate()) {
+      FocusScope.of(context).requestFocus(new FocusNode());
       FormData formData = new FormData.from({
         'title': _titleController.text,
         'description': _descriptionController.text,

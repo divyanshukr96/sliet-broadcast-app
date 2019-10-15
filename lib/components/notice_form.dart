@@ -45,7 +45,7 @@ class TitleInput extends StatelessWidget {
         ),
         validator: (value) {
           if (value.isEmpty) return 'Notice title field is required.';
-          if (value.length < 10) return 'Title must be more than 5 charater.';
+          if (value.length < 5) return 'Title must be more than 5 charater.';
           return null;
         },
       ),
@@ -426,5 +426,6 @@ class _DepartmentSelectionState extends State<DepartmentSelection> {
       widget.selectedDepartment(widget.value);
     else
       widget.selectedDepartment(selectedValues);
+    FocusScope.of(context).requestFocus(new FocusNode());
   }
 }

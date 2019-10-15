@@ -63,9 +63,8 @@ class _EditNoticeState extends State<EditNotice>
       print('Error $e');
     }
 
-    print(files.length == 0 && networkImages.length == 0);
     if (_descriptionController.text == "" &&
-        (files.length == 0 && networkImages.length == 0)) {
+        (files.length == 0 && (networkImages == null || networkImages.length == 0))) {
 //      _formSubmitting();
       return _scaffold.currentState.showSnackBar(SnackBar(
         content: Text(

@@ -8,12 +8,12 @@ class PublicFeed extends StatelessWidget {
   Widget build(BuildContext context) {
     dynamic provider = Provider.of<PublicNoticeNotifier>(context);
     return NoticeFeed(
-      provider: Provider.of<PublicNoticeNotifier>(context),
+      provider: provider,
       child: Consumer<PublicNoticeNotifier>(
         builder: (context, notices, notFound) {
           notices.noticePath = '/v1/public/notice';
           if (notices.fetched) notices.fetchNotice();
-          return notices.notices != null
+          return notices.notices != null && notices.notices.notices.length != 0
               ? NoticeList(notices.notices, notices, 'public1212')
               : notFound;
         },
