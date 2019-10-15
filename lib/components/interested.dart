@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sliet_broadcast/noticefeed.dart';
-import 'package:sliet_broadcast/provider/bookmarkNoticeNotifier.dart';
+import 'package:sliet_broadcast/provider/interestedNoticeNotifier.dart';
 
-class Bookmark extends StatelessWidget {
+class Interested extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    dynamic provider = Provider.of<BookmarkNoticeNotifier>(context);
+    dynamic provider = Provider.of<InterestedNoticeNotifier>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Bookmarks'),
+        title: Text('Interested events'),
       ),
       body: SafeArea(
         child: NoticeFeed(
           provider: provider,
-          child: Consumer<BookmarkNoticeNotifier>(
+          child: Consumer<InterestedNoticeNotifier>(
             builder: (context, notices, notFound) {
-              notices.noticePath = '/bookmark';
+              notices.noticePath = '/interested';
               if (notices.fetched) notices.fetchNotice();
               return notices.notices != null &&
                       notices.notices.notices.length != 0
-                  ? NoticeList(notices.notices, notices, 'bookmark')
+                  ? NoticeList(notices.notices, notices, 'interested')
                   : notFound;
             },
             child: Center(

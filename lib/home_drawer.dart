@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliet_broadcast/components/bookmark.dart';
 import 'package:sliet_broadcast/components/channelList.dart';
+import 'package:sliet_broadcast/components/interested.dart';
 import 'package:sliet_broadcast/components/register.dart';
 import 'package:sliet_broadcast/components/terms_conditions.dart';
 import 'package:sliet_broadcast/login.dart';
@@ -218,6 +219,16 @@ class FollowingButton extends StatelessWidget {
               Navigator.of(context).push(
                 MaterialPageRoute(
                     builder: (BuildContext context) => Bookmark()),
+              );
+            },
+          ),
+          ListTile(
+            title: Text('Interested events'),
+            leading: Icon(Icons.pan_tool),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (BuildContext context) => Interested()),
               );
             },
           ),

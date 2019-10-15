@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:sliet_broadcast/components/profile.dart';
 import 'package:sliet_broadcast/homepage.dart';
 import 'package:sliet_broadcast/provider/bookmarkNoticeNotifier.dart';
+import 'package:sliet_broadcast/provider/interestedNoticeNotifier.dart';
 import 'package:sliet_broadcast/provider/privateNoticeNotifier.dart';
 import 'package:sliet_broadcast/provider/publicNoticeNotifier.dart';
 import 'package:sliet_broadcast/utils/app_upgrader.dart';
@@ -33,6 +34,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           builder: (_) => BookmarkNoticeNotifier(),
+        ),
+        ChangeNotifierProvider(
+          builder: (_) => InterestedNoticeNotifier(),
         ),
       ],
     );

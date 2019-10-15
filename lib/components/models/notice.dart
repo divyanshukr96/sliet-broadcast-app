@@ -22,7 +22,9 @@ class Notice {
   List departments;
   final imageList;
   final caEditNotice;
+  bool interested;
   bool bookmark;
+  bool authenticated;
   final dateTime;
 
   Notice({
@@ -42,6 +44,8 @@ class Notice {
     this.departments,
     this.imageList,
     this.caEditNotice,
+    this.interested,
+    this.authenticated,
     this.bookmark,
     this.dateTime,
   });
@@ -63,6 +67,8 @@ class Notice {
         imageList = map['images_list'],
         caEditNotice = map['can_edit'],
         bookmark = map['bookmark'],
+        interested = map['interested'],
+        authenticated = map['authenticated'],
         dateTime = map['datetime'],
         dateOfNoticeUpload = map['created_at'];
 
@@ -86,5 +92,27 @@ class Notice {
       }
     } catch (e) {}
     return bookmark;
+  }
+
+  Future<bool> setInterested({BuildContext context}) async {
+    Dio _dio = new Dio();
+    Response response;
+    String token = await NetworkUtils.getTokenStatic();
+    if (token == null || token == "") return interested;
+    _dio.options.headers['Authorization'] = "Token " + token;
+    try {
+      response = await _dio.patch(NetworkUtils.host + '/api/interested/$id/');
+      if (response.statusCode == 200) {
+        if (context is BuildContext)
+          Toast.show(
+            response.data['success'],
+            context,
+            duration: Toast.LENGTH_LONG,
+            gravity: Toast.BOTTOM,
+          );
+        interested = !interested;
+      }
+    } catch (e) {}
+    return interested;
   }
 }

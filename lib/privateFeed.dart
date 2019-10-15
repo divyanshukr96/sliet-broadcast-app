@@ -17,7 +17,12 @@ class PrivateFeed extends StatelessWidget {
               ? NoticeList(notices.notices, notices, 'private002')
               : notFound;
         },
-        child: Center(child: NoticeNotFound(loading: provider.loading)),
+        child: Center(
+          child: NoticeNotFound(
+            loading: provider.loading,
+            provider: provider,
+          ),
+        ),
       ),
     );
   }

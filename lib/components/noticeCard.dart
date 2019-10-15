@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:photo_view/photo_view.dart';
@@ -16,9 +15,9 @@ class NoticeCard extends StatefulWidget {
 }
 
 class _NoticeCardState extends State<NoticeCard> {
-  Dio _dio = Dio();
   Notice notice;
   bool bookmark = false;
+  bool interested = false;
 
   _NoticeCardState(this.notice);
 
@@ -33,6 +32,7 @@ class _NoticeCardState extends State<NoticeCard> {
   @override
   void initState() {
     bookmark = notice.bookmark;
+    interested = notice.interested;
     super.initState();
   }
 
@@ -67,14 +67,15 @@ class _NoticeCardState extends State<NoticeCard> {
               EventTime(notice: notice),
               Row(
                 mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  SizedBox(width: 48.0),
+//                  SizedBox(width: 48.0),
+                  Expanded(child: buildInterestedButton()),
                   IconButton(
                     icon: iconForText,
                     onPressed: changeLines,
                   ),
-                  buildBookmarkButton(),
+                  Expanded(child: buildBookmarkButton())
                 ],
               )
             ],
@@ -84,19 +85,42 @@ class _NoticeCardState extends State<NoticeCard> {
     );
   }
 
+  Widget buildInterestedButton() {
+    if ((numberOfLines > 3 || interested) && notice.isEvent)
+      return Align(
+        alignment: Alignment.centerLeft,
+        child: IconButton(
+          icon: Icon(
+            Icons.pan_tool,
+            color: interested ? Colors.green : Colors.black54,
+          ),
+          tooltip: 'Bookmark',
+          onPressed: () {
+            notice.setInterested(context: context).then((val) {
+              setState(() => interested = val);
+            });
+          },
+        ),
+      );
+    return SizedBox(width: 48.0);
+  }
+
   Widget buildBookmarkButton() {
     if (numberOfLines > 3 || bookmark)
-      return IconButton(
-        icon: Icon(
-          bookmark ? Icons.bookmark : Icons.bookmark_border,
-          color: bookmark ? Colors.blue : Colors.black54,
+      return Align(
+        alignment: Alignment.centerRight,
+        child: IconButton(
+          icon: Icon(
+            bookmark ? Icons.bookmark : Icons.bookmark_border,
+            color: bookmark ? Colors.blue : Colors.black54,
+          ),
+          tooltip: 'Bookmark',
+          onPressed: () {
+            notice.setBookmark(context: context).then((val) {
+              setState(() => bookmark = val);
+            });
+          },
         ),
-        tooltip: 'Bookmark',
-        onPressed: () {
-          notice.setBookmark(context: context).then((val) {
-            setState(() => bookmark = val);
-          });
-        },
       );
     return SizedBox(width: 48.0);
   }

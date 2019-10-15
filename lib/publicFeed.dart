@@ -17,7 +17,12 @@ class PublicFeed extends StatelessWidget {
               ? NoticeList(notices.notices, notices, 'public1212')
               : notFound;
         },
-        child: Center(child: NoticeNotFound(loading: provider.loading)),
+        child: Center(
+          child: NoticeNotFound(
+            loading: provider.loading,
+            provider: provider,
+          ),
+        ),
       ),
     );
   }

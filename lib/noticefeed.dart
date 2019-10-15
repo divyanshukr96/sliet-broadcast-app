@@ -129,47 +129,73 @@ class NoticeNotFound extends StatelessWidget {
   const NoticeNotFound({
     Key key,
     bool loading = false,
+    dynamic provider,
   })  : _loading = loading,
+        _provider = provider,
         super(key: key);
   final bool _loading;
+  final dynamic _provider;
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Container(
-          width: 120.0,
-          height: 120.0,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/images/login.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        _loading
-            ? Column(
-                children: <Widget>[
-                  SizedBox(height: 24.0),
-                  CircularProgressIndicator(
-                    backgroundColor: Colors.white54,
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                height: 120.0,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/splash_screen.png'),
+                    fit: BoxFit.fitHeight,
                   ),
-                ],
-              )
-            : SizedBox(height: 24.0),
-        Padding(
-          padding: const EdgeInsets.only(top: 16.0),
-          child: Text(
-            _loading ? "Loading ..." : "No data available!",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 22.0,
-              fontWeight: FontWeight.w500,
-            ),
+                ),
+              ),
+              _loading
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 24.0),
+                      child: CircularProgressIndicator(
+                        backgroundColor: Colors.white54,
+                      ),
+                    )
+                  : SizedBox(height: 8.0),
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0),
+                child: Text(
+                  _loading ? "Loading ..." : "No data available!",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22.0,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
+        buildRefreshButton()
       ],
+    );
+  }
+
+  Widget buildRefreshButton() {
+    if (_provider == null || _provider == "") return SizedBox(height: 0.0);
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: FloatingActionButton(
+          tooltip: 'Refresh',
+          backgroundColor: Colors.white70,
+          foregroundColor: Colors.black38,
+          onPressed: () {
+            _provider.refreshNotice();
+          },
+          child: Icon(Icons.refresh),
+        ),
+      ),
     );
   }
 }
