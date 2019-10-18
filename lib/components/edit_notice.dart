@@ -60,7 +60,7 @@ class _EditNoticeState extends State<EditNotice>
       }
       _department.removeWhere((value) => value == "ALL");
     } catch (e) {
-      print('Error $e');
+      print('edit_notice _submitNotice _departmentSelect onCatch Error $e');
     }
 
     if (_descriptionController.text == "" &&
@@ -131,7 +131,7 @@ class _EditNoticeState extends State<EditNotice>
           });
         }
       } on DioError catch (e) {
-        print('Erorr $e');
+        print('edit_notice _submitNotice onDioError Erorr $e');
       }
     } else {
       setState(() {
@@ -174,7 +174,7 @@ class _EditNoticeState extends State<EditNotice>
         selectedDepartment.add(e);
       });
     } catch (e) {
-      print('Error $e');
+      print('edit_notice _initNoticeData onCatch Error $e');
     }
   }
 
@@ -199,7 +199,7 @@ class _EditNoticeState extends State<EditNotice>
         });
       }
     } on DioError catch (error) {
-      print('Error $error');
+      print('edit_notice _deleteNetworkImage onCatch Error $error');
     }
   }
 
@@ -474,7 +474,7 @@ class _EditNoticeState extends State<EditNotice>
         ),
       );
     } on Exception catch (e) {
-      print('Error $e');
+      print('edit_notice _loadAssets onExceptionCatch Error $e');
     }
 
     if (!mounted) return;

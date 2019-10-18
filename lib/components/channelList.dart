@@ -34,7 +34,7 @@ class _ChannelListState extends State<ChannelList> {
         channelList = data;
       });
     } catch (e) {
-      print('Error $e');
+      print('channelList _fetchChannelList Error $e');
     }
     loading = false;
   }

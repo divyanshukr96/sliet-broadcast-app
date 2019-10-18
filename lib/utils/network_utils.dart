@@ -26,6 +26,7 @@ class NetworkUtils {
           await http.post(uri, body: {'username': email, 'password': password});
 
       final responseJson = json.decode(response.body);
+      if (response.statusCode == 206) return {'newUser': responseJson};
       if (response.statusCode == 400) return {'errors': responseJson};
       return responseJson;
     } catch (exception) {
@@ -84,7 +85,7 @@ class NetworkUtils {
       final responseJson = json.decode(response.body);
       return responseJson;
     } catch (exception) {
-      print(exception);
+      print("network_utils fetch $exception");
       if (exception.toString().contains('SocketException')) {
         return 'NetworkError';
       } else {
@@ -223,14 +224,14 @@ class NetworkUtils {
       var token = await getTokenStatic();
       dio.options.headers['Authorization'] = "Token " + token;
     } catch (e) {
-      print('Error $e');
+      print('network_utils fetchData Error $e');
     }
 
     try {
       response = await dio.get('$host/api$url');
       if (response.statusCode == 401) await logout();
       if (response.statusCode != 200) {
-        print('Error ${response.statusCode}: $url');
+        print('network_utils fetch data Error ${response.statusCode}: $url');
         throw HttpException(
           'Invalid response ${response.statusCode}',
           uri: Uri.parse(url),
@@ -242,7 +243,7 @@ class NetworkUtils {
       response = error.response;
       return response;
     } catch (e) {
-      print('Error $e');
+      print('network_utils fetchData catch Error $e');
     }
   }
 }

@@ -396,7 +396,7 @@ class _CreateNoticeState extends State<CreateNotice> {
         ),
       );
     } on Exception catch (e) {
-      print('Error $e');
+      print('createNotice loadAssets Error $e');
     }
 
     if (!mounted) return;

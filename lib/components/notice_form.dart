@@ -388,7 +388,7 @@ class _DepartmentSelectionState extends State<DepartmentSelection> {
       var responseJson = await NetworkUtils.get("/api/public/department");
       if (responseJson != null) departments = responseJson;
     } catch (e) {
-      print('Error $e');
+      print('notice_form _fetchDepartment Error $e');
     }
   }
 

@@ -26,7 +26,7 @@ class _ChangePasswordState extends State<ChangePassword> {
   bool _obscureTextLogin = true;
   bool _obscureTextLoginCurrent = true;
 
-  _submitNewNotice() async {
+  _submitForm() async {
     Response response;
     Dio dio = new Dio();
     String token = await networkUtils.getToken();
@@ -58,7 +58,7 @@ class _ChangePasswordState extends State<ChangePassword> {
           _backAction();
         }
       } on DioError catch (e) {
-        print("Error $e");
+        print("change_password _submitForm Error $e");
       }
     } else {
       setState(() {
@@ -206,7 +206,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                       textColor: Colors.white,
                       color: loading ? Colors.white12 : Colors.lightBlueAccent,
                       child: Text("Change Password"),
-                      onPressed: loading ? () {} : _submitNewNotice,
+                      onPressed: loading ? () {} : _submitForm,
                     ),
                   ),
                   Expanded(

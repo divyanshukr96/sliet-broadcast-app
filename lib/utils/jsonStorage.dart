@@ -15,7 +15,7 @@ class JsonStorage {
     try {
       _dir = await getTemporaryDirectory();
     } catch (e) {
-      print('Error $e');
+      print('jsonstorage _getpath Error $e');
     }
   }
 

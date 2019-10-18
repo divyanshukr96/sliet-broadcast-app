@@ -19,7 +19,7 @@ class _AppUpgradeState extends State<AppUpgrade> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 30), () {
+    Timer(Duration(seconds: 5), () {
       _upgradeDialog();
     });
   }
@@ -41,6 +41,7 @@ class _AppUpgradeState extends State<AppUpgrade> {
     if (_toInteger(appStoreVersion) <= _toInteger(installedVersion)) return;
 
     await showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
@@ -56,20 +57,17 @@ class _AppUpgradeState extends State<AppUpgrade> {
                   "is available! Version $appStoreVersion is now available, you have $installedVersion."),
               Padding(
                 padding: EdgeInsets.only(top: 15.0),
-                child: Text(
-                  'Would you like to update it now?',
-                  textAlign: TextAlign.center,
-                ),
+                child: Text('Please update for using the application.'),
               ),
             ],
           ),
           actions: <Widget>[
 //            FlatButton(child: Text('Ignore'), onPressed: () {}),
-            FlatButton(
-                child: Text('Later'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                }),
+//            FlatButton(
+//                child: Text('Later'),
+//                onPressed: () {
+//                  Navigator.of(context).pop();
+//                }),
             FlatButton(
               child: Text('Update Now'),
               onPressed: () async {

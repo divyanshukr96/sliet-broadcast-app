@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sliet_broadcast/components/faculty_register.dart';
 import 'package:sliet_broadcast/homepage.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
 import 'package:sliet_broadcast/utils/auth_utils.dart';
@@ -180,6 +181,16 @@ class _LoginPageState extends State<LoginPage>
       } else if (responseJson['errors'] != null) {
         await pr.hide();
         NetworkUtils.showSnackBar(_scaffoldKey, 'Invalid Email/Password');
+      } else if (responseJson['newUser'] != null) {
+        await pr.hide();
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext context) => FacultyRegister(
+                faculty: responseJson['newUser'],
+              ),
+            ));
+        return;
       } else {
         await AuthUtils.insertDetails(_sharedPreferences, responseJson);
 
@@ -194,9 +205,7 @@ class _LoginPageState extends State<LoginPage>
         Navigator.pushNamedAndRemoveUntil(context, "/home", (r) => false);
       }
     }
-    print(pr.isShowing());
     if (pr.isShowing()) await pr.hide();
-    print('asdjkasdkjasdksahdjhsajdg');
   }
 
   void showInSnackBar(String value) {

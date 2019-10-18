@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sliet_broadcast/components/profile.dart';
 import 'package:sliet_broadcast/homepage.dart';
+import 'package:sliet_broadcast/login.dart';
 import 'package:sliet_broadcast/provider/bookmarkNoticeNotifier.dart';
 import 'package:sliet_broadcast/provider/interestedNoticeNotifier.dart';
 import 'package:sliet_broadcast/provider/privateNoticeNotifier.dart';
@@ -21,8 +22,10 @@ class MyApp extends StatelessWidget {
 //      initialRoute: '/',
         routes: {
 //        '/': (context) => SplashingHome(),
-          '/home': (context) => AppUpgrade(child: HomePage()),
+          '/start': (context) => AppUpgrade(child: HomePage()),
+          '/home': (context) => HomePage(),
           '/profile': (context) => Profile(),
+          '/login': (context) => LoginPage(),
         },
       ),
       providers: <SingleChildCloneableWidget>[
@@ -52,7 +55,7 @@ class SplashingHome extends StatelessWidget {
   Widget build(BuildContext context) {
     return SplashScreen(
       seconds: 4,
-      navigateAfterSeconds: '/home',
+      navigateAfterSeconds: '/start',
       title: new Text(
         'Together we can make a difference',
         style: new TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),

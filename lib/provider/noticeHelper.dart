@@ -73,7 +73,7 @@ class NoticeNotifier with ChangeNotifier {
         await _lastNoticeFetched(_resData);
       }
     } catch (e) {
-      print('Error $e');
+      print('noticeHelper fetchNotice catch Error $e');
     }
     _fetched = false;
     _loading = false;
@@ -104,11 +104,11 @@ class NoticeNotifier with ChangeNotifier {
           );
         }
       } catch (e) {
-        print('Error $e');
+        print('noticeHelper loadMore _loadNotices onCatch Error $e');
       }
       notifyListeners();
     } catch (e) {
-      print('Error $e');
+      print('noticeHelper loadMore onCatch Error $e');
     }
   }
 
@@ -137,7 +137,7 @@ class NoticeNotifier with ChangeNotifier {
       }
       return response.data;
     } catch (e) {
-      print('Error $e');
+      print('noticeHelper _loadNotices Error $e');
       throw Error();
     }
   }

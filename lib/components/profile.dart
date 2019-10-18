@@ -417,30 +417,19 @@ class ProfileDetails extends StatelessWidget {
       width: MediaQuery.of(context).size.width,
       margin: EdgeInsets.symmetric(horizontal: 8.0),
       child: Card(
-        color: Colors.white,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 8.0,
-              ),
-              child: Text(
-                "Email:  " + profile['email'],
-                style: TextStyle(fontSize: 18.0),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 8.0,
-              ),
-              child: Text(
-                "Mobile:  " + profile['mobile'],
-                style: TextStyle(fontSize: 18.0),
-              ),
-            ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              DetailField(title: "Email", value: profile['email']),
+              DetailField(title: "Mobile", value: profile['mobile']),
+              Divider(),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: buildUserDetails(),
+              )
+
 //          Padding(
 //            padding: const EdgeInsets.all(8.0),
 //            child: Text(
@@ -448,8 +437,46 @@ class ProfileDetails extends StatelessWidget {
 //              style: TextStyle(fontSize: 18.0),
 //            ),
 //          ),
-          ],
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  List<Widget> buildUserDetails() {
+    if (profile['user_type'] == "STUDENT")
+      return <Widget>[
+        DetailField(
+            title: "Department", value: profile['details']['department']),
+        DetailField(title: 'Program', value: profile['details']['program']),
+        DetailField(title: 'Batch', value: profile['details']['batch']),
+        DetailField(
+            title: "Regd. No.",
+            value: profile['details']['registration_number']),
+        DetailField(title: "D.O.B.", value: profile['details']['dob']),
+      ];
+    else if (profile['user_type'] == "DEPARTMENT" && !profile['is_admin'])
+      return <Widget>[
+        DetailField(title: "H.O.D", value: profile['extra_fields']['hod']),
+      ];
+    return <Widget>[];
+  }
+}
+
+class DetailField extends StatelessWidget {
+  final String title;
+  final dynamic value;
+
+  DetailField({@required this.title, @required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Text(
+        "$title:  " + value.toString(),
+        style: TextStyle(fontSize: 16.0),
       ),
     );
   }

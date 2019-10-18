@@ -54,7 +54,7 @@ class _MyAppState extends State<MyApp> {
 
       for (var r in resultList) {
         var t = await r.filePath;
-        print(t);
+        print("image_picker loadAssets $t");
       }
     } on Exception catch (e) {
       error = e.toString();

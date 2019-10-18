@@ -32,11 +32,11 @@ class DeviceRegistration {
       } on DioError catch (e) {
         if (e.response.statusCode == 401) NetworkUtils.logout();
         if (e.response.statusCode == 404) await _registerDevice(fireBase);
-        print('Error $e');
+        print('device_registration _verifyDevice onDioError Error $e');
       } catch (e) {}
     }
     fireBase.onTokenRefresh.listen((token) {
-      print(token);
+      print("device_registration _verifyDevice on_token_refresh");
     });
   }
 
@@ -51,7 +51,7 @@ class DeviceRegistration {
       );
     } on DioError catch (e) {
       if (e.response.statusCode == 401) NetworkUtils.logout();
-      print('Error $e');
+      print('device_registration _registerDevice onDioError Error $e');
     } catch (e) {}
   }
 
@@ -67,7 +67,7 @@ class DeviceRegistration {
       );
     } on DioError catch (e) {
       if (e.response.statusCode == 401) NetworkUtils.logout();
-      print('Error $e');
+      print('device_registration _updateDevice onDioError Error $e');
     } catch (e) {}
   }
 

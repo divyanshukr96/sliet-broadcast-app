@@ -60,7 +60,7 @@ class _RegisterState extends State<Register> {
           _program = program;
         });
     } catch (e) {
-      print('Error $e');
+      print('register fetchDepartment Error $e');
       _scaffoldKey.currentState.showSnackBar(SnackBar(
         content: Text(
           'Something went wrong.',
@@ -179,7 +179,7 @@ class _RegisterState extends State<Register> {
           _serverError.clear();
         }
       } catch (e) {
-        print('Error $e');
+        print('register on_submit Error $e');
       }
     }
     pr.hide();
@@ -562,6 +562,7 @@ class InputTextForm extends StatelessWidget {
     GestureTapCallback onTap,
     bool readOnly = false,
     bool obscureText = false,
+    bool enableInteractiveSelection = true,
   })  : _controller = controller,
         _focusNode = focusNode,
         _label = label,
@@ -572,6 +573,7 @@ class InputTextForm extends StatelessWidget {
         _onTap = onTap,
         _readOnly = readOnly,
         _obscureText = obscureText,
+        _enableInteractiveSelection = enableInteractiveSelection,
         super(key: key);
 
   final TextEditingController _controller;
@@ -584,12 +586,14 @@ class InputTextForm extends StatelessWidget {
   final bool _readOnly;
   final bool _obscureText;
   final FocusNode _focusNode;
+  final bool _enableInteractiveSelection;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextFormField(
+        enableInteractiveSelection: _enableInteractiveSelection,
         controller: _controller,
         focusNode: _focusNode,
         obscureText: _obscureText,
@@ -653,12 +657,11 @@ class RegistrationSuccess extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Container(
-                  width: 120.0,
                   height: 120.0,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: AssetImage('assets/images/login.png'),
-                      fit: BoxFit.cover,
+                      image: AssetImage('assets/images/splash_screen.png'),
+                      fit: BoxFit.fitHeight,
                     ),
                   ),
                 ),
