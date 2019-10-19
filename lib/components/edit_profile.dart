@@ -47,12 +47,10 @@ class _EditProfileState extends State<EditProfile> {
 
   @override
   Widget build(BuildContext context) {
-
     ImageProvider profileUrl = AssetImage('assets/images/login.png');
     if (_profile != null) {
       profileUrl = NetworkImage(_profile);
     }
-
 
     return Scaffold(
       key: _scaffoldKey,
@@ -68,13 +66,12 @@ class _EditProfileState extends State<EditProfile> {
             children: <Widget>[
               Container(
                 margin: EdgeInsets.only(top: 16.0, bottom: 8.0),
-                width: 150.0,
-                height: 150.0,
+                width: 120.0,
+                height: 120.0,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: _image == null
-                        ? profileUrl
-                        : Image.file(_image).image,
+                    image:
+                        _image == null ? profileUrl : Image.file(_image).image,
                     fit: BoxFit.cover,
                   ),
                   borderRadius: BorderRadius.circular(75.0),
@@ -88,14 +85,17 @@ class _EditProfileState extends State<EditProfile> {
                 highlightColor: Colors.transparent,
                 splashColor: Theme.Colors.loginGradientEnd,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 10.0, horizontal: 42.0),
+                  padding: EdgeInsets.symmetric(
+                    vertical: 10.0,
+                    horizontal: 42.0,
+                  ),
                   child: Text(
                     "Choose profile photo",
                     style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20.0,
-                        fontFamily: "WorkSansBold"),
+                      color: Colors.white,
+                      fontSize: 18.0,
+                      fontFamily: "WorkSansBold",
+                    ),
                   ),
                 ),
                 onPressed: getImage,
@@ -147,7 +147,7 @@ class _EditProfileState extends State<EditProfile> {
                   child: TextFormField(
                     controller: _mobileController,
                     keyboardType: TextInputType.phone,
-                    maxLength: 11,
+                    maxLength: 10,
                     inputFormatters: [
                       BlacklistingTextInputFormatter(RegExp(" ")),
                       WhitelistingTextInputFormatter.digitsOnly,
@@ -173,15 +173,15 @@ class _EditProfileState extends State<EditProfile> {
               ),
               Container(
                 margin: EdgeInsets.only(top: 12.0, bottom: 30.0),
-                decoration: new BoxDecoration(
+                decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                  gradient: new LinearGradient(
+                  gradient: LinearGradient(
                       colors: [
                         Theme.Colors.loginGradientEnd,
                         Theme.Colors.loginGradientStart
                       ],
-                      begin: const FractionalOffset(0.2, 0.2),
-                      end: const FractionalOffset(1.0, 1.0),
+                      begin: FractionalOffset(0.2, 0.2),
+                      end: FractionalOffset(1.0, 1.0),
                       stops: [0.0, 1.0],
                       tileMode: TileMode.clamp),
                 ),
@@ -189,13 +189,15 @@ class _EditProfileState extends State<EditProfile> {
                     highlightColor: Colors.transparent,
                     splashColor: Theme.Colors.loginGradientEnd,
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 42.0),
+                      padding: EdgeInsets.symmetric(
+                        vertical: 10.0,
+                        horizontal: 24.0,
+                      ),
                       child: Text(
                         "Update Profile",
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 24.0,
+                          fontSize: 18.0,
                           fontFamily: "WorkSansBold",
                         ),
                       ),
@@ -247,18 +249,12 @@ class _EditProfileState extends State<EditProfile> {
           backgroundColor: Colors.green,
         ));
         prefs.setString('profile', jsonEncode(response.data));
-
-        Navigator.pop(context);
-        Navigator.popAndPushNamed(context, '/profile');
-//        Navigator.pop(context);
-//        Navigator.pop(context);
-//        Navigator.pop(context);
-//        Navigator.push(
-//          context,
-//          MaterialPageRoute(
-//            builder: (BuildContext context) => Profile(),
-//          ),
-//        );
+        int count = 0;
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/profile',
+          (route) => count++ == 2,
+        );
       }
     } on DioError catch (e) {
       if (e.response != null) {

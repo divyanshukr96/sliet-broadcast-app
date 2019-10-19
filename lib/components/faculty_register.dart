@@ -155,136 +155,137 @@ class _FacultyRegisterState extends State<FacultyRegister> {
   @override
   Widget build(BuildContext context) {
     pr = ProgressDialog(context);
-    return Container(
-      child: Scaffold(
-        key: _scaffoldKey,
-        body: SingleChildScrollView(
-          child: Container(
-            margin: EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
-            child: SafeArea(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: <Widget>[
-                    InputTextForm(
-                      controller: _nameController,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Faculty Registration'),
+      ),
+      key: _scaffoldKey,
+      body: SingleChildScrollView(
+        child: Container(
+          margin: EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
+          child: SafeArea(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  InputTextForm(
+                    controller: _nameController,
 //                      focusNode: _nameFocus,
-                      label: 'Full Name',
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Please enter full name';
-                        }
-                        if (value.length < 5) {
-                          return 'Name must be more than 5 charater';
-                        }
-                        return null;
-                      },
-                    ),
-                    InputTextForm(
-                      readOnly: true,
-                      enableInteractiveSelection: false,
-                      controller: _emailController,
-                      label: 'Email address',
-                    ),
-                    InputTextForm(
-                      controller: _mobileController,
+                    label: 'Full Name',
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter full name';
+                      }
+                      if (value.length < 5) {
+                        return 'Name must be more than 5 charater';
+                      }
+                      return null;
+                    },
+                  ),
+                  InputTextForm(
+                    readOnly: true,
+                    enableInteractiveSelection: false,
+                    controller: _emailController,
+                    label: 'Email address',
+                  ),
+                  InputTextForm(
+                    controller: _mobileController,
 //                      focusNode: _mobileFocus,
-                      label: 'Mobile number',
-                      keyboardType: TextInputType.phone,
-                      maxLength: 10,
-                      inputFormatters: [
-                        WhitelistingTextInputFormatter.digitsOnly,
-                        BlacklistingTextInputFormatter(RegExp(" "))
-                      ],
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Please enter mobile number';
-                        }
-                        if (value.length < 10) {
-                          return 'Mobile number should be of 10 digit';
-                        }
-                        return null;
-                      },
-                    ),
-                    InputTextForm(
-                      controller: _usernameController,
+                    label: 'Mobile number',
+                    keyboardType: TextInputType.phone,
+                    maxLength: 10,
+                    inputFormatters: [
+                      WhitelistingTextInputFormatter.digitsOnly,
+                      BlacklistingTextInputFormatter(RegExp(" "))
+                    ],
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter mobile number';
+                      }
+                      if (value.length < 10) {
+                        return 'Mobile number should be of 10 digit';
+                      }
+                      return null;
+                    },
+                  ),
+                  InputTextForm(
+                    controller: _usernameController,
 //                      focusNode: _usernameFocus,
-                      label: 'Username',
-                      inputFormatters: [
-                        BlacklistingTextInputFormatter(RegExp(" "))
-                      ],
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Please enter username';
-                        }
-                        if (value.length < 4) {
-                          return 'Username must be more than 5 charater';
-                        }
-                        return null;
-                      },
-                    ),
-                    InputTextForm(
-                      controller: _passwordController,
+                    label: 'Username',
+                    inputFormatters: [
+                      BlacklistingTextInputFormatter(RegExp(" "))
+                    ],
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter username';
+                      }
+                      if (value.length < 4) {
+                        return 'Username must be more than 5 charater';
+                      }
+                      return null;
+                    },
+                  ),
+                  InputTextForm(
+                    controller: _passwordController,
 //                      focusNode: _passwordFocus,
-                      label: 'Confirm Password',
-                      obscureText: true,
-                      inputFormatters: [
-                        BlacklistingTextInputFormatter(RegExp(" "))
-                      ],
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Please enter your password';
-                        }
-                        if (value.length < 6) {
-                          return 'Password must be atleast 6 charater';
-                        }
-                        return null;
-                      },
-                    ),
-                    InputTextForm(
-                      readOnly: true,
-                      enableInteractiveSelection: false,
-                      controller: _departmentController,
-                      label: 'Department',
-                    ),
-                    InputTextForm(
-                      controller: _designationController,
+                    label: 'Confirm Password',
+                    obscureText: true,
+                    inputFormatters: [
+                      BlacklistingTextInputFormatter(RegExp(" "))
+                    ],
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter your password';
+                      }
+                      if (value.length < 6) {
+                        return 'Password must be atleast 6 charater';
+                      }
+                      return null;
+                    },
+                  ),
+                  InputTextForm(
+                    readOnly: true,
+                    enableInteractiveSelection: false,
+                    controller: _departmentController,
+                    label: 'Department',
+                  ),
+                  InputTextForm(
+                    controller: _designationController,
 //                      focusNode: _nameFocus,
-                      label: 'Designation',
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Please enter current designation';
-                        }
-                        if (value.length < 2) {
-                          return 'Designation must be at lest 2 charater';
-                        }
-                        return null;
-                      },
-                    ),
-                    buildGenderRow(),
-                    InputTextForm(
-                      controller: _dobController,
+                    label: 'Designation',
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter current designation';
+                      }
+                      if (value.length < 2) {
+                        return 'Designation must be at lest 2 charater';
+                      }
+                      return null;
+                    },
+                  ),
+                  buildGenderRow(),
+                  InputTextForm(
+                    controller: _dobController,
 //                      focusNode: _dobFocus,
-                      label: 'DOB (YYYY-MM-DD)',
-                      readOnly: true,
-                      onTap: () {
-                        _selectDate(context);
+                    label: 'DOB (YYYY-MM-DD)',
+                    readOnly: true,
+                    onTap: () {
+                      _selectDate(context);
+                    },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: RaisedButton(
+                      color: Colors.blueAccent,
+                      textColor: Colors.white,
+                      onPressed: () {
+                        _handleSubmit();
                       },
+                      child: Text('Submit Registration'),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: RaisedButton(
-                        color: Colors.blueAccent,
-                        textColor: Colors.white,
-                        onPressed: () {
-                          _handleSubmit();
-                        },
-                        child: Text('Submit Registration'),
-                      ),
-                    ),
-                    SizedBox(height: 8.0)
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 8.0)
+                ],
               ),
             ),
           ),

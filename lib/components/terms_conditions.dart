@@ -17,10 +17,10 @@ class TermsAndConditions extends StatelessWidget {
       body: SafeArea(
         child: Container(
           child: ListView(
-            padding: EdgeInsets.all(24.0),
+            padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.only(bottom: 10.0),
+                padding: const EdgeInsets.only(bottom: 8.0),
                 child: Text(
                   '✎ This application is for official communication inside SLIET, Longowal campus.',
                   textAlign: TextAlign.justify,
@@ -28,7 +28,7 @@ class TermsAndConditions extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(bottom: 10.0),
+                padding: const EdgeInsets.only(bottom: 8.0),
                 child: Text(
                   '✎ The ACSS Section, SLIET Longowal is the administrator of this application.',
                   textAlign: TextAlign.justify,
@@ -36,7 +36,7 @@ class TermsAndConditions extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(bottom: 10.0),
+                padding: const EdgeInsets.only(bottom: 8.0),
                 child: Text(
                   '✎ All activities and communication on the platform is monitored by the administrator. If any sort of wrong communication is done through the platform, the administrator has the right to take strict action against the user responsible for doing so.',
                   textAlign: TextAlign.justify,
@@ -44,7 +44,7 @@ class TermsAndConditions extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(bottom: 10.0),
+                padding: const EdgeInsets.only(bottom: 8.0),
                 child: Text(
                   '✎ Administration channels in the platform cannot be unfollowed by any user.',
                   textAlign: TextAlign.justify,
@@ -52,7 +52,7 @@ class TermsAndConditions extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(bottom: 10.0),
+                padding: const EdgeInsets.only(bottom: 8.0),
                 child: Text(
                   '✎ The user accounts will be activated only after they have been verified.',
                   textAlign: TextAlign.justify,
@@ -60,7 +60,7 @@ class TermsAndConditions extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 10.0),
+                padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
                   'SLIET Broadcast',
                   textAlign: TextAlign.center,

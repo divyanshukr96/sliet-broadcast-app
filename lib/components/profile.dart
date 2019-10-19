@@ -348,7 +348,7 @@ class ProfileDetails extends StatelessWidget {
     TextStyle _nameTextStyle = TextStyle(
       fontFamily: 'Roboto',
       color: Colors.white,
-      fontSize: 24.0,
+      fontSize: 20.0,
       fontWeight: FontWeight.w500,
     );
     return Column(
@@ -359,7 +359,7 @@ class ProfileDetails extends StatelessWidget {
             "@" + profile['username'],
             style: TextStyle(
               color: Colors.white70,
-              fontSize: 20.0,
+              fontSize: 16.0,
             ),
           ),
         ),
@@ -377,7 +377,7 @@ class ProfileDetails extends StatelessWidget {
   Widget _buildBio(BuildContext context) {
     TextStyle bioTextStyle = TextStyle(
       fontFamily: 'Spectral',
-      fontWeight: FontWeight.w400,
+      fontWeight: FontWeight.w500,
       //try changing weight to w500 if not thin
       fontStyle: FontStyle.italic,
       color: Colors.black,
@@ -406,9 +406,9 @@ class ProfileDetails extends StatelessWidget {
   Widget _buildSeparator(Size screenSize) {
     return Container(
       width: screenSize.width / 1.3,
-      height: 2.0,
+      height: 1.5,
       color: Colors.white,
-      margin: EdgeInsets.only(bottom: 8.0, top: 8.0),
+      margin: EdgeInsets.symmetric(vertical: 4.0),
     );
   }
 
@@ -445,16 +445,43 @@ class ProfileDetails extends StatelessWidget {
   }
 
   List<Widget> buildUserDetails() {
-    if (profile['user_type'] == "STUDENT")
+    if (profile['user_type'] == "FACULTY")
       return <Widget>[
         DetailField(
-            title: "Department", value: profile['details']['department']),
+          title: "Department",
+          value: profile['details']['department'],
+        ),
+        DetailField(
+          title: 'Designation',
+          value: profile['details']['designation'],
+        ),
+        DetailField(title: "D.O.B.", value: profile['details']['dob']),
+      ];
+    else if (profile['user_type'] == "STUDENT")
+      return <Widget>[
+        DetailField(
+          title: "Department",
+          value: profile['details']['department'],
+        ),
         DetailField(title: 'Program', value: profile['details']['program']),
         DetailField(title: 'Batch', value: profile['details']['batch']),
         DetailField(
-            title: "Regd. No.",
-            value: profile['details']['registration_number']),
+          title: "Regd. No.",
+          value: profile['details']['registration_number'],
+        ),
         DetailField(title: "D.O.B.", value: profile['details']['dob']),
+      ];
+    else if (profile['user_type'] == "SOCIETY")
+      return <Widget>[
+        DetailField(
+          title: "Regd. No.",
+          value: profile['details']['registration_number'],
+        ),
+        DetailField(
+          title: 'Faculty Adviser',
+          value: profile['details']['faculty_adviser'],
+        ),
+        DetailField(title: "Convener", value: profile['details']['convener']),
       ];
     else if (profile['user_type'] == "DEPARTMENT" && !profile['is_admin'])
       return <Widget>[
@@ -476,7 +503,7 @@ class DetailField extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Text(
         "$title:  " + value.toString(),
-        style: TextStyle(fontSize: 16.0),
+        style: TextStyle(fontSize: 14.0),
       ),
     );
   }
