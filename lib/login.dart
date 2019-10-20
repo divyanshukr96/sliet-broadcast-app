@@ -7,6 +7,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliet_broadcast/components/faculty_register.dart';
+import 'package:sliet_broadcast/components/password_reset.dart';
+import 'package:sliet_broadcast/components/register.dart';
 import 'package:sliet_broadcast/homepage.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
 import 'package:sliet_broadcast/utils/auth_utils.dart';
@@ -424,13 +426,19 @@ class _LoginPageState extends State<LoginPage>
             child: FlatButton(
                 onPressed: () {
                   showDialog(
+                    barrierDismissible: false,
                     context: context,
-                    builder: (_) => AlertDialog(
-                      title: new Text('Dear User'),
-                      content: Text(
-                          'Please visit ACSS section in Computer Department to confirm your identity and get your password changed.'),
-                    ),
+                    builder: (_) => PasswordResetRequest(),
                   );
+
+//                  showDialog(
+//                    context: context,
+//                    builder: (_) => AlertDialog(
+//                      title: Text('Forgot Password'),
+//                      content: Text(
+//                          'Please visit ACSS section in Computer Department to confirm your identity and get your password changed.'),
+//                    ),
+//                  );
                 },
                 child: Text(
                   "Forgot Password",
@@ -455,5 +463,102 @@ class _LoginPageState extends State<LoginPage>
     setState(() {
       _obscureTextLogin = !_obscureTextLogin;
     });
+  }
+}
+
+class PasswordResetRequest extends StatefulWidget {
+  const PasswordResetRequest({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  _PasswordResetRequestState createState() => _PasswordResetRequestState();
+}
+
+class _PasswordResetRequestState extends State<PasswordResetRequest> {
+  final TextEditingController _emailController = new TextEditingController();
+  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  String _emailError;
+
+  _sendOTPRequest() async {
+    if (_formKey.currentState.validate()) {
+      FocusScope.of(context).requestFocus(new FocusNode());
+      try {
+        dynamic token = await NetworkUtils.post('/api/password/reset', {
+          'email': _emailController.text,
+        });
+
+        setState(() {
+          _emailError =
+              token['errors'] != null ? token['errors']['email'][0] : null;
+        });
+        if (token['token'] != null)
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (BuildContext context) => PasswordReset(token['token']),
+          ));
+        return;
+      } catch (e) {
+        print('password_change _sendOTPRequest $e');
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      contentPadding: EdgeInsets.all(16.0),
+      titlePadding: EdgeInsets.all(16.0),
+      elevation: 5.0,
+      content: Wrap(
+        children: <Widget>[
+          Text(
+            'Forgot Password',
+            style: TextStyle(
+              fontSize: 20.0,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          Divider(
+            color: Colors.black54,
+            height: 20,
+          ),
+          Form(
+            key: _formKey,
+            child: TextFormField(
+              controller: _emailController,
+              decoration: InputDecoration(
+                  labelText: "Enter registered email", errorText: _emailError),
+              keyboardType: TextInputType.emailAddress,
+              inputFormatters: [BlacklistingTextInputFormatter(RegExp(" "))],
+              validator: (value) {
+                if (value.isEmpty) return 'Please enter email address';
+                Pattern pattern =
+                    r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+                RegExp regex = new RegExp(pattern);
+                if (!regex.hasMatch(value)) return 'Enter valid email address';
+                return null;
+              },
+            ),
+          ),
+        ],
+      ),
+      actions: <Widget>[
+        FlatButton(
+          textColor: Colors.redAccent,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text('Close'),
+        ),
+        RaisedButton(
+          color: Colors.blueAccent,
+          textColor: Colors.white,
+          onPressed: () {
+            _sendOTPRequest();
+          },
+          child: Text('Send OTP'),
+        )
+      ],
+    );
   }
 }

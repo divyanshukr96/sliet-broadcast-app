@@ -121,12 +121,13 @@ class NetworkUtils {
   static dynamic post(var endPoint, Object data) async {
     var prefs = await SharedPreferences.getInstance();
     var uri = host + endPoint;
+    dynamic token = prefs.getString(AuthUtils.authTokenKey);
     try {
       final response = await http.post(
         uri,
         body: data,
         headers: {
-          'Authorization': 'Token ' + prefs.getString(AuthUtils.authTokenKey)
+          'Authorization': token == null ? "" : 'Token ' + token.toString()
         },
       );
 
@@ -134,6 +135,7 @@ class NetworkUtils {
       if (response.statusCode == 400) return {'errors': responseJson};
       return responseJson;
     } catch (exception) {
+      print('network_utils static post $exception');
 //      print(exception);
 //      if (exception.toString().contains('SocketException')) {
 //        return 'NetworkError';

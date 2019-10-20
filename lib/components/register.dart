@@ -78,7 +78,9 @@ class _RegisterState extends State<Register> {
       context: context,
       initialDate: selectedDate,
       firstDate: DateTime(1800, 8),
-      lastDate: DateTime(DateTime.now().year - 12),
+      lastDate: DateTime(DateTime
+          .now()
+          .year - 12),
     );
     if (picked != null && picked != selectedDate)
       setState(() {
@@ -124,7 +126,7 @@ class _RegisterState extends State<Register> {
 
       try {
         dio.options.headers['content-type'] =
-            "application/x-www-form-urlencoded";
+        "application/x-www-form-urlencoded";
         dio.options.headers['Accept'] = "application/json";
         response = await dio.post(
           NetworkUtils.host + "/api/auth/register",
@@ -301,12 +303,18 @@ class _RegisterState extends State<Register> {
                       if (value.isEmpty) {
                         return 'Please enter your batch';
                       }
-                      if ((int.parse(value) > DateTime.now().year) ||
+                      if ((int.parse(value) > DateTime
+                          .now()
+                          .year) ||
                           value.length < 4) {
                         return 'Entered batch year is invalid';
                       }
-                      if ((int.parse(value) == DateTime.now().year) &&
-                          DateTime.now().month < 6) {
+                      if ((int.parse(value) == DateTime
+                          .now()
+                          .year) &&
+                          DateTime
+                              .now()
+                              .month < 6) {
                         return 'Entered value is invalid';
                       }
                       return null;
@@ -378,7 +386,9 @@ class _RegisterState extends State<Register> {
   }
 
   Padding buildDepartmentField() {
-    if (!FocusScope.of(context).hasFocus)
+    if (!FocusScope
+        .of(context)
+        .hasFocus)
       FocusScope.of(context).requestFocus(new FocusNode());
 
     var value;
@@ -409,10 +419,11 @@ class _RegisterState extends State<Register> {
               color: Colors.blue,
             ),
             items: _departments
-                .map((data) => DropdownMenuItem<String>(
-                      child: Text(data['name']),
-                      value: data['username'],
-                    ))
+                .map((data) =>
+                DropdownMenuItem<String>(
+                  child: Text(data['name']),
+                  value: data['username'],
+                ))
                 .toList(),
             onChanged: (String value) {
               setState(() => _departmentController.text = value);
@@ -429,7 +440,7 @@ class _RegisterState extends State<Register> {
     var value = "";
     if (_programController.text != "") {
       value =
-          _program.where((d) => d[0] == _programController.text).toList()[0][1];
+      _program.where((d) => d[0] == _programController.text).toList()[0][1];
     }
     return Padding(
       padding: const EdgeInsets.symmetric(
@@ -453,10 +464,11 @@ class _RegisterState extends State<Register> {
               color: Colors.blue,
             ),
             items: _program
-                .map((data) => DropdownMenuItem<String>(
-                      child: Text(data[1]),
-                      value: data[0],
-                    ))
+                .map((data) =>
+                DropdownMenuItem<String>(
+                  child: Text(data[1]),
+                  value: data[0],
+                ))
                 .toList(),
             onChanged: (String value) {
               setState(() => _programController.text = value);
@@ -563,7 +575,9 @@ class InputTextForm extends StatelessWidget {
     bool readOnly = false,
     bool obscureText = false,
     bool enableInteractiveSelection = true,
-  })  : _controller = controller,
+    EdgeInsetsGeometry contentPadding,
+  })
+      : _controller = controller,
         _focusNode = focusNode,
         _label = label,
         _keyboardType = keyboardType,
@@ -574,6 +588,7 @@ class InputTextForm extends StatelessWidget {
         _readOnly = readOnly,
         _obscureText = obscureText,
         _enableInteractiveSelection = enableInteractiveSelection,
+        _contentPadding = contentPadding,
         super(key: key);
 
   final TextEditingController _controller;
@@ -587,6 +602,7 @@ class InputTextForm extends StatelessWidget {
   final bool _obscureText;
   final FocusNode _focusNode;
   final bool _enableInteractiveSelection;
+  final EdgeInsetsGeometry _contentPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -609,6 +625,7 @@ class InputTextForm extends StatelessWidget {
           color: Colors.black,
         ),
         decoration: InputDecoration(
+          contentPadding: _contentPadding,
           labelText: _label,
           hintStyle: TextStyle(fontFamily: "WorkSansSemiBold", fontSize: 17.0),
           focusedBorder: OutlineInputBorder(
@@ -633,8 +650,14 @@ class RegistrationSuccess extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
+      height: MediaQuery
+          .of(context)
+          .size
+          .height,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topRight,
