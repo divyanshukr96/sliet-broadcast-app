@@ -328,7 +328,7 @@ class SuccessPasswordChange extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              "Password Successfully Chnaged!",
+              "Password Successfully Changed!",
               textAlign: TextAlign.center,
               style: new TextStyle(
                 fontSize: 18.0,

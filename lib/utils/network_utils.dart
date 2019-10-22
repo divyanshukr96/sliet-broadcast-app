@@ -9,12 +9,12 @@ import 'auth_utils.dart';
 class NetworkUtils {
   static final String host = productionHost;
 
-  static final String productionHost = 'http://192.168.137.1:8000';
-  static final String developmentHost = 'http://192.168.137.1:8000';
-
+//  static final String productionHost = 'http://192.168.137.1:8000';
+//  static final String developmentHost = 'http://192.168.137.1:8000';
 //
-//  static final String productionHost = 'https://slietbroadcast.in';
-//  static final String developmentHost = 'https://slietbroadcast.in';
+
+  static final String productionHost = 'https://slietbroadcast.in';
+  static final String developmentHost = 'https://slietbroadcast.in';
 
   static Future<SharedPreferences> _shPrefs = SharedPreferences.getInstance();
 
