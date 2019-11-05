@@ -313,25 +313,6 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
         contentPadding: EdgeInsets.all(4.0),
       ),
     );
-    return new Container(
-      width: 35.0,
-      height: 45.0,
-      alignment: Alignment.center,
-      child: new Text(
-        digit != null ? digit.toString() : "",
-        style: new TextStyle(
-          fontSize: 30.0,
-          color: Colors.black,
-        ),
-      ),
-      decoration: BoxDecoration(
-//            color: Colors.grey.withOpacity(0.4),
-          border: Border(
-              bottom: BorderSide(
-        width: 2.0,
-        color: Colors.black,
-      ))),
-    );
   }
 
   // Returns "Otp keyboard input Button"
@@ -391,13 +372,6 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
         _thirdDigit = _currentDigit;
       } else if (_fourthDigit == null) {
         _fourthDigit = _currentDigit;
-
-        var otp = _firstDigit.toString() +
-            _secondDigit.toString() +
-            _thirdDigit.toString() +
-            _fourthDigit.toString();
-
-        // Verify your otp by here. API call
       }
     });
   }
@@ -422,7 +396,7 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
 
 class OtpTimer extends StatelessWidget {
   final AnimationController controller;
-  double fontSize;
+  final double fontSize;
   Color timeColor = Colors.black;
 
   OtpTimer(this.controller, this.fontSize, this.timeColor);
@@ -448,9 +422,10 @@ class OtpTimer extends StatelessWidget {
           return new Text(
             timerString,
             style: new TextStyle(
-                fontSize: fontSize,
-                color: timeColor,
-                fontWeight: FontWeight.w600),
+              fontSize: fontSize,
+              color: timeColor,
+              fontWeight: FontWeight.w600,
+            ),
           );
         });
   }

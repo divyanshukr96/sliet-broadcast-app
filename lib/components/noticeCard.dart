@@ -40,7 +40,7 @@ class _NoticeCardState extends State<NoticeCard> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 4.0),
       child: Card(
         elevation: 5.0,
         shape: RoundedRectangleBorder(

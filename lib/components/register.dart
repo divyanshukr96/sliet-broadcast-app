@@ -37,11 +37,8 @@ class _RegisterState extends State<Register> {
   final FocusNode _mobileFocus = FocusNode();
   final FocusNode _usernameFocus = FocusNode();
   final FocusNode _passwordFocus = FocusNode();
-  final FocusNode _departmentFocus = FocusNode();
   final FocusNode _batchFocus = FocusNode();
   final FocusNode _registrationFocus = FocusNode();
-  final FocusNode _programFocus = FocusNode();
-  final FocusNode _genderFocus = FocusNode();
   final FocusNode _dobFocus = FocusNode();
 
   @override

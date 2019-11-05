@@ -8,7 +8,6 @@ import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliet_broadcast/components/faculty_register.dart';
 import 'package:sliet_broadcast/components/password_reset.dart';
-import 'package:sliet_broadcast/components/register.dart';
 import 'package:sliet_broadcast/homepage.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
 import 'package:sliet_broadcast/utils/auth_utils.dart';
@@ -202,7 +201,11 @@ class _LoginPageState extends State<LoginPage>
         try {
           response = await dio.get(NetworkUtils.host + "/api/auth/user");
           _sharedPreferences.setString('profile', jsonEncode(response.data));
-        } on DioError catch (e) {} catch (e) {}
+        } on DioError catch (e) {
+          print('Login authentication Dioerror $e');
+        } catch (e) {
+          print('Login authentication catch $e');
+        }
         await pr.hide();
         Navigator.pushNamedAndRemoveUntil(context, "/home", (r) => false);
       }

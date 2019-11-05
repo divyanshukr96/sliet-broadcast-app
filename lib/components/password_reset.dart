@@ -74,17 +74,6 @@ class _PasswordResetState extends State<PasswordReset>
       }
   }
 
-  _showMessage(context) {
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (_) => AlertDialog(
-        contentPadding: EdgeInsets.all(8.0),
-        content: SuccessPasswordChange(),
-      ),
-    );
-  }
-
   @override
   void initState() {
     super.initState();
