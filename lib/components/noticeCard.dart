@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:photo_view/photo_view_gallery.dart';
 import 'package:sliet_broadcast/components/edit_notice.dart';
 import 'package:sliet_broadcast/components/models/notice.dart';
-import 'package:sliet_broadcast/utils/carousel.dart';
+import 'package:sliet_broadcast/components/notice_image_view_wrapper.dart';
 
 class NoticeCard extends StatefulWidget {
   final Notice cardModelData;
@@ -141,21 +142,37 @@ class _NoticeCardState extends State<NoticeCard> {
   void changeLines() {
     if ((numberOfLines == 3) && (notice.imageUrlNotice != null)) {
       numberOfLines = 1000;
-      iconForText = Icon(Icons.expand_more);
+      iconForText = Icon(Icons.expand_less);
 
-      imageForCard = Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: CarouselSlider(
-          height: MediaQuery.of(context).size.height * .6,
-          aspectRatio: MediaQuery.of(context).size.aspectRatio,
-          viewportFraction: 1.0,
-          items: notice.imageUrlNotice.map((image) {
-            return Builder(
-              builder: (BuildContext context) {
-                return PhotoView(imageProvider: NetworkImage(image));
+      imageForCard = Container(
+        height: MediaQuery.of(context).size.height * .6,
+        child: Stack(
+          children: <Widget>[
+            PhotoViewGallery.builder(
+              itemCount: notice.imageUrlNotice.length,
+              builder: (context, index) {
+                return PhotoViewGalleryPageOptions(
+                  imageProvider: NetworkImage(notice.imageUrlNotice[index]),
+                  minScale: PhotoViewComputedScale.contained * 1,
+                  maxScale: PhotoViewComputedScale.covered * 3,
+                  heroAttributes: PhotoViewHeroAttributes(tag: index),
+                );
               },
-            );
-          }).toList(),
+              scrollPhysics: BouncingScrollPhysics(),
+              loadingChild: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+            Positioned(
+              child: IconButton(
+                onPressed: fullScreen,
+                icon: Icon(Icons.fullscreen),
+                color: Colors.white,
+              ),
+              right: 0,
+              top: 0,
+            )
+          ],
         ),
       );
     } else if (numberOfLines == 3) {
@@ -169,6 +186,17 @@ class _NoticeCardState extends State<NoticeCard> {
     setState(() {
       numberOfLines = numberOfLines;
     });
+  }
+
+  void fullScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => NoticePhotoViewWrapper(
+            noticeImages: notice.imageUrlNotice,
+            noticeTitle: notice.titleOfEvent),
+      ),
+    );
   }
 }
 
