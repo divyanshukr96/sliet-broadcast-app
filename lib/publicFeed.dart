@@ -11,7 +11,6 @@ class PublicFeed extends StatelessWidget {
       provider: provider,
       child: Consumer<PublicNoticeNotifier>(
         builder: (context, notices, notFound) {
-          notices.noticePath = '/v1/public/notice';
           if (notices.fetched) notices.fetchNotice();
           return notices.notices != null && notices.notices.notices.length != 0
               ? NoticeList(notices.notices, notices, 'public1212')

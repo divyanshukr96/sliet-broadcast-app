@@ -7,6 +7,7 @@ import 'package:sliet_broadcast/utils/toast.dart';
 class Notice {
   String id;
   String nameOfUploader;
+  String uploaderId;
   String userProfile;
   String titleOfEvent;
   String dateOfNoticeUpload;
@@ -30,6 +31,7 @@ class Notice {
   Notice({
     this.id,
     this.nameOfUploader,
+    this.uploaderId,
     this.userProfile,
     this.titleOfEvent,
     this.dateOfNoticeUpload,
@@ -53,6 +55,7 @@ class Notice {
   Notice.fromMap(Map<dynamic, dynamic> map)
       : id = map['id'],
         nameOfUploader = map['user'],
+        uploaderId = map['user_id'],
         userProfile = map['profile'],
         titleOfEvent = map['title'],
         aboutEvent = map['description'],

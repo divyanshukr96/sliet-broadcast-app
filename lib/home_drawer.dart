@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cache_image/cache_image.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliet_broadcast/components/bookmark.dart';
@@ -72,7 +73,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
   Widget build(BuildContext context) {
     ImageProvider profileUrl = AssetImage('assets/images/login.png');
     if (profile['profile'] != null) {
-      profileUrl = NetworkImage(profile['profile']);
+      profileUrl = CacheImage(profile['profile']);
     }
 
     return Drawer(

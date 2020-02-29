@@ -16,7 +16,6 @@ class Bookmark extends StatelessWidget {
           provider: provider,
           child: Consumer<BookmarkNoticeNotifier>(
             builder: (context, notices, notFound) {
-              notices.noticePath = '/bookmark';
               if (notices.fetched) notices.fetchNotice();
               return notices.notices != null &&
                       notices.notices.notices.length != 0

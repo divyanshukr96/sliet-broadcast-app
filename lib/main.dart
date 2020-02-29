@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sliet_broadcast/components/channel_details.dart';
 import 'package:sliet_broadcast/components/profile.dart';
 import 'package:sliet_broadcast/homepage.dart';
 import 'package:sliet_broadcast/login.dart';
@@ -27,19 +28,33 @@ class MyApp extends StatelessWidget {
           '/profile': (context) => Profile(),
           '/login': (context) => LoginPage(),
         },
+        onGenerateRoute: (RouteSettings settings) {
+          return MaterialPageRoute(
+            builder: (BuildContext context) {
+              switch (settings.name) {
+                case '/details':
+                  return ChannelDetail(settings.arguments);
+                default:
+                  throw 'Route ${settings.name} is not defined';
+              }
+            },
+            maintainState: true,
+            fullscreenDialog: false,
+          );
+        },
       ),
       providers: <SingleChildCloneableWidget>[
         ChangeNotifierProvider(
-          builder: (_) => PublicNoticeNotifier(),
+          create: (_) => PublicNoticeNotifier(),
         ),
         ChangeNotifierProvider(
-          builder: (_) => PrivateNoticeNotifier(),
+          create: (_) => PrivateNoticeNotifier(),
         ),
         ChangeNotifierProvider(
-          builder: (_) => BookmarkNoticeNotifier(),
+          create: (_) => BookmarkNoticeNotifier(),
         ),
         ChangeNotifierProvider(
-          builder: (_) => InterestedNoticeNotifier(),
+          create: (_) => InterestedNoticeNotifier(),
         ),
       ],
     );
@@ -54,7 +69,7 @@ class SplashingHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SplashScreen(
-      seconds: 4,
+      seconds: 2,
       navigateAfterSeconds: '/start',
       title: new Text(
         'Together we can make a difference',

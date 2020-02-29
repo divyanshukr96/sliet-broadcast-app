@@ -16,7 +16,6 @@ class Interested extends StatelessWidget {
           provider: provider,
           child: Consumer<InterestedNoticeNotifier>(
             builder: (context, notices, notFound) {
-              notices.noticePath = '/interested';
               if (notices.fetched) notices.fetchNotice();
               return notices.notices != null &&
                       notices.notices.notices.length != 0

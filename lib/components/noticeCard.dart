@@ -1,3 +1,4 @@
+import 'package:cache_image/cache_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:photo_view/photo_view.dart';
@@ -145,34 +146,39 @@ class _NoticeCardState extends State<NoticeCard> {
       iconForText = Icon(Icons.expand_less);
 
       imageForCard = Container(
-        height: MediaQuery.of(context).size.height * .6,
-        child: Stack(
-          children: <Widget>[
-            PhotoViewGallery.builder(
-              itemCount: notice.imageUrlNotice.length,
-              builder: (context, index) {
-                return PhotoViewGalleryPageOptions(
-                  imageProvider: NetworkImage(notice.imageUrlNotice[index]),
-                  minScale: PhotoViewComputedScale.contained * 1,
-                  maxScale: PhotoViewComputedScale.covered * 3,
-                  heroAttributes: PhotoViewHeroAttributes(tag: index),
-                );
-              },
-              scrollPhysics: BouncingScrollPhysics(),
-              loadingChild: Center(
-                child: CircularProgressIndicator(),
+        height: MediaQuery.of(context).size.height * .4,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Stack(
+            children: <Widget>[
+              PhotoViewGallery.builder(
+                itemCount: notice.imageUrlNotice.length,
+                builder: (context, index) {
+                  return PhotoViewGalleryPageOptions(
+                    imageProvider: CacheImage(notice.imageUrlNotice[index]),
+                    minScale: PhotoViewComputedScale.contained * 1,
+                    maxScale: PhotoViewComputedScale.covered * 3,
+                    heroAttributes: PhotoViewHeroAttributes(
+                      tag: notice.imageUrlNotice[index],
+                    ),
+                  );
+                },
+                scrollPhysics: BouncingScrollPhysics(),
+                loadingChild: Center(
+                  child: CircularProgressIndicator(),
+                ),
               ),
-            ),
-            Positioned(
-              child: IconButton(
-                onPressed: fullScreen,
-                icon: Icon(Icons.fullscreen),
-                color: Colors.white,
-              ),
-              right: 0,
-              top: 0,
-            )
-          ],
+              Positioned(
+                child: IconButton(
+                  onPressed: fullScreen,
+                  icon: Icon(Icons.fullscreen),
+                  color: Colors.white,
+                ),
+                right: 0,
+                top: 0,
+              )
+            ],
+          ),
         ),
       );
     } else if (numberOfLines == 3) {
@@ -217,7 +223,7 @@ class NoticeCardHeader extends StatelessWidget {
       children: <Widget>[
         CircleAvatar(
           backgroundImage: notice.userProfile != null
-              ? NetworkImage(notice.userProfile)
+              ? CacheImage(notice.userProfile)
               : AssetImage('assets/images/login.png'),
           radius: 25.0,
           backgroundColor: Colors.black, //change this to backgroundImage
@@ -229,11 +235,17 @@ class NoticeCardHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
-                  notice.nameOfUploader,
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context)
+                        .pushNamed('/details', arguments: notice.uploaderId);
+                  },
+                  child: Text(
+                    notice.nameOfUploader,
+                    textAlign: TextAlign.start,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 Text(

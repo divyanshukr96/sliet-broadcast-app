@@ -111,7 +111,7 @@ class _RegisterState extends State<Register> {
         'name': _nameController.text,
         'email': _emailController.text,
         'mobile': _mobileController.text,
-        'username': _usernameController.text,
+        'username': _usernameController.text.toLowerCase(),
         'password': _passwordController.text,
         'department': _departmentController.text,
         'registration_number': _registrationController.text,
@@ -255,7 +255,7 @@ class _RegisterState extends State<Register> {
                     focusNode: _usernameFocus,
                     label: 'Username',
                     inputFormatters: [
-                      BlacklistingTextInputFormatter(RegExp(" "))
+                      BlacklistingTextInputFormatter(RegExp(" ")),
                     ],
                     validator: (value) {
                       if (value.isEmpty) {

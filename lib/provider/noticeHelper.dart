@@ -6,6 +6,10 @@ import 'package:sliet_broadcast/components/models/noticeList.dart';
 import 'package:sliet_broadcast/utils/network_utils.dart';
 
 class NoticeNotifier with ChangeNotifier {
+  final String path;
+
+  NoticeNotifier({this.path = '/public/notice'});
+
   bool _fetched = true;
 
   bool _loading = true;
@@ -123,7 +127,7 @@ class NoticeNotifier with ChangeNotifier {
 
   Future _loadNotices({String after, String before}) async {
     _authenticated = true;
-    String url = _noticePath;
+    String url = _noticePath == null ? path : _noticePath;
     if (after != null) url += "?after=$after";
     if (before != null) url += "?before=$before";
     try {

@@ -11,7 +11,6 @@ class PrivateFeed extends StatelessWidget {
       provider: provider,
       child: Consumer<PrivateNoticeNotifier>(
         builder: (context, notices, notFound) {
-          notices.noticePath = '/v1/private/notice';
           if (notices.fetched) notices.fetchNotice();
           return notices.notices != null && notices.notices.notices.length != 0
               ? NoticeList(notices.notices, notices, 'private002')
