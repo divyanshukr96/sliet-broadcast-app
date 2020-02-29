@@ -17,20 +17,9 @@ class _HomePageState extends State<HomePage> {
   bool authenticated = false;
   String userType = "STUDENT";
 
-  final _controller = PageController();
   int _index = 0;
 
-  dynamic _pageOptions = <Widget>[PublicFeed()];
-
-  _HomePageState() {
-    _controller.addListener(() {
-      if (_controller.page.round() != _index) {
-        setState(() {
-          _index = _controller.page.round();
-        });
-      }
-    });
-  }
+  final List<Widget> _pageOptions = <Widget>[PublicFeed()];
 
   @override
   void initState() {
@@ -49,29 +38,12 @@ class _HomePageState extends State<HomePage> {
         userType = onValue;
       });
     });
-    if (["DEPARTMENT", "SOCIETY", "CHANNEL"].contains(userType)) {
-      await _pageOptions.add(CreateNotice());
-    }
-    if (["STUDENT"].contains(userType)) {
-      await _pageOptions.add(PrivateFeed());
-    }
-    if (["FACULTY"].contains(userType)) {
-      await _pageOptions.add(PrivateFeed());
-    }
-    if (["DEPARTMENT", "SOCIETY", "CHANNEL"].contains(userType)) {
-      await _pageOptions.add(PublishedNotice());
-    }
   }
 
   void _showPageIndex(int index) {
     setState(() {
       _index = index;
     });
-    _controller.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeOutCubic,
-    );
   }
 
   @override
@@ -81,10 +53,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text('SLIET Broadcast'),
       ),
-      body: PageView(
-        controller: _controller,
-        children: _pageOptions,
-      ),
+      body: _pageOptions[_index],
       drawer: HomeDrawer(),
       bottomNavigationBar: authenticated ? buildBottomNavigationBar() : null,
 //      bottomNavigationBar: authenticated &&
@@ -101,24 +70,28 @@ class _HomePageState extends State<HomePage> {
       title: Text('Public'),
     ));
     if (["DEPARTMENT", "SOCIETY", "CHANNEL"].contains(userType)) {
+      _pageOptions.add(CreateNotice());
       items.add(BottomNavigationBarItem(
         icon: Icon(Icons.add_circle_outline),
         title: Text('Add Notice'),
       ));
     }
     if (["STUDENT"].contains(userType)) {
+      _pageOptions.add(PrivateFeed());
       items.add(BottomNavigationBarItem(
         icon: Icon(Icons.subject),
         title: Text('My Notice'),
       ));
     }
     if (["FACULTY"].contains(userType)) {
+      _pageOptions.add(PrivateFeed());
       items.add(BottomNavigationBarItem(
         icon: Icon(Icons.vpn_key),
         title: Text('Private'),
       ));
     }
     if (["DEPARTMENT", "SOCIETY", "CHANNEL"].contains(userType)) {
+      _pageOptions.add(PublishedNotice());
       items.add(BottomNavigationBarItem(
         icon: Icon(Icons.publish),
         title: Text('Published'),

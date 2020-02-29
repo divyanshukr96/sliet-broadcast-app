@@ -106,6 +106,7 @@ class _EditNoticeState extends State<EditNotice>
     if (form.validate()) {
       pr.style(message: 'Updating Notice...');
       pr.show();
+      FocusScope.of(context).requestFocus(new FocusNode());
       try {
         FormData formData = new FormData.from({
           'title': _titleController.text,
@@ -131,9 +132,8 @@ class _EditNoticeState extends State<EditNotice>
             data: formData);
 
         if (response.statusCode == 200) {
-          pr.hide().then((isHidden) {
-            _backAction();
-          });
+          await pr.hide();
+          _backAction(context);
         }
       } on DioError catch (e) {
         print('edit_notice _submitNotice onDioError Erorr $e');
@@ -459,7 +459,7 @@ class _EditNoticeState extends State<EditNotice>
                         ),
                         FlatButton(
                           splashColor: Colors.lightBlue,
-                          onPressed: _backAction,
+                          onPressed: () => _backAction(context),
                           child: Text(
                             "Back",
                             textAlign: TextAlign.center,
@@ -534,7 +534,7 @@ class _EditNoticeState extends State<EditNotice>
 
   var files = {};
 
-  void _backAction() {
+  void _backAction(context) {
     Navigator.pop(context);
   }
 }

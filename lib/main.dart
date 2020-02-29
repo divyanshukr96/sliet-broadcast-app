@@ -4,10 +4,7 @@ import 'package:sliet_broadcast/components/channel_details.dart';
 import 'package:sliet_broadcast/components/profile.dart';
 import 'package:sliet_broadcast/homepage.dart';
 import 'package:sliet_broadcast/login.dart';
-import 'package:sliet_broadcast/provider/bookmarkNoticeNotifier.dart';
-import 'package:sliet_broadcast/provider/interestedNoticeNotifier.dart';
-import 'package:sliet_broadcast/provider/privateNoticeNotifier.dart';
-import 'package:sliet_broadcast/provider/publicNoticeNotifier.dart';
+import 'package:sliet_broadcast/provider/provider_setup.dart';
 import 'package:sliet_broadcast/utils/app_upgrader.dart';
 import 'package:splashscreen/splashscreen.dart';
 
@@ -20,9 +17,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: SplashingHome(),
-//      initialRoute: '/',
         routes: {
-//        '/': (context) => SplashingHome(),
           '/start': (context) => AppUpgrade(child: HomePage()),
           '/home': (context) => HomePage(),
           '/profile': (context) => Profile(),
@@ -43,20 +38,7 @@ class MyApp extends StatelessWidget {
           );
         },
       ),
-      providers: [
-        ChangeNotifierProvider(
-          create: (_) => PublicNoticeNotifier(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => PrivateNoticeNotifier(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => BookmarkNoticeNotifier(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => InterestedNoticeNotifier(),
-        ),
-      ],
+      providers: providers,
     );
   }
 }

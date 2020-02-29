@@ -1,4 +1,5 @@
 import 'package:cache_image/cache_image.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:photo_view/photo_view.dart';
@@ -6,6 +7,7 @@ import 'package:photo_view/photo_view_gallery.dart';
 import 'package:sliet_broadcast/components/edit_notice.dart';
 import 'package:sliet_broadcast/components/models/notice.dart';
 import 'package:sliet_broadcast/components/notice_image_view_wrapper.dart';
+import 'package:url_launcher/url_launcher.dart' as launcher;
 
 class NoticeCard extends StatefulWidget {
   final Notice cardModelData;
@@ -128,15 +130,30 @@ class _NoticeCardState extends State<NoticeCard> {
   }
 
   Widget buildNoticeDescription() {
-    if (notice.aboutEvent != null && notice.aboutEvent != "")
+    final _style = Theme.of(context).textTheme.body1;
+    if (notice.aboutEvent != null && notice.aboutEvent != "") {
+      final words = notice.aboutEvent.split(' ');
+      List<TextSpan> span = [];
+
+      words.forEach((word) {
+        span.add(_isLink(word)
+            ? LinkTextSpan(
+                text: '$word',
+                url: word,
+                style: _style.copyWith(color: Colors.blue),
+              )
+            : TextSpan(text: '$word', style: _style));
+      });
+
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Text(
-          notice.aboutEvent,
+        child: RichText(
           overflow: TextOverflow.ellipsis,
           maxLines: numberOfLines,
+          text: TextSpan(text: '', children: span),
         ),
       );
+    }
     return SizedBox(height: 0.0);
   }
 
@@ -204,6 +221,25 @@ class _NoticeCardState extends State<NoticeCard> {
       ),
     );
   }
+
+  bool _isLink(String input) {
+    final matcher = RegExp(
+        r"(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)");
+    return matcher.hasMatch(input);
+  }
+}
+
+class LinkTextSpan extends TextSpan {
+  LinkTextSpan({
+    TextStyle style,
+    String url,
+    String text,
+  }) : super(
+          style: style,
+          text: text ?? url,
+          recognizer: TapGestureRecognizer()
+            ..onTap = () => launcher.launch(url),
+        );
 }
 
 class NoticeCardHeader extends StatelessWidget {

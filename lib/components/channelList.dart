@@ -1,3 +1,4 @@
+import 'package:cache_image/cache_image.dart';
 import 'package:flutter/material.dart';
 import 'package:sliet_broadcast/noticefeed.dart';
 import 'package:sliet_broadcast/utils/network_utils.dart';
@@ -59,7 +60,9 @@ class _ChannelListState extends State<ChannelList> {
         ),
         padding: EdgeInsets.all(8.0),
         child: channelList == null || channelList.length == 0
-            ? NoticeNotFound(loading: loading,)
+            ? NoticeNotFound(
+                loading: loading,
+              )
             : ListView.builder(
                 itemCount: channelList != null ? channelList.length : 0,
                 itemBuilder: (BuildContext context, int index) {
@@ -95,7 +98,7 @@ class ChannelCard extends StatelessWidget {
           children: <Widget>[
             CircleAvatar(
               backgroundImage: channel['profile'] != null
-                  ? NetworkImage(channel['profile'])
+                  ? CacheImage(channel['profile'])
                   : AssetImage('assets/images/login.png'),
               radius: 36.0,
               backgroundColor: Colors.black, //change this to backgroundImage
@@ -107,9 +110,9 @@ class ChannelCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     GestureDetector(
-                      onTap: (){
-                        Navigator.of(context).pushNamed('/details',
-                            arguments: channel['id']);
+                      onTap: () {
+                        Navigator.of(context)
+                            .pushNamed('/details', arguments: channel['id']);
                       },
                       child: Text(
                         channel['name'],
@@ -156,18 +159,16 @@ class FollowButton extends StatefulWidget {
 class _FollowButtonState extends State<FollowButton> {
   bool _following = false;
 
-  _followChannel() {
-    NetworkUtils.post('/api/channel/follow/${widget.channel['id']}', null);
-    setState(() {
-      _following = true;
-    });
-  }
-
-  _unFollowChannel() {
-    NetworkUtils.delete('/api/channel/follow/${widget.channel['id']}');
-    setState(() {
-      _following = false;
-    });
+  _followChannel() async {
+    try {
+      String url = '/api/channel/follow/${widget.channel['id']}';
+      final response = await NetworkUtils.post(url, null);
+      setState(() {
+        _following = response['following'];
+      });
+    } catch (e) {
+      print('_followChannel error in channel list : $e');
+    }
   }
 
   @override
@@ -199,8 +200,7 @@ class _FollowButtonState extends State<FollowButton> {
             );
             return;
           }
-
-          _following ? _unFollowChannel() : _followChannel();
+          _followChannel();
         },
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),

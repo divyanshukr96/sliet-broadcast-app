@@ -1,17 +1,13 @@
-import 'dart:convert';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:progress_dialog/progress_dialog.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 import 'package:sliet_broadcast/components/faculty_register.dart';
 import 'package:sliet_broadcast/components/password_reset.dart';
-import 'package:sliet_broadcast/homepage.dart';
+import 'package:sliet_broadcast/core/viewmodels/views/login_view_model.dart';
 import 'package:sliet_broadcast/style/theme.dart' as Theme;
-import 'package:sliet_broadcast/utils/auth_utils.dart';
 import 'package:sliet_broadcast/utils/network_utils.dart';
+import 'package:sliet_broadcast/views/base_widget.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -24,210 +20,142 @@ class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  SharedPreferences _sharedPreferences;
-  ProgressDialog pr;
 
   final FocusNode myFocusNodeEmailLogin = FocusNode();
   final FocusNode myFocusNodePasswordLogin = FocusNode();
 
-  final FocusNode myFocusNodePassword = FocusNode();
-  final FocusNode myFocusNodeEmail = FocusNode();
-
   TextEditingController loginEmailController = new TextEditingController();
   TextEditingController loginPasswordController = new TextEditingController();
 
-  bool _obscureTextLogin = true;
-
-  PageController _pageController;
+  bool _obscureTextLogin = false;
 
   Color left = Colors.black;
   Color right = Colors.white;
 
+  final BoxDecoration _boxDecoration = BoxDecoration(
+    gradient: LinearGradient(
+      colors: [Theme.Colors.loginGradientStart, Theme.Colors.loginGradientEnd],
+      begin: const FractionalOffset(0.0, 0.0),
+      end: const FractionalOffset(1.0, 1.0),
+      stops: [0.0, 1.0],
+      tileMode: TileMode.clamp,
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
-    pr = ProgressDialog(context);
-    return Scaffold(
-      key: _scaffoldKey,
-      body: NotificationListener<OverscrollIndicatorNotification>(
-        onNotification: (overscroll) {
-          overscroll.disallowGlow();
-          return null;
-        },
-        child: SingleChildScrollView(
-            child: Stack(
-          children: <Widget>[
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-//            height: MediaQuery.of(context).size.height >= 775.0
-//                ? MediaQuery.of(context).size.height
-//                : 775.0,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    colors: [
-                      Theme.Colors.loginGradientStart,
-                      Theme.Colors.loginGradientEnd
-                    ],
-                    begin: const FractionalOffset(0.0, 0.0),
-                    end: const FractionalOffset(1.0, 1.0),
-                    stops: [0.0, 1.0],
-                    tileMode: TileMode.clamp),
-              ),
-              child: Container(
-                margin: EdgeInsets.only(
-                    top: MediaQuery.of(context).size.height * 0.1),
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 40.0,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 20.0, left: 50.0),
-                      child: Image(
-                        width: 100.0,
-                        height: 100.0,
-                        fit: BoxFit.fill,
-                        image: new AssetImage('assets/images/login.png'),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 20.0),
-                      child: _buildMenuBar(context),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: PageView(
-                        controller: _pageController,
+    return BaseWidget(
+        model: LoginViewModel(authenticationService: Provider.of(context)),
+        builder: (context, model, child) {
+          return Scaffold(
+            key: _scaffoldKey,
+            body: NotificationListener<OverscrollIndicatorNotification>(
+              onNotification: (overScroll) {
+                overScroll.disallowGlow();
+                return null;
+              },
+              child: SingleChildScrollView(
+                  child: Stack(
+                children: <Widget>[
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    decoration: _boxDecoration,
+                    child: Container(
+                      margin: EdgeInsets.only(
+                          top: MediaQuery.of(context).size.height * 0.1),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
                         children: <Widget>[
-                          new ConstrainedBox(
-                            constraints: const BoxConstraints.expand(),
-                            child: _buildSignIn(context),
+                          SizedBox(
+                            height: 40.0,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(top: 20.0, left: 50.0),
+                            child: Image(
+                              width: 100.0,
+                              height: 100.0,
+                              fit: BoxFit.fill,
+                              image: AssetImage('assets/images/login.png'),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(top: 20.0),
+                            child: _buildMenuBar(context),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: PageView(
+                              children: <Widget>[
+                                new ConstrainedBox(
+                                  constraints: const BoxConstraints.expand(),
+                                  child: _buildSignIn(context, model),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
                     ),
-                  ],
-                ),
-              ),
+                  ),
+                  Positioned(
+                    top: 35.0,
+                    right: 10.0,
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(Icons.close),
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              )),
             ),
-            Positioned(
-              top: 35.0,
-              right: 10.0,
-              child: IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: Icon(Icons.close),
-                color: Colors.white,
-              ),
-            ),
-          ],
-        )),
-      ),
-    );
+          );
+        });
   }
 
   @override
   void dispose() {
-    myFocusNodePassword.dispose();
-    myFocusNodeEmail.dispose();
-    _pageController?.dispose();
+    myFocusNodeEmailLogin?.dispose();
+    myFocusNodePasswordLogin?.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
-    _fetchSessionAndNavigate();
 
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-
-    _pageController = PageController();
   }
 
-  _fetchSessionAndNavigate() async {
-    _sharedPreferences = await _prefs;
-    String authToken = AuthUtils.getToken(_sharedPreferences);
-    if (authToken != null) {
-      Navigator.of(_scaffoldKey.currentContext).push(
-        MaterialPageRoute(
-          builder: (BuildContext context) => HomePage(),
-        ),
-      );
-    }
-  }
-
-  _authenticateUser() async {
-    pr.style(message: 'Authenticating ...');
-    Response response;
-    Dio dio = new Dio();
-//    _showLoading();
-    final form = _formKey.currentState;
-    if (form.validate()) {
-      pr.show();
-      var responseJson = await NetworkUtils.authenticateUser(
-          loginEmailController.text, loginPasswordController.text);
-
-      if (responseJson == null) {
-        await pr.hide();
-        NetworkUtils.showSnackBar(_scaffoldKey, 'Something went wrong!');
-      } else if (responseJson == 'NetworkError') {
-        await pr.hide();
-        NetworkUtils.showSnackBar(_scaffoldKey, null);
-      } else if (responseJson['errors'] != null) {
-        await pr.hide();
-        NetworkUtils.showSnackBar(_scaffoldKey, 'Invalid Email/Password');
-      } else if (responseJson['newUser'] != null) {
-        await pr.hide();
-        Navigator.pushReplacement(
+  _authenticateUser(model) async {
+    if (_formKey.currentState.validate()) {
+      try {
+        var response = await model.login(
+          loginEmailController,
+          loginPasswordController,
+        );
+        if (response['newUser'] != null) {
+          return Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (BuildContext context) => FacultyRegister(
-                faculty: responseJson['newUser'],
+                faculty: response['newUser'],
               ),
-            ));
-        return;
-      } else {
-        await AuthUtils.insertDetails(_sharedPreferences, responseJson);
-
-        dio.options.headers['Authorization'] = "Token " + responseJson['token'];
-        dio.options.headers['content-type'] = "application/json";
-        dio.options.headers['Accept'] = "application/json";
-        try {
-          response = await dio.get(NetworkUtils.host + "/api/auth/user");
-          _sharedPreferences.setString('profile', jsonEncode(response.data));
-        } on DioError catch (e) {
-          print('Login authentication Dioerror $e');
-        } catch (e) {
-          print('Login authentication catch $e');
+            ),
+          );
+        } else {
+          Navigator.pushNamedAndRemoveUntil(context, "/home", (r) => false);
         }
-        await pr.hide();
-        Navigator.pushNamedAndRemoveUntil(context, "/home", (r) => false);
+      } catch (e) {
+        NetworkUtils.showSnackBar(_scaffoldKey, 'Invalid Email/Password');
       }
     }
-    if (pr.isShowing()) await pr.hide();
-  }
-
-  void showInSnackBar(String value) {
-    FocusScope.of(context).requestFocus(new FocusNode());
-    _scaffoldKey.currentState?.removeCurrentSnackBar();
-    _scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(
-        value,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.0,
-            fontFamily: "WorkSansSemiBold"),
-      ),
-      backgroundColor: Colors.blue,
-      duration: Duration(seconds: 3),
-    ));
   }
 
   Widget _buildMenuBar(BuildContext context) {
@@ -247,7 +175,6 @@ class _LoginPageState extends State<LoginPage>
         borderRadius: BorderRadius.all(Radius.circular(28.0)),
       ),
       child: CustomPaint(
-//        painter: TabIndicationPainter(pageController: _pageController),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
@@ -266,7 +193,16 @@ class _LoginPageState extends State<LoginPage>
     );
   }
 
-  Widget _buildSignIn(BuildContext context) {
+  Widget _buildSignIn(BuildContext context, model) {
+    TextStyle _textStyle = TextStyle(
+      fontFamily: "WorkSansSemiBold",
+      fontSize: 16.0,
+      color: Colors.black,
+    );
+    TextStyle _hintStyle = TextStyle(
+      fontFamily: "WorkSansSemiBold",
+      fontSize: 17.0,
+    );
     return Container(
       padding: EdgeInsets.only(top: 23.0),
       child: Column(
@@ -279,7 +215,7 @@ class _LoginPageState extends State<LoginPage>
                 elevation: 2.0,
                 color: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+                  borderRadius: BorderRadius.circular(4.0),
                 ),
                 child: Container(
                   width: MediaQuery.of(context).size.width * .9,
@@ -290,7 +226,10 @@ class _LoginPageState extends State<LoginPage>
                       children: <Widget>[
                         Padding(
                           padding: EdgeInsets.only(
-                              top: 20.0, bottom: 10.0, left: 25.0, right: 25.0),
+                            top: 15.0,
+                            left: 25.0,
+                            right: 25.0,
+                          ),
                           child: TextFormField(
                             focusNode: myFocusNodeEmailLogin,
                             controller: loginEmailController,
@@ -304,10 +243,7 @@ class _LoginPageState extends State<LoginPage>
                               }
                               return null;
                             },
-                            style: TextStyle(
-                                fontFamily: "WorkSansSemiBold",
-                                fontSize: 16.0,
-                                color: Colors.black),
+                            style: _textStyle,
                             decoration: InputDecoration(
 //                            border: InputBorder.none,
                               icon: Icon(
@@ -316,25 +252,22 @@ class _LoginPageState extends State<LoginPage>
                                 size: 22.0,
                               ),
                               hintText: "Email / Username",
-                              hintStyle: TextStyle(
-                                  fontFamily: "WorkSansSemiBold",
-                                  fontSize: 17.0),
+                              hintStyle: _hintStyle,
                             ),
                           ),
                         ),
-//                      Container(
-//                        width: 250.0,
-//                        height: 1.0,
-//                        color: Colors.grey[400],
-//                      ),
                         Padding(
                           padding: EdgeInsets.only(
-                              top: 10.0, bottom: 20.0, left: 25.0, right: 25.0),
+                            top: 10.0,
+                            bottom: 25.0,
+                            left: 25.0,
+                            right: 25.0,
+                          ),
                           child: TextFormField(
                             enableInteractiveSelection: false,
                             focusNode: myFocusNodePasswordLogin,
                             controller: loginPasswordController,
-                            obscureText: _obscureTextLogin,
+                            obscureText: !_obscureTextLogin,
                             inputFormatters: [
                               BlacklistingTextInputFormatter(RegExp(" "))
                             ],
@@ -344,10 +277,7 @@ class _LoginPageState extends State<LoginPage>
                               }
                               return null;
                             },
-                            style: TextStyle(
-                                fontFamily: "WorkSansSemiBold",
-                                fontSize: 16.0,
-                                color: Colors.black),
+                            style: _textStyle,
                             decoration: InputDecoration(
                               icon: Icon(
                                 Icons.lock_outline,
@@ -355,10 +285,7 @@ class _LoginPageState extends State<LoginPage>
                                 color: Colors.black,
                               ),
                               hintText: "Password",
-                              hintStyle: TextStyle(
-                                fontFamily: "WorkSansSemiBold",
-                                fontSize: 17.0,
-                              ),
+                              hintStyle: _hintStyle,
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _obscureTextLogin
@@ -419,7 +346,7 @@ class _LoginPageState extends State<LoginPage>
                       ),
                     ),
                   ),
-                  onPressed: _authenticateUser,
+                  onPressed: () => _authenticateUser(model),
                 ),
               ),
             ],
@@ -446,21 +373,17 @@ class _LoginPageState extends State<LoginPage>
                 child: Text(
                   "Forgot Password",
                   style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      color: Colors.white,
-                      fontSize: 16.0,
-                      fontFamily: "WorkSansMedium"),
+                    decoration: TextDecoration.underline,
+                    color: Colors.white,
+                    fontSize: 16.0,
+                    fontFamily: "WorkSansMedium",
+                  ),
                 )),
           ),
         ],
       ),
     );
   }
-
-//  void _onSignInButtonPress() {
-//    _pageController.animateToPage(0,
-//        duration: Duration(milliseconds: 500), curve: Curves.decelerate);
-//  }
 
   void _toggleLogin() {
     setState(() {
