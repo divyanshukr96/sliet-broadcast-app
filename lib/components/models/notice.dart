@@ -27,6 +27,7 @@ class Notice {
   bool bookmark;
   bool authenticated;
   final dateTime;
+  bool allDepartment;
 
   Notice({
     this.id,
@@ -50,6 +51,7 @@ class Notice {
     this.authenticated,
     this.bookmark,
     this.dateTime,
+    this.allDepartment,
   });
 
   Notice.fromMap(Map<dynamic, dynamic> map)
@@ -73,6 +75,7 @@ class Notice {
         interested = map['interested'],
         authenticated = map['authenticated'],
         dateTime = map['datetime'],
+        allDepartment = map['all_department'],
         dateOfNoticeUpload = map['created_at'];
 
   Future<bool> setBookmark({BuildContext context}) async {

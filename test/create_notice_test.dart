@@ -275,7 +275,7 @@ class _CreateNoticeTestState extends State<CreateNoticeTest> {
       );
 
       for (var r in resultList) {
-        var t = await r.filePath;
+        var t = await r.getByteData();
         print(t);
       }
     } on Exception catch (e) {

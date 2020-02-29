@@ -39,6 +39,7 @@ class _EditNoticeState extends State<EditNotice>
   int selectedRadio;
   bool _isEvent = true;
   bool _visible = true;
+  bool _allDepartment = true;
 
   Set<String> selectedDepartment = Set<String>();
   final _dateController = TextEditingController();
@@ -51,20 +52,22 @@ class _EditNoticeState extends State<EditNotice>
   _submitNewNotice() async {
     Response response;
     final form = _formKey.currentState;
+
+    // TODO optimise this
     List<String> _department = new List<String>();
     try {
-      if (selectedDepartment != null) {
+      if (selectedDepartment != null && !_allDepartment) {
         setState(() {
           _department = selectedDepartment.toList();
         });
       }
-      _department.removeWhere((value) => value == "ALL");
     } catch (e) {
       print('edit_notice _submitNotice _departmentSelect onCatch Error $e');
     }
 
     if (_descriptionController.text == "" &&
-        (files.length == 0 && (networkImages == null || networkImages.length == 0))) {
+        (files.length == 0 &&
+            (networkImages == null || networkImages.length == 0))) {
 //      _formSubmitting();
       return _scaffold.currentState.showSnackBar(SnackBar(
         content: Text(
@@ -88,7 +91,7 @@ class _EditNoticeState extends State<EditNotice>
       ));
     }
 
-    if (_department.length == 0) {
+    if (_department.length == 0 && !_allDepartment) {
 //      _formSubmitting();
       return _scaffold.currentState.showSnackBar(SnackBar(
         content: Text(
@@ -117,9 +120,11 @@ class _EditNoticeState extends State<EditNotice>
           'time': _timeController.text,
           'public_notice': selectedRadio,
           'visible': _visible,
-          'department': _department.toList(),
+          'all_department': _allDepartment,
           'files': files,
         });
+
+        if (!_allDepartment) formData.add('department', _department.toList());
 
         response = await dio.patch(
             NetworkUtils.productionHost + "/api/notice/$noticeId/",
@@ -161,6 +166,7 @@ class _EditNoticeState extends State<EditNotice>
 
     _isEvent = notice.isEvent;
     _visible = notice.visible;
+    _allDepartment = notice.allDepartment;
     _venueController.text = notice.venueForEvent;
     _timeController.text = notice.timeOfEvent;
 
@@ -324,7 +330,8 @@ class _EditNoticeState extends State<EditNotice>
                                       style: TextStyle(fontSize: 15.0),
                                     ),
                                     secondary: GestureDetector(
-                                      child: Icon(Icons.help_outline, size: 20.0),
+                                      child:
+                                          Icon(Icons.help_outline, size: 20.0),
                                       onTap: () {
                                         showDialog(
                                           context: context,
@@ -348,9 +355,37 @@ class _EditNoticeState extends State<EditNotice>
                                   Divider(),
                                 ],
                               ),
+                        CheckboxListTile(
+                          dense: true,
+                          title: Text(
+                            'Notice for all Departments',
+                            style: TextStyle(fontSize: 15.0),
+                          ),
+                          secondary: GestureDetector(
+                            child: Icon(Icons.help_outline, size: 20.0),
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    content: Text(
+                                      'Publish this notice for all departments student/faculty.',
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                          value: _allDepartment,
+                          controlAffinity: ListTileControlAffinity.leading,
+                          onChanged: (bool value) {
+                            setState(() => _allDepartment = !_allDepartment);
+                          },
+                        ),
                         DepartmentSelection(
                           edit: true,
                           value: selectedDepartment,
+                          allDepartment: _allDepartment,
                           selectedDepartment: (departments) {
                             setState(() {
                               selectedDepartment = departments;
@@ -415,8 +450,9 @@ class _EditNoticeState extends State<EditNotice>
                             highlightColor: Colors.transparent,
                             splashColor: Theme.Colors.loginGradientEnd,
                             textColor: Colors.white,
-                            color:
-                                loading ? Colors.white12 : Colors.lightBlueAccent,
+                            color: loading
+                                ? Colors.white12
+                                : Colors.lightBlueAccent,
                             child: Text("Update Notice"),
                             onPressed: loading ? () {} : _submitNewNotice,
                           ),

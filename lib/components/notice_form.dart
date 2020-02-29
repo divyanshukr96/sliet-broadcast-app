@@ -362,10 +362,13 @@ class DepartmentSelection extends StatefulWidget {
     Key key,
     @required this.selectedDepartment,
     @required this.value,
+    bool allDepartment,
     bool edit,
   })  : _edit = edit ?? false,
+        allDepartment = allDepartment ?? false,
         super(key: key);
 
+  final bool allDepartment;
   final bool _edit;
   final value;
   final VoidCallback selectedDepartment;
@@ -385,7 +388,7 @@ class _DepartmentSelectionState extends State<DepartmentSelection> {
 
   _fetchDepartment() async {
     try {
-      var responseJson = await NetworkUtils.get("/api/public/department");
+      var responseJson = await NetworkUtils.get("/api/departments");
       if (responseJson != null) departments = responseJson;
     } catch (e) {
       print('notice_form _fetchDepartment Error $e');
@@ -394,20 +397,20 @@ class _DepartmentSelectionState extends State<DepartmentSelection> {
 
   @override
   Widget build(BuildContext context) {
-    return RaisedButton(
-      textColor: Colors.white,
-      color: Colors.lightBlueAccent,
-      child: Text("Select Target Department"),
-      onPressed: () {
-        _showMultiSelect(context);
-      },
-    );
+    return widget.allDepartment
+        ? SizedBox(height: 0.0)
+        : RaisedButton(
+            textColor: Colors.white,
+            color: Colors.lightBlueAccent,
+            child: Text("Select Target Department"),
+            onPressed: () {
+              _showMultiSelect(context);
+            },
+          );
   }
 
   void _showMultiSelect(BuildContext context) async {
-    final items = <MultiSelectDialogItem<String>>[
-      MultiSelectDialogItem('ALL', 'ALL'),
-    ];
+    final items = <MultiSelectDialogItem<String>>[];
     var data = departments.map(
       (dept) => items.add(MultiSelectDialogItem(dept['id'], dept['name'])),
     );

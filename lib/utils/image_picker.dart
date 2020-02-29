@@ -53,7 +53,7 @@ class _MyAppState extends State<MyApp> {
       );
 
       for (var r in resultList) {
-        var t = await r.filePath;
+        var t = await r.getByteData();
         print("image_picker loadAssets $t");
       }
     } on Exception catch (e) {

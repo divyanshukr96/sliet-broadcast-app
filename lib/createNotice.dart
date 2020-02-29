@@ -24,6 +24,7 @@ class _CreateNoticeState extends State<CreateNotice> {
   bool loading = false;
   bool _isEvent = false;
   bool _visible = true;
+  bool _allDepartment = true;
   var percentage;
 
   // department selection variable
@@ -65,13 +66,14 @@ class _CreateNoticeState extends State<CreateNotice> {
     String token = await networkUtils.getToken();
 
     final form = _formKey.currentState;
+
+    // TODO optimise this
     List<String> _department = new List<String>();
-    if (selectedDepartment != null) {
+    if (selectedDepartment != null && !_allDepartment) {
       setState(() {
         _department = selectedDepartment.toList();
       });
     }
-    _department.removeWhere((value) => value == "ALL");
 
     if (_descriptionController.text == "" && files.length == 0) {
       _formSubmitting();
@@ -84,11 +86,11 @@ class _CreateNoticeState extends State<CreateNotice> {
         duration: Duration(seconds: 2),
       ));
     }
-    if (_department.length == 0) {
+    if (_department.length == 0 && !_allDepartment) {
       _formSubmitting();
       return Scaffold.of(context).showSnackBar(SnackBar(
         content: Text(
-          'Department field is required.',
+          'Department is not selected.',
           style: TextStyle(color: Colors.white70),
         ),
         backgroundColor: Colors.deepOrange,
@@ -110,9 +112,11 @@ class _CreateNoticeState extends State<CreateNotice> {
         'time': _timeController.text,
         'public_notice': selectedRadio,
         'visible': _visible,
-        'department': _department.toList(),
+        'all_department': _allDepartment,
         'files': files,
       });
+
+      if (!_allDepartment) formData.add('department', _department.toList());
 
       pr.style(message: 'Uploading Notice...');
       pr.show();
@@ -139,6 +143,7 @@ class _CreateNoticeState extends State<CreateNotice> {
             selectedDepartment = null;
             _isEvent = false;
             _visible = true;
+            _allDepartment = true;
           });
           _department.clear();
           files.clear();
@@ -154,7 +159,7 @@ class _CreateNoticeState extends State<CreateNotice> {
           });
         }
       } on DioError catch (e) {
-        pr.hide();
+        await pr.hide();
         if (e.response != null) {
           if (e.response.data != null)
             Scaffold.of(context).showSnackBar(SnackBar(
@@ -320,8 +325,36 @@ class _CreateNoticeState extends State<CreateNotice> {
                                 Divider(),
                               ],
                             ),
+                      CheckboxListTile(
+                        dense: true,
+                        title: Text(
+                          'Notice for all Departments',
+                          style: TextStyle(fontSize: 15.0),
+                        ),
+                        secondary: GestureDetector(
+                          child: Icon(Icons.help_outline, size: 20.0),
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  content: Text(
+                                    'Publish this notice for all departments student/faculty.',
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                        value: _allDepartment,
+                        controlAffinity: ListTileControlAffinity.leading,
+                        onChanged: (bool value) {
+                          setState(() => _allDepartment = !_allDepartment);
+                        },
+                      ),
                       DepartmentSelection(
                         value: selectedDepartment,
+                        allDepartment: _allDepartment,
                         selectedDepartment: (departments) {
                           setState(() {
                             selectedDepartment = departments;

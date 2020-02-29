@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
           );
         },
       ),
-      providers: <SingleChildCloneableWidget>[
+      providers: [
         ChangeNotifierProvider(
           create: (_) => PublicNoticeNotifier(),
         ),
