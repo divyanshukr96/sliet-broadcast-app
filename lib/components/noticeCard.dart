@@ -1,6 +1,7 @@
 import 'package:cache_image/cache_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -25,13 +26,7 @@ class _NoticeCardState extends State<NoticeCard> {
 
   _NoticeCardState(this.notice);
 
-  int numberOfLines = 3;
-
-  var iconForText = Icon(
-    Icons.keyboard_arrow_down,
-  );
-
-  var imageForCard;
+  bool expanded = false;
 
   @override
   void initState() {
@@ -42,182 +37,183 @@ class _NoticeCardState extends State<NoticeCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 4.0),
-      child: Card(
-        elevation: 5.0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4.0),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              NoticeCardHeader(notice: notice),
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                  notice.titleOfEvent,
-                  textAlign: TextAlign.start,
-                  style: TextStyle(fontSize: 16.0),
-                ),
+    TextStyle _body2Style = Theme.of(context).textTheme.body2;
+    return Card(
+      elevation: 5.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(2.0),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            NoticeCardHeader(notice: notice),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 4.0),
+              child: Text(
+                notice.titleOfEvent,
+                textAlign: TextAlign.start,
+                style: _body2Style.copyWith(fontSize: 16.0),
               ),
-              Container(
-                child: imageForCard,
-              ),
-              buildNoticeDescription(),
-              EventTime(notice: notice),
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-//                  SizedBox(width: 48.0),
-                  Expanded(child: buildInterestedButton()),
-                  IconButton(
-                    icon: iconForText,
-                    onPressed: changeLines,
-                  ),
-                  Expanded(child: buildBookmarkButton())
-                ],
-              )
-            ],
-          ),
+            ),
+            buildNoticeDescription(),
+            noticeImages(),
+            SizedBox(height: 6.0),
+            EventTime(notice: notice),
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[_interestButton, _moreButton, _bookmarkButton],
+            )
+          ],
         ),
       ),
     );
   }
 
-  Widget buildInterestedButton() {
-    if ((numberOfLines > 3 || interested) && notice.isEvent)
-      return Align(
-        alignment: Alignment.centerLeft,
-        child: IconButton(
-          icon: Icon(
-            Icons.pan_tool,
-            color: interested ? Colors.green : Colors.black54,
-          ),
-          tooltip: 'Bookmark',
-          onPressed: () {
-            notice.setInterested(context: context).then((val) {
-              setState(() => interested = val);
-            });
-          },
-        ),
+  Widget get _moreButton => SizedBox(
+        width: 36,
+        child: notice.imageUrlNotice != null
+            ? CustomIconButton(
+                child: InkWell(
+                  onTap: changeLines,
+                  child: Icon(_moreLessIcons()),
+                ),
+              )
+            : null,
       );
-    return SizedBox(width: 48.0);
+
+  IconData _moreLessIcons() {
+    return expanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down;
   }
 
-  Widget buildBookmarkButton() {
-    if (numberOfLines > 3 || bookmark)
-      return Align(
+  Widget get _interestButton => SizedBox(
+        width: 36,
+        child: notice.isEvent
+            ? CustomIconButton(
+                child: Tooltip(
+                  message: 'Interested',
+                  child: InkWell(
+                    child: Icon(
+                      Icons.pan_tool,
+                      color: interested ? Colors.green : Colors.black54,
+                    ),
+                    onTap: () {
+                      notice.setInterested(context: context).then((val) {
+                        setState(() => interested = val);
+                      });
+                    },
+                  ),
+                ),
+              )
+            : null,
+      );
+
+  Widget get _bookmarkButton => Align(
         alignment: Alignment.centerRight,
-        child: IconButton(
-          icon: Icon(
-            bookmark ? Icons.bookmark : Icons.bookmark_border,
-            color: bookmark ? Colors.blue : Colors.black54,
+        child: CustomIconButton(
+          child: Tooltip(
+            message: 'Bookmark',
+            child: InkWell(
+              child: Icon(
+                bookmark ? Icons.bookmark : Icons.bookmark_border,
+                color: bookmark ? Colors.blue : Colors.black54,
+              ),
+              onTap: () {
+                notice.setBookmark(context: context).then((val) {
+                  setState(() => bookmark = val);
+                });
+              },
+            ),
           ),
-          tooltip: 'Bookmark',
-          onPressed: () {
-            notice.setBookmark(context: context).then((val) {
-              setState(() => bookmark = val);
-            });
-          },
         ),
       );
-    return SizedBox(width: 48.0);
-  }
 
   Widget buildNoticeDescription() {
     final _style = Theme.of(context).textTheme.body1;
-    if (notice.aboutEvent != null && notice.aboutEvent != "") {
-      final words = notice.aboutEvent.split(' ');
-      List<TextSpan> span = [];
 
-      words.forEach((word) {
-        span.add(_isLink(word)
-            ? LinkTextSpan(
-                text: '$word',
-                url: word,
-                style: _style.copyWith(color: Colors.blue),
-              )
-            : TextSpan(text: '$word', style: _style));
-      });
-
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: RichText(
-          overflow: TextOverflow.ellipsis,
-          maxLines: numberOfLines,
-          text: TextSpan(text: '', children: span),
-        ),
-      );
+    if (notice.aboutEvent == null || notice.aboutEvent == "") {
+      return SizedBox(height: 0.0);
     }
-    return SizedBox(height: 0.0);
-  }
 
-  void changeLines() {
-    if ((numberOfLines == 3) && (notice.imageUrlNotice != null)) {
-      numberOfLines = 1000;
-      iconForText = Icon(Icons.expand_less);
+    final words = notice.aboutEvent.split(' ');
+    List<TextSpan> span = [];
 
-      imageForCard = Container(
-        height: MediaQuery.of(context).size.height * .4,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Stack(
-            children: <Widget>[
-              PhotoViewGallery.builder(
-                itemCount: notice.imageUrlNotice.length,
-                builder: (context, index) {
-                  return PhotoViewGalleryPageOptions(
-                    imageProvider: CacheImage(notice.imageUrlNotice[index]),
-                    minScale: PhotoViewComputedScale.contained * 1,
-                    maxScale: PhotoViewComputedScale.covered * 3,
-                    heroAttributes: PhotoViewHeroAttributes(
-                      tag: notice.imageUrlNotice[index],
-                    ),
-                  );
-                },
-                scrollPhysics: BouncingScrollPhysics(),
-                loadingChild: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              ),
-              Positioned(
-                child: IconButton(
-                  onPressed: fullScreen,
-                  icon: Icon(Icons.fullscreen),
-                  color: Colors.white,
-                ),
-                right: 0,
-                top: 0,
-              )
-            ],
-          ),
-        ),
-      );
-    } else if (numberOfLines == 3) {
-      numberOfLines = 1000;
-      iconForText = Icon(Icons.expand_less);
-    } else {
-      numberOfLines = 3;
-      iconForText = Icon(Icons.expand_more);
-      imageForCard = null;
-    }
-    setState(() {
-      numberOfLines = numberOfLines;
+    words.forEach((word) {
+      span.add(_isLink(word)
+          ? LinkTextSpan(
+              text: '$word ',
+              url: _generateLink(word),
+              style: _style.copyWith(color: Colors.blue),
+            )
+          : TextSpan(text: '$word ', style: _style));
     });
+
+    return RichText(text: TextSpan(children: span));
   }
+
+  String _generateLink(String word) {
+    RegExp exp = RegExp(r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+');
+    Iterable<RegExpMatch> matches = exp.allMatches(word);
+    matches.forEach((match) {
+      word = word.substring(match.start, match.end);
+    });
+    return word;
+  }
+
+  Widget noticeImages() {
+    return expanded
+        ? Container(
+            padding: EdgeInsets.only(top: 8.0),
+            height: MediaQuery.of(context).size.height * .4,
+            child: Stack(
+              children: <Widget>[
+                PhotoViewGallery.builder(
+                  itemCount: notice.imageUrlNotice.length,
+                  builder: (context, index) {
+                    return PhotoViewGalleryPageOptions(
+                      imageProvider: CacheImage(notice.imageUrlNotice[index]),
+                      minScale: PhotoViewComputedScale.contained * 1,
+                      maxScale: PhotoViewComputedScale.covered * 3,
+                      heroAttributes: PhotoViewHeroAttributes(
+                        tag: notice.imageUrlNotice[index],
+                      ),
+                    );
+                  },
+                  scrollPhysics: BouncingScrollPhysics(),
+                  loadingChild: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                Positioned(
+                  child: IconButton(
+                    onPressed: fullScreen,
+                    icon: Icon(Icons.fullscreen),
+                    color: Colors.white,
+                  ),
+                  right: 0,
+                  top: 0,
+                )
+              ],
+            ),
+          )
+        : SizedBox(height: 0);
+  }
+
+  void changeLines() => setState(() {
+        expanded = !expanded;
+      });
 
   void fullScreen() {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => NoticePhotoViewWrapper(
-            noticeImages: notice.imageUrlNotice,
-            noticeTitle: notice.titleOfEvent),
+          noticeImages: notice.imageUrlNotice,
+          noticeTitle: notice.titleOfEvent,
+        ),
       ),
     );
   }
@@ -226,6 +222,30 @@ class _NoticeCardState extends State<NoticeCard> {
     final matcher = RegExp(
         r"(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)");
     return matcher.hasMatch(input);
+  }
+}
+
+class CustomIconButton extends StatelessWidget {
+  final Widget _child;
+
+  const CustomIconButton({
+    Key key,
+    @required Widget child,
+  })  : _child = child,
+        assert(child != null),
+        super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 36,
+      width: 36,
+      child: ClipOval(
+        child: Material(
+          child: _child,
+        ),
+      ),
+    );
   }
 }
 
@@ -255,41 +275,41 @@ class NoticeCardHeader extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.max,
       //mainAxisAlignment: MainAxisAlignment.spaceAround,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         CircleAvatar(
           backgroundImage: notice.userProfile != null
               ? CacheImage(notice.userProfile)
               : AssetImage('assets/images/login.png'),
-          radius: 25.0,
-          backgroundColor: Colors.black, //change this to backgroundImage
+          radius: 18.0,
+          backgroundColor: Colors.black, //TODO change this to backgroundImage
         ),
+        SizedBox(width: 6.0),
         Expanded(
           flex: 25,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                GestureDetector(
-                  onTap: () {
-                    Navigator.of(context)
-                        .pushNamed('/details', arguments: notice.uploaderId);
-                  },
-                  child: Text(
-                    notice.nameOfUploader,
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    "/details",
+                    (route) => route.isFirst,
+                    arguments: notice.uploaderId,
+                  );
+                },
+                child: Text(
+                  notice.nameOfUploader,
+                  textAlign: TextAlign.start,
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                Text(
-                  notice.dateOfNoticeUpload,
-                  style: TextStyle(fontSize: 11.0),
-                ),
-              ],
-            ),
+              ),
+              Text(
+                notice.dateOfNoticeUpload,
+                style: TextStyle(fontSize: 11.0),
+              ),
+            ],
           ),
         ),
         NoticeEditButton(notice: notice),
@@ -359,11 +379,13 @@ class EventTime extends StatelessWidget {
           Expanded(
             child: Column(
               children: <Widget>[
-                Text('DATE & TIME',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1976D2),
-                    )),
+                Text(
+                  'DATE & TIME',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1976D2),
+                  ),
+                ),
                 Text(eventTime),
               ],
             ),

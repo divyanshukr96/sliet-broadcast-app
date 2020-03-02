@@ -6,7 +6,9 @@ import 'package:sliet_broadcast/components/models/user.dart';
 import 'package:sliet_broadcast/utils/auth_utils.dart';
 
 class Api {
-  static const endpoint = 'http://192.168.137.1:8000/api';
+//  static const endpoint = 'http://192.168.137.1:8000/api';
+
+  static const endpoint = 'https://slietbroadcast.in/api';
 
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   Dio client = new Dio();

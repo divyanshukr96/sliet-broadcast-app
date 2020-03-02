@@ -45,7 +45,6 @@ dependencies:
   device_info: ^0.4.1+5
 
   cache_image: ^1.0.5
-  zefyr: ^0.10.0
 
 dev_dependencies:
   flutter_test:

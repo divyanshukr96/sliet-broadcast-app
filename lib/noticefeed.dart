@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:sliet_broadcast/components/models/noticeList.dart';
 import 'package:sliet_broadcast/components/noticeCard.dart';
@@ -19,9 +20,11 @@ class _NoticeFeedState extends State<NoticeFeed>
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       new GlobalKey<RefreshIndicatorState>();
 
-  Future<Null> refreshList(_context) async {
-    widget.provider.refreshNotice();
-    return null;
+  Future<Null> refreshList() async {
+    Completer<Null> completer = Completer<Null>();
+    await widget.provider.refreshNotice();
+    completer.complete();
+    return await completer.future;
   }
 
   @override
@@ -40,9 +43,7 @@ class _NoticeFeedState extends State<NoticeFeed>
       ),
       child: RefreshIndicator(
         key: _refreshIndicatorKey,
-        onRefresh: () async {
-          await refreshList(context);
-        },
+        onRefresh: refreshList,
         child: SafeArea(
           child: widget.child,
         ),
@@ -65,9 +66,9 @@ class NoticeList extends StatelessWidget {
     return Stack(
       children: <Widget>[
         ListView.builder(
-          key: new PageStorageKey(_key),
+          key: PageStorageKey(_key),
           controller: _scrollController,
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 2.0),
           itemCount: notices.notices.length + 1,
           itemBuilder: (BuildContext context, int index) {
             return (index == notices.notices.length)
