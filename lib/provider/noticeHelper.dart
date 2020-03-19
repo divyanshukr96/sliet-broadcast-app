@@ -58,15 +58,15 @@ class NoticeNotifier with ChangeNotifier {
     _noticePath = notices;
   }
 
-  void refreshNotice() async {
+  Future<void> refreshNotice() async {
     _fetched = true;
     _loading = true;
-    _notices = null;
+//    _notices = null;
     notifyListeners();
-    fetchNotice();
+    await fetchNotice();
   }
 
-  void fetchNotice() async {
+  Future<void> fetchNotice() async {
     try {
       dynamic _resData = await _loadNotices();
       if (_authenticated) {

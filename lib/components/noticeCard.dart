@@ -5,6 +5,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
+import 'package:sliet_broadcast/components/custom_button.dart';
 import 'package:sliet_broadcast/components/edit_notice.dart';
 import 'package:sliet_broadcast/components/models/notice.dart';
 import 'package:sliet_broadcast/components/notice_image_view_wrapper.dart';
@@ -59,13 +60,18 @@ class _NoticeCardState extends State<NoticeCard> {
               ),
             ),
             buildNoticeDescription(),
+            SizedBox(height: 8.0),
             noticeImages(),
             SizedBox(height: 6.0),
             EventTime(notice: notice),
             Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[_interestButton, _moreButton, _bookmarkButton],
+              children: <Widget>[
+                _interestButton,
+                _moreButton,
+                _bookmarkButton,
+              ],
             )
           ],
         ),
@@ -166,7 +172,6 @@ class _NoticeCardState extends State<NoticeCard> {
   Widget noticeImages() {
     return expanded
         ? Container(
-            padding: EdgeInsets.only(top: 8.0),
             height: MediaQuery.of(context).size.height * .4,
             child: Stack(
               children: <Widget>[
@@ -222,30 +227,6 @@ class _NoticeCardState extends State<NoticeCard> {
     final matcher = RegExp(
         r"(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)");
     return matcher.hasMatch(input);
-  }
-}
-
-class CustomIconButton extends StatelessWidget {
-  final Widget _child;
-
-  const CustomIconButton({
-    Key key,
-    @required Widget child,
-  })  : _child = child,
-        assert(child != null),
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 36,
-      width: 36,
-      child: ClipOval(
-        child: Material(
-          child: _child,
-        ),
-      ),
-    );
   }
 }
 
@@ -373,44 +354,47 @@ class EventTime extends StatelessWidget {
         eventTime = notice.dateOfEvent;
         if (notice.timeOfEvent != null) eventTime += ", " + notice.timeOfEvent;
       }
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          Expanded(
-            child: Column(
-              children: <Widget>[
-                Text(
-                  'DATE & TIME',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1976D2),
+      return Padding(
+        padding: EdgeInsets.only(bottom: 8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Expanded(
+              child: Column(
+                children: <Widget>[
+                  Text(
+                    'DATE & TIME',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1976D2),
+                    ),
                   ),
-                ),
-                Text(eventTime),
-              ],
+                  Text(eventTime),
+                ],
+              ),
             ),
-          ),
-          Container(
-            height: 35.0,
-            width: 1.0,
-            color: Colors.orange,
-            margin: const EdgeInsets.only(left: 10.0, right: 10.0),
-          ),
-          Expanded(
-            child: Column(
-              children: <Widget>[
-                Text(
-                  'VENUE',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1976D2),
+            Container(
+              height: 35.0,
+              width: 1.0,
+              color: Colors.orange,
+              margin: const EdgeInsets.only(left: 10.0, right: 10.0),
+            ),
+            Expanded(
+              child: Column(
+                children: <Widget>[
+                  Text(
+                    'VENUE',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1976D2),
+                    ),
                   ),
-                ),
-                Text(notice.venueForEvent ?? "- - - - - -"),
-              ],
+                  Text(notice.venueForEvent ?? "- - - - - -"),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       );
     } else
       return SizedBox(

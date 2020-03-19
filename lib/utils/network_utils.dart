@@ -242,7 +242,7 @@ class NetworkUtils {
       }
       return response;
     } on DioError catch (error) {
-      if (response.statusCode == 401) await logout();
+      if (error.response.statusCode == 401) await logout();
       response = error.response;
       return response;
     } catch (e) {

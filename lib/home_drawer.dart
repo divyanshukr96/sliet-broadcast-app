@@ -112,7 +112,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (BuildContext context) => ChannelList(
-                          'Administration', '/api/channel?admin=true'),
+                        'Administration',
+                        '/api/channel?admin=true',
+                      ),
                     ),
                   );
                 },

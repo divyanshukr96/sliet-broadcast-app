@@ -80,21 +80,22 @@ class Notice {
 
   Future<bool> setBookmark({BuildContext context}) async {
     Dio _dio = new Dio();
-    Response response;
+
     String token = await NetworkUtils.getTokenStatic();
     if (token == null || token == "") return bookmark;
     _dio.options.headers['Authorization'] = "Token " + token;
     try {
-      response = await _dio.patch(NetworkUtils.host + '/api/bookmark/$id/');
+      String _url = NetworkUtils.host + '/api/bookmark/$id/';
+      Response response = await _dio.patch(_url);
       if (response.statusCode == 200) {
         if (context is BuildContext)
           Toast.show(
-            response.data['success'],
+            response.data['message'],
             context,
             duration: Toast.LENGTH_LONG,
             gravity: Toast.BOTTOM,
           );
-        bookmark = !bookmark;
+        bookmark = response.data['status'];
       }
     } catch (e) {}
     return bookmark;
@@ -109,16 +110,20 @@ class Notice {
     try {
       response = await _dio.patch(NetworkUtils.host + '/api/interested/$id/');
       if (response.statusCode == 200) {
-        if (context is BuildContext)
-          Toast.show(
-            response.data['success'],
-            context,
-            duration: Toast.LENGTH_LONG,
-            gravity: Toast.BOTTOM,
-          );
+        _showToast(context, response.data['success']);
         interested = !interested;
       }
     } catch (e) {}
     return interested;
+  }
+
+  void _showToast(BuildContext context, String message) {
+    if (context is BuildContext && message != null)
+      Toast.show(
+        message,
+        context,
+        duration: Toast.LENGTH_LONG,
+        gravity: Toast.BOTTOM,
+      );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:cache_image/cache_image.dart';
 import 'package:flutter/material.dart';
+import 'package:sliet_broadcast/components/custom_button.dart';
 import 'package:sliet_broadcast/noticefeed.dart';
 import 'package:sliet_broadcast/utils/network_utils.dart';
 import 'package:sliet_broadcast/utils/toast.dart';
@@ -58,15 +59,15 @@ class _ChannelListState extends State<ChannelList> {
             ],
           ),
         ),
-        padding: EdgeInsets.all(8.0),
+        padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
         child: channelList == null || channelList.length == 0
-            ? NoticeNotFound(
-                loading: loading,
-              )
+            ? NoticeNotFound(loading: loading)
             : ListView.builder(
-                itemCount: channelList != null ? channelList.length : 0,
+                itemCount: channelList.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return ChannelCard(channel: channelList[index]);
+                  return ChannelCard(
+                    channel: channelList[index],
+                  );
                 },
               ),
       ),
@@ -74,69 +75,115 @@ class _ChannelListState extends State<ChannelList> {
   }
 }
 
-class ChannelCard extends StatelessWidget {
+class ChannelCard extends StatefulWidget {
+  final dynamic channel;
+
   const ChannelCard({
     Key key,
     @required this.channel,
   }) : super(key: key);
 
-  final dynamic channel;
+  @override
+  _ChannelCardState createState() => _ChannelCardState();
+}
+
+class _ChannelCardState extends State<ChannelCard> {
+  bool _following = false;
+
+  @override
+  void initState() {
+    _following = widget.channel['following'];
+    super.initState();
+  }
+
+  Future _followChannel() async {
+    try {
+      String url = '/api/channel/follow/${widget.channel['id']}';
+      final response = await NetworkUtils.post(url, null);
+      setState(() {
+        _following = response['following'];
+      });
+    } catch (e) {
+      print('_followChannel error in channel list : $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4.0,
+      elevation: 0.0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(4.0),
       ),
-      margin: EdgeInsets.all(8.0),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 2.0),
         child: Row(
           mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            CircleAvatar(
-              backgroundImage: channel['profile'] != null
-                  ? CacheImage(channel['profile'])
-                  : AssetImage('assets/images/login.png'),
-              radius: 36.0,
-              backgroundColor: Colors.black, //change this to backgroundImage
-            ),
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pushNamed(
+                    '/details',
+                    arguments: widget.channel['id'],
+                  );
+                },
+                child: Row(
                   children: <Widget>[
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.of(context)
-                            .pushNamed('/details', arguments: channel['id']);
-                      },
-                      child: Text(
-                        channel['name'],
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16.0,
-                        ),
+                    SizedBox(width: 4.0),
+                    CircleAvatar(
+                      backgroundImage: widget.channel['profile'] != null
+                          ? CacheImage(widget.channel['profile'])
+                          : AssetImage('assets/images/login.png'),
+                      radius: 28.0,
+                      backgroundColor: Colors.black,
+                      //change this to backgroundImage
+                    ),
+                    SizedBox(width: 8.0),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            widget.channel['name'],
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16.0,
+                            ),
+                          ),
+                          SizedBox(height: 2.0),
+                          Text('@${widget.channel['username']}')
+                        ],
                       ),
                     ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text('@${channel['username']}'),
-                        FollowButton(channel: channel),
-                      ],
-                    )
                   ],
                 ),
               ),
             ),
+            CustomIconButton(
+              child: InkWell(
+                child: Icon(
+                  _following ? Icons.favorite : Icons.favorite_border,
+                  color: _following ? Colors.green : Colors.grey,
+                ),
+                onTap: () async {
+                  if (widget.channel['is_admin']) {
+                    Toast.show(
+                      "You can't unfollw ${widget.channel['name']}",
+                      context,
+                      duration: Toast.LENGTH_LONG,
+                      gravity: Toast.BOTTOM,
+                    );
+                    return;
+                  }
+                  await _followChannel();
+                },
+              ),
+            )
           ],
         ),
       ),
