@@ -5,8 +5,12 @@ class BaseModel extends ChangeNotifier {
 
   bool get busy => _busy;
 
-  void setBusy(bool value) {
+  void setBusy({bool value = true}) {
     _busy = value;
+    notifyListeners();
+  }
+
+  void listen() {
     notifyListeners();
   }
 }

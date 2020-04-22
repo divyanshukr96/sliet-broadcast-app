@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sliet_broadcast/components/department_selection.dart';
-import 'package:sliet_broadcast/utils/network_utils.dart';
+import 'package:sliet_broadcast/ui/widgets/department_selection.dart';
 
 void main() => runApp(MyApp());
 
@@ -61,13 +60,13 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   }
 
   _fetchDepartment() async {
-    var responseJson = await NetworkUtils.get("/api/public/department");
-    if (responseJson.toString() != null)
-      setState(() {
-        setState(() {
-          departments = responseJson;
-        });
-      });
+//    var responseJson = await NetworkUtils.get("/api/public/department");
+//    if (responseJson.toString() != null)
+//      setState(() {
+//        setState(() {
+//          departments = responseJson;
+//        });
+//      });
   }
 
   @override

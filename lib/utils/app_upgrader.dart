@@ -3,7 +3,10 @@ import 'dart:io' show Platform;
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
-import 'package:sliet_broadcast/utils/network_utils.dart';
+import 'package:provider/provider.dart';
+import 'package:sliet_broadcast/core/services/api.dart';
+import 'package:sliet_broadcast/core/viewmodels/views/login_view_model.dart';
+import 'package:sliet_broadcast/views/base_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AppUpgrade extends StatefulWidget {
@@ -29,9 +32,8 @@ class _AppUpgradeState extends State<AppUpgrade> {
   }
 
   _upgradeDialog() async {
-    Dio dio = new Dio();
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    Response response = await dio.get(NetworkUtils.host + "/api/appversion");
+    Response response = await Api().get(path: '/appversion');
 
     String packageName = packageInfo.packageName;
     String installedVersion = packageInfo.version;
@@ -86,6 +88,14 @@ class _AppUpgradeState extends State<AppUpgrade> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.child;
+    return BaseWidget(
+      model: LoginViewModel(authenticationService: Provider.of(context)),
+      onModelReady: (LoginViewModel model) {
+        model.getUser();
+      },
+      builder: (context, model, child) {
+        return widget.child;
+      },
+    );
   }
 }

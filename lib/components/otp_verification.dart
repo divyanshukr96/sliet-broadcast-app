@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:sliet_broadcast/components/register.dart';
+import 'package:sliet_broadcast/ui/widgets/custom_input.dart';
 
 class Otp extends StatefulWidget {
   final String email;
@@ -397,9 +397,10 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
 class OtpTimer extends StatelessWidget {
   final AnimationController controller;
   final double fontSize;
-  Color timeColor = Colors.black;
+  final Color timeColor;
 
-  OtpTimer(this.controller, this.fontSize, this.timeColor);
+  OtpTimer(this.controller, this.fontSize, Color color)
+      : timeColor = color ?? Colors.black;
 
   String get timerString {
     Duration duration = controller.duration * controller.value;
@@ -417,16 +418,17 @@ class OtpTimer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-        animation: controller,
-        builder: (BuildContext context, Widget child) {
-          return new Text(
-            timerString,
-            style: new TextStyle(
-              fontSize: fontSize,
-              color: timeColor,
-              fontWeight: FontWeight.w600,
-            ),
-          );
-        });
+      animation: controller,
+      builder: (BuildContext context, Widget child) {
+        return new Text(
+          timerString,
+          style: new TextStyle(
+            fontSize: fontSize,
+            color: timeColor,
+            fontWeight: FontWeight.w600,
+          ),
+        );
+      },
+    );
   }
 }

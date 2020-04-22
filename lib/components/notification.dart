@@ -1,6 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:sliet_broadcast/components/models/message.dart';
+import 'package:sliet_broadcast/core/models/message.dart';
 import 'package:sliet_broadcast/utils/device_registration.dart';
 
 class FireBaseNotification extends StatefulWidget {

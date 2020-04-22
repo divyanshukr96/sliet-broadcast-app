@@ -9,12 +9,12 @@ import 'auth_utils.dart';
 class NetworkUtils {
   static final String host = productionHost;
 
-//  static final String productionHost = 'http://192.168.137.1:8000';
-//  static final String developmentHost = 'http://192.168.137.1:8000';
-//
+  static final String productionHost = 'http://192.168.43.83:8000';
+  static final String developmentHost = 'http://192.168.43.83:8000';
 
-  static final String productionHost = 'https://slietbroadcast.in';
-  static final String developmentHost = 'https://slietbroadcast.in';
+//
+//  static final String productionHost = 'https://slietbroadcast.in';
+//  static final String developmentHost = 'https://slietbroadcast.in';
 
   static Future<SharedPreferences> _shPrefs = SharedPreferences.getInstance();
 
@@ -44,7 +44,7 @@ class NetworkUtils {
 
 //    Navigator.of(context).pushReplacementNamed('/');
 //    showSnackBar(context, message)
-    Navigator.pushNamedAndRemoveUntil(context, "/home", (r) => false);
+    Navigator.pushNamedAndRemoveUntil(context, "/start", (r) => false);
 //    Navigator.of(context).push(
 //      MaterialPageRoute(
 //        builder: (BuildContext context) => HomePage(),
@@ -67,11 +67,11 @@ class NetworkUtils {
     prefs.setString('profile', null);
   }
 
-  static showSnackBar(GlobalKey<ScaffoldState> scaffoldKey, String message) {
-    scaffoldKey.currentState.showSnackBar(new SnackBar(
-      content: new Text(message ?? 'You are offline'),
-    ));
-  }
+//  static showSnackBar(GlobalKey<ScaffoldState> scaffoldKey, String message) {
+//    scaffoldKey.currentState.showSnackBar(new SnackBar(
+//      content: new Text(message ?? 'You are offline'),
+//    ));
+//  }
 
   static fetch(var authToken, var endPoint) async {
     var uri = host + endPoint;
@@ -242,7 +242,9 @@ class NetworkUtils {
       }
       return response;
     } on DioError catch (error) {
-      if (error.response.statusCode == 401) await logout();
+      if (error.response != null && error.response.statusCode == 401) {
+        await logout();
+      }
       response = error.response;
       return response;
     } catch (e) {
